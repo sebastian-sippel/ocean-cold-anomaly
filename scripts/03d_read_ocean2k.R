@@ -78,10 +78,10 @@ ocean2k_ = get.df(Y = ocean2k$Tropics[match(x = 1850:2001, table = ocean2k$year)
 ## ----------------------------------------------------------------------------------------------------------------
 # OBS.tas_land$WAtlantic$mon$mod_p1_min
 # x = OBS.tas_land_$WAtlantic$mon$mod_p1_min
-get.ens.avg_Apr_Mar <- function(x, nrow = 200) {
-  ret.mat = matrix(data = NA, nrow = nrow, ncol = 171)
+get.ens.avg_Apr_Mar <- function(x, nrow = 200, ncol = 171) {
+  ret.mat = matrix(data = NA, nrow = nrow, ncol = ncol)
   
-  for ( i in 1:170) {
+  for ( i in 1:(ncol-1)) {
     ret.mat[,i] = rowMeans(sapply(X = 1:12, FUN=function(mon) {
       if(mon %in% 1:3) {
         x[[mon]][,i + 1]

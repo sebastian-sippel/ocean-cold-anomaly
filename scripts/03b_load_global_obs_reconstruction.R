@@ -7,8 +7,9 @@
 # 23.10.2022
 
 # 00.(c) Load *new* reconstructions:
-load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/OBS.tas_land_v4.RData")
-load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/OBS.tos_v4.RData")
+load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/OBS.tas_land_v5.RData")
+#load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/OBS.tos_v4.RData")
+load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly//data/03_processedOBS_reconstr/OBS.tos.RData")
 
 
 # 00.(d) Derive reconstructions+percentiles:
@@ -21,9 +22,8 @@ names.vec = c("GSAT", "GMSST", "GMLSAT_MI", "GMLSAT_NI", "GMST_FM", "GMMSAT", "T
 YEARS.mon = seq(1850.042, 2020.958, length.out = 171*12)
 
 # Observational predictions:
-ens.ix = 94:200
+ens.ix = 1:200
 OBS.tas_land = list(); OBS.tas_land[1:14] = sapply(1:14, FUN=function(i) OBS.tas_land[[i]] <- list() ); names(OBS.tas_land) = names.vec
-OBS.tos = list(); OBS.tos[1:14] = sapply(1:14, FUN=function(i) OBS.tos[[i]] <- list() ); names(OBS.tos) = names.vec
 
 for (i in 1:length(names.vec)) {
   cur.name = names.vec[i]
@@ -58,8 +58,16 @@ for (i in 1:length(names.vec)) {
   OBS.tas_land[[cur.name]]$ann$mod_gta_2.5 = colQuantiles(OBS.tas_land_[[cur.name]]$ann$mod_gta[ens.ix,], probs = 0.025)
   OBS.tas_land[[cur.name]]$ann$mod_gta_97.5 = colQuantiles(OBS.tas_land_[[cur.name]]$ann$mod_gta[ens.ix,], probs = 0.975)
   OBS.tas_land[[cur.name]]$ann$YEARS = 1850:2020
+}
   
+# tos
+names.vec = c("GSAT", "GMSST", "GMLSAT_NI", "GMST_FM", "GMMSAT", "IndianOcean", "WPacific", "WAtlantic")
+
+OBS.tos = list(); OBS.tos[1:8] = sapply(1:8, FUN=function(i) OBS.tos[[i]] <- list() ); names(OBS.tos) = names.vec
   
+for (i in 1:length(names.vec)) {
+  cur.name = names.vec[i]
+  print(cur.name)
   
   OBS.tos[[cur.name]]$mon = list(); OBS.tos[[cur.name]]$ann = list();
   

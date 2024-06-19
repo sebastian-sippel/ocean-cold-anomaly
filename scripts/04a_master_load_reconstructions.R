@@ -10,29 +10,29 @@ library(matrixStats)
 # 00. Load functions & code:
 # ------------------------------------------------------------------------------------
 source("/net/h2o/climphys1/sippels/_code/tools/frenchcolormap.R")
-source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/code/_functions_CMIP6.R")
-source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/code/_attribution_hildreth-lu.R")
+source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_functions_CMIP6.R")
+source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_attribution_hildreth-lu.R")
 source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_post-processing_reconstructions.R")
 
 
 # 01. Load global observations:
 # ------------------------------------------------------------------------------------
-source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/scripts/03a_load_global_observations.R")
+source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/03a_load_global_observations.R")
 # source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/scripts/03a_load_global_observations_SST.R")
 # load additional SST datasets:
-load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/SST_datasets.RData")
-load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/TLand_datasets.RData")
+load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedOBS_reconstr/SST_datasets.RData")
+load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedOBS_reconstr/TLand_datasets.RData")
 
 
 # 02. Load NEW reconstructions:
 # ------------------------------------------------------------------------------------
-source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/scripts/03b_load_global_obs_reconstruction.R")
+source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/03b_load_global_obs_reconstruction.R")
 
 
 # 03. Load CMIP reconstructions:
 # ------------------------------------------------------------------------------------
 load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedCMIP6_reconstr/CMIP6.tas_land_all.df_v4.RData")
-load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedCMIP6_reconstr/CMIP6.tos_all.df_v4.RData")
+load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedCMIP6_reconstr/CMIP6.tos_all.df.RData")
 CMIP6.tos_all.df$ann$Yhat$GSAT[which(CMIP6.tos_all.df$ann$Yhat$GSAT > 20)] = NA
 
 
@@ -135,7 +135,7 @@ library("dplR") # package for band-pass filtering
     # GMST Prepare data for plotting:
     GMST.CRUTEM5 = get.df(Y = CRUTEM5.global.annual$Anomaly[8:171], f = rowMeans(CMIP6.GMST.f, na.rm=T), years = c(1850:2020)[8:171], center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMST.tas_land = get.df(Y = OBS.tas_land_$GMST_FM$ann$mod_p1_min, f = rowMeans(CMIP6.GMST.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-    GMST.tos = get.df(Y = OBS.tos_$GMST$ann$mod_p1_min, f = rowMeans(CMIP6.GMST.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 94:200, years.DA = 1850:2014)
+    GMST.tos = get.df(Y = OBS.tos_$GMST$ann$mod_p1_min, f = rowMeans(CMIP6.GMST.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 1:200, years.DA = 1850:2014)
     GMST.HadISST = get.df(Y = HadISST.annual$GMST_FM_mod_p1_min[1:151], f = rowMeans(CMIP6.GMST.f, na.rm=T), years = HadISST.annual$Year[1:151], center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMST.COBE_SST2 = get.df(Y = COBE_SST2.annual$GMST_FM_mod_p1_min, f = rowMeans(CMIP6.GMST.f, na.rm=T), years = COBE_SST2.annual$Year, center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMST.ERSSTv5 = get.df(Y = ERSSTv5.annual$GMST_FM_mod_p1_min[1:167], f = rowMeans(CMIP6.GMST.f, na.rm=T), years = ERSSTv5.annual$Year[1:167], center = T, ens.ix = NULL, years.DA = 1850:2014)
@@ -148,13 +148,13 @@ library("dplR") # package for band-pass filtering
 
 
 
-
 # 09. Derive window correlation for OBS and CMIP (Figure 2):
 # ------------------------------------------------------------------------------------
 setwd("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/")
 
 # OBS Window correlation:
-OBS_mod_p1_min = get.diff.window.cor_ens(x = OBS.tos_$GSAT$ann$mod_p1_min, y = OBS.tas_land_$GSAT$ann$mod_p1_min, years = 1850:2020, w.width = 51, W = 20, center = T, center.ens.means = T, ens.ix = 94:200)
+OBS_mod_p1_min = get.diff.window.cor_ens(x = OBS.tos_$GMST_FM$ann$mod_p1_min, y = OBS.tas_land_$GMST_FM$ann$mod_p1_min, years = 1850:2020, w.width = 51, W = 20, center = T, center.ens.means = T, ens.ix = 1:200)
+# OBS_mod_GMST_p1_min = get.diff.window.cor_ens(x = OBS.tos_$GMST_FM$ann$mod_p1_min, y = OBS.tas_land_$GMST_FM$ann$mod_p1_min, years = 1850:2020, w.width = 51, W = 20, center = T, center.ens.means = T, ens.ix = 1:200)
 
 # CMIP Window correlation:
 {
@@ -167,7 +167,7 @@ OBS_mod_p1_min = get.diff.window.cor_ens(x = OBS.tos_$GSAT$ann$mod_p1_min, y = O
   ens.mem.un = unique(ens.mem)
   ens.mem.un = ens.mem.un[which(ens.mem.un$scen == "historical"),]
   # remove all ensemble members that contain NA's:
-  na.mems = unique(CMIP6.tos.all$all[which(is.na(CMIP6.tos_all.df$ann$Yhat$GSAT))])
+  na.mems = unique(CMIP6.tos.all$all[which(is.na(CMIP6.tos_all.df$ann$Yhat$GMST_FM))])
   omit.ix=na.omit(match(x = na.mems, table = ens.mem.un$all))
   if (length(omit.ix) > 0)  ens.mem.un = ens.mem.un[-omit.ix,]
   
@@ -182,16 +182,30 @@ OBS_mod_p1_min = get.diff.window.cor_ens(x = OBS.tos_$GSAT$ann$mod_p1_min, y = O
     ix_tas_land = which(CMIP6.tas_land.all$all == ens.mem.un$all[en] & CMIP6.tas_land_all.df$M$year %in% 1850:2014)
     ix_tos = which(CMIP6.tos.all$all == ens.mem.un$all[en] & CMIP6.tos_all.df$M$year %in% 1850:2014)
     
-    CMIP6.tas_land_hist_mod_p1[en,] = CMIP6.tas_land_all.df$ann$Yhat$GSAT[ix_tas_land]
-    CMIP6.tos_hist_mod_p1[en,] = CMIP6.tos_all.df$ann$Yhat$GSAT[ix_tos]
+    CMIP6.tas_land_hist_mod_p1[en,] = CMIP6.tas_land_all.df$ann$Yhat$GMST_FM[ix_tas_land]
+    CMIP6.tos_hist_mod_p1[en,] = CMIP6.tos_all.df$ann$Yhat$GMST_FM[ix_tos]
     
-    CMIP6.tas_land_hist_mod_p1_pt1[en,] = CMIP6.tas_land_all.df$ann$Yhat_pt1$GSAT[ix_tas_land]
-    CMIP6.tos_hist_mod_p1_pt1[en,] = CMIP6.tos_all.df$ann$Yhat_pt1$GSAT[ix_tos]
+    CMIP6.tas_land_hist_mod_p1_pt1[en,] = CMIP6.tas_land_all.df$ann$Yhat_pt1$GMST_FM[ix_tas_land]
+    CMIP6.tos_hist_mod_p1_pt1[en,] = CMIP6.tos_all.df$ann$Yhat_pt1$GMST_FM[ix_tos]
   }
   
   CMIP6_mod_p1_min = get.diff.window.cor_ens(x = CMIP6.tos_hist_mod_p1, y = CMIP6.tas_land_hist_mod_p1, years = 1850:2014, w.width = 51, W = 20, center = T, center.ens.means = F, ens.ix = 1:599)
   CMIP6_mod_p1_min_pt1 = get.diff.window.cor_ens(x = CMIP6.tos_hist_mod_p1_pt1, y = CMIP6.tas_land_hist_mod_p1_pt1, years = 1850:2014, w.width = 51, W = 20, center = F, center.ens.means = F, ens.ix = 1:599)
 }
+
+## make table for ens.mem.un:
+train.table = read.table(file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/CMIP6-table-train.txt", header = F)
+train.table[,3] = round(train.table[,3] / 165)
+train.test = train.table
+train.test[,4] <- rep(NA, 64)
+
+for (m in 1:length(train.table[,1])) {
+  print(train.table[m,1])
+  train.test[m,4] = length(which(ens.mem.un$mod == train.table[m,1]))
+}
+
+write.table(x = train.test, file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/CMIP6-table-test.txt", 
+            quote = F, row.names = F, col.names = F, sep = "&")
 
 
 

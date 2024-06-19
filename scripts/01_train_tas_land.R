@@ -80,7 +80,10 @@ for (mon in 1:12) {
     }
       
       train.mod = cbind(1:64, mod.un, sapply(X = train.ix, FUN = function(x) length(x)))
+      out.table = cbind(train.mod[,2], substring(train.mod[,2], first = 1, last = 3), train.mod[,3])
       train.ix = unlist(train.ix) # length(train.ix)
+      write.table(x = out.table, file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/CMIP6-table-train.txt", 
+                  quote = F, row.names = F, col.names = F)
     # old version:
       # train.ix1 = which(!is.na(CMIP6.tas_monX_ct$Y$GSAT_f) & CMIP6.tas_monX_ct$M$ens.mem %in% paste("r", 1:5,"i1p1f1", sep="") & CMIP6.tas_monX_ct$M$year %in% 1850:2020 )
       # train.mod1 = cbind(1:30, modcl.un, sapply(X = train.ix1, FUN = function(x) length(x)))

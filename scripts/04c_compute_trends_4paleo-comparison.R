@@ -68,6 +68,7 @@ lat = c(matrix(coordinates(raster.template)[,2], 72, 36)[,36:1])
 }
 # get Tropics full ensemble with the same weights as Abram et al:
 # str(IndianOcean_ann_ens)
+
 Tropics_ann_ens = t(sapply(X = 1:200, FUN = function(ix) {
   return(sapply(X = 1:170, FUN=function(i) {
     weighted.mean(x = c(IndianOcean_ann_ens[ix,i], WAtlantic_ann_ens[ix,i], WPacific_ann_ens[ix,i]), w = c(w_IOcean, w_WAtlantic, w_WPacific), na.rm = T)
@@ -218,7 +219,7 @@ OBS.IndianOcean_tas_land.trends = apply(X = IndianOcean_tas_land_ens, MARGIN = 1
 OBS.IndianOcean_tos.trends = apply(X = IndianOcean_tos_ens, MARGIN = 1, FUN=get.trend, trend.years = trend.years, years = 1850:2020)
 
 OBS.EPacific_tas_land.trends = apply(X = EPacific_tas_land_ens, MARGIN = 1, FUN=get.trend, trend.years = trend.years, years = 1850:2020)
-OBS.EPacific_tos.trends = apply(X = EPacific_tos_ens, MARGIN = 1, FUN=get.trend, trend.years = trend.years, years = 1850:2020)
+#OBS.EPacific_tos.trends = apply(X = EPacific_tos_ens, MARGIN = 1, FUN=get.trend, trend.years = trend.years, years = 1850:2020)
 
 # HadSST4 regional averages:
 HadSST4.Tropics.trends = apply(X = Tropics_ann_ens, MARGIN = 1, FUN=get.trend, trend.years = trend.years, years = 1850:2020)

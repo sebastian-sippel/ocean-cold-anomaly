@@ -27,7 +27,7 @@ rep.col<-function(x,n){
 
 
 # read reconstruction coefficients \beta:
-load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processed_CMIP6_4evaluation/CMIP6.tos.df_v4.RData")
+load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processed_CMIP6_4evaluation/CMIP6.tos.df.RData")
 load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processed_CMIP6_4evaluation/CMIP6.tas_land.df_v4.RData")
 # length(CMIP6.tos.df$mon[[1]]$beta$GMSST)
 
@@ -92,6 +92,10 @@ for (i in 3:59) {
 
 
 
+# tos
+names.vec = c("GSAT", "GMSST", "GMLSAT_NI", "GMST_FM", "GMMSAT", "IndianOcean", "WPacific", "WAtlantic")
+
+
 
 # 01 HadISST:
 # ---------------------------------------------
@@ -143,11 +147,11 @@ for (i in 1:1833) {
   }
 }
 
-HadISST.annual = data.frame(matrix(NA, nrow = 153, ncol = 59))
+HadISST.annual = data.frame(matrix(NA, nrow = 153, ncol = 35))
 names(HadISST.annual) = c("Year", "Month", "Anomaly", c(sapply(X = names.vec, FUN=function(x) paste(x, "_", c("mod_p0_min", "mod_p0_1se", "mod_p1_min", "mod_p1_1se"), sep=""))))
 HadISST.annual$Year = c(1870:2022)
 
-for (i in 3:59) {
+for (i in 3:35) {
   HadISST.annual[[i]] = get_annual_average(cur.ts = HadISST.monthly[[i]])
 }
 
@@ -205,11 +209,11 @@ for (i in 1:2040) {
   }
 }
 
-COBE_SST2.annual = data.frame(matrix(NA, nrow = 170, ncol = 59))
+COBE_SST2.annual = data.frame(matrix(NA, nrow = 170, ncol = 35))
 names(COBE_SST2.annual) = c("Year", "Month", "Anomaly", c(sapply(X = names.vec, FUN=function(x) paste(x, "_", c("mod_p0_min", "mod_p0_1se", "mod_p1_min", "mod_p1_1se"), sep=""))))
 COBE_SST2.annual$Year = c(1850:2019)
 
-for (i in 3:59) {
+for (i in 3:35) {
   COBE_SST2.annual[[i]] = get_annual_average(cur.ts = COBE_SST2.monthly[[i]])
 }
 
@@ -260,11 +264,11 @@ for (i in 1:2025) {
   }
 }
 
-ERSSTv5.annual = data.frame(matrix(NA, nrow = 169, ncol = 59))
+ERSSTv5.annual = data.frame(matrix(NA, nrow = 169, ncol = 35))
 names(ERSSTv5.annual) = c("Year", "Month", "Anomaly", c(sapply(X = names.vec, FUN=function(x) paste(x, "_", c("mod_p0_min", "mod_p0_1se", "mod_p1_min", "mod_p1_1se"), sep=""))))
 ERSSTv5.annual$Year = c(1854:2022)
 
-for (i in 3:59) {
+for (i in 3:35) {
   ERSSTv5.annual[[i]] = get_annual_average(cur.ts = ERSSTv5.monthly[[i]])
 }
 
@@ -314,11 +318,11 @@ for (i in 1:1994) {
 }
 
 
-ERSSTv4.annual = data.frame(matrix(NA, nrow = 167, ncol = 59))
+ERSSTv4.annual = data.frame(matrix(NA, nrow = 167, ncol = 35))
 names(ERSSTv4.annual) = c("Year", "Month", "Anomaly", c(sapply(X = names.vec, FUN=function(x) paste(x, "_", c("mod_p0_min", "mod_p0_1se", "mod_p1_min", "mod_p1_1se"), sep=""))))
 ERSSTv4.annual$Year = c(1854:2020)
 
-for (i in 3:59) {
+for (i in 3:35) {
   ERSSTv4.annual[[i]] = get_annual_average(cur.ts = ERSSTv4.monthly[[i]])
 }
 
@@ -332,7 +336,7 @@ for (i in 3:59) {
 # https://www.metoffice.gov.uk/hadobs/hadsst4/data/download.html
 
 ## Get conversion to CMIP6 grid and distance matrix for rasterbrick format:
-source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/code/_functions_CMIP6.R")
+source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_functions_CMIP6.R")
 source("/net/h2o/climphys1/sippels/_code/tools/convert.to.eurocentric.R")
 
 setwd("/net/h2o/climphys1/sippels/_DATASET/CRU/HadCRUT5/5d00_monthly_noninfilled/")
@@ -399,11 +403,11 @@ for (i in 1:2052) {
   }
 }
 
-HadSST_ua.annual = data.frame(matrix(NA, nrow = 171, ncol = 59))
+HadSST_ua.annual = data.frame(matrix(NA, nrow = 171, ncol = 35))
 names(HadSST_ua.annual) = c("Year", "Month", "Anomaly", c(sapply(X = names.vec, FUN=function(x) paste(x, "_", c("mod_p0_min", "mod_p0_1se", "mod_p1_min", "mod_p1_1se"), sep=""))))
 HadSST_ua.annual$Year = c(1850:2020)
 
-for (i in 3:59) {
+for (i in 3:35) {
   HadSST_ua.annual[[i]] = get_annual_average(cur.ts = HadSST_ua.monthly[[i]])
 }
 
@@ -426,18 +430,11 @@ lines(ERSSTv4.annual$Year, ERSSTv4.annual$GMSST_mod_p1_min, col = "red", lty = 2
 save(list = c("HadISST.annual", "HadISST.monthly", "COBE_SST2.annual", "COBE_SST2.monthly",
               "ERSSTv5.annual", "ERSSTv5.monthly", "ERSSTv4.annual", "ERSSTv4.monthly",
               "HadSST_ua.annual", "HadSST_ua.monthly"), 
-     file = "/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/SST_datasets.RData")
+     file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedOBS_reconstr/SST_datasets.RData")
 
 save(list = c("BEST_Land.annual", "BEST_Land.monthly"), 
-     file = "/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/TLand_datasets.RData")
+     file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedOBS_reconstr/TLand_datasets.RData")
 
-
-
-
-
-### ------------------------------------------------------------
-### Load PAGES2k global field reconstructions (???)
-### ------------------------------------------------------------
 
 
 

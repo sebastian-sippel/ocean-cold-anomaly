@@ -6,7 +6,7 @@
 # Sebastian Sippel
 # 17.06.2021
 # run on xenon-server:
-# screen -S train_tos
+# screen -S train_tos_MR
 # module load R/4.0.3-openblas
 # R (-> not R-3.6.1)
 
@@ -29,9 +29,9 @@ openblas_set_num_threads(num_threads = 3)
 # --------------------------------------------------------------------------
 # 0.a Load functions needed:
 # --------------------------------------------------------------------------
-source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/code/_ridge_fun_v2.R")
-source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/code/_functions_CMIP6.R")
-source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/code/_gta_fun.R")
+source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_ridge_fun_v2.R")
+source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_functions_CMIP6.R")
+source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_gta_fun.R")
 
 
 raster.template = raster(res = 5, xmn = 0, xmx=360, ymn = -90, ymx=90)
@@ -43,14 +43,14 @@ areaw_cos = sqrt(cos(c(matrix(raster::coordinates(raster.template)[,2], 72, 36)[
 # --------------------------------------------------------------------------
 # 1. Train to predict forced response on sea-only record.
 # --------------------------------------------------------------------------
-setwd("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/")
+setwd("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/02_trained_models/")
 
 for (mon in 1:12) {
   print(mon)
   
   ## 0.1 Load climate model monthly data & select training model indices:
   {
-    load(paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/_CMIP6_processed/CMIP6.tos_mon", mon, "_ct.RData", sep=""))
+    load(paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/01_processed4train_CMIP6/CMIP6.tos_mon", mon, "_ct.RData", sep=""))
     # load(paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v2/data/_processed/CMIP6.tas_mon", mon, "_ct.RData", sep=""))
       
     # select training model indices:
@@ -92,7 +92,7 @@ for (mon in 1:12) {
   
   
   ## 0.2 load CRU data:
-  load(paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/_processed_CRU/HadSST4_mon", mon, ".RData", sep=""))
+  load(paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/01_processed4train_CRU/HadSST4_mon", mon, ".RData", sep=""))
   
   
   ## Run through all time steps from 1850 through 2020
@@ -165,6 +165,9 @@ for (mon in 1:12) {
       CMIP6.df$train.ix = train.ix
       CMIP6.df$train.mod = train.mod
     }
+    
+    # remove mean:
+    cur.CMIP6.tos_monX_ct$X_MR = cur.CMIP6.tos_monX_ct$X[,grid.ix] - rep.col(rowMeans(cur.CMIP6.tos_monX_ct$X[,grid.ix]), n = length(grid.ix))
       
     # 1.3 Define Biases and uncertainties:
     {
@@ -211,24 +214,26 @@ for (mon in 1:12) {
     # 1.3 Generate perturbed training dataset. str(X)
     {
         X = list()
-        X$X_orig = cur.CMIP6.tos_monX_ct$X[,grid.ix]
-        X$X_pert = gen.pert.traintest.data(X = cur.CMIP6.tos_monX_ct$X[,grid.ix], M = cur.CMIP6.tos_monX_ct$M, 
-                                           bias.ens = bias.ens, unc = unc_cov, randomize.ens = F, fact = 1)
-        X$X_pert2 = gen.pert.traintest.data(X = cur.CMIP6.tos_monX_ct$X[,grid.ix], M = cur.CMIP6.tos_monX_ct$M, 
-                                            bias.ens = bias.ens, unc = unc_cov, randomize.ens = F, fact = 2)
-        ens.mem.split = gen.pert.traintest.data(X = cur.CMIP6.tos_monX_ct$X[,grid.ix], M = cur.CMIP6.tos_monX_ct$M, 
-                                                bias.ens = bias.ens, unc = unc_cov, randomize.ens = F, fact = 1, ret.ens.mem.split = T)
-        ens.ix = gen.pert.traintest.data(X = cur.CMIP6.tos_monX_ct$X[,grid.ix], M = cur.CMIP6.tos_monX_ct$M, 
-                                                bias.ens = bias.ens, unc = unc_cov, randomize.ens = F, fact = 1, ret.ens.mem.split = F, ret.ens.ix = T)
+        X$X_orig = cur.CMIP6.tos_monX_ct$X_MR
+        X$X_pert = gen.pert.traintest.data(X = cur.CMIP6.tos_monX_ct$X_MR, M = cur.CMIP6.tos_monX_ct$M, 
+                                           bias.ens = bias.ens, unc = unc_cov, randomize.ens = T, fact = 1)
+        X$X_pert2 = gen.pert.traintest.data(X = cur.CMIP6.tos_monX_ct$X_MR, M = cur.CMIP6.tos_monX_ct$M, 
+                                            bias.ens = bias.ens, unc = unc_cov, randomize.ens = T, fact = 2)
+        ens.mem.split = gen.pert.traintest.data(X = cur.CMIP6.tos_monX_ct$X_MR, M = cur.CMIP6.tos_monX_ct$M, 
+                                                bias.ens = bias.ens, unc = unc_cov, randomize.ens = T, fact = 1, ret.ens.mem.split = T)
+        ens.ix = gen.pert.traintest.data(X = cur.CMIP6.tos_monX_ct$X_MR, M = cur.CMIP6.tos_monX_ct$M, 
+                                                bias.ens = bias.ens, unc = unc_cov, randomize.ens = T, fact = 1, ret.ens.mem.split = F, ret.ens.ix = T)
     }
     
     # 1.4 Generate observational input data with uncertainties:
     {
+      HadSST4_MR = HadSST4_[date.ix,grid.ix] - mean(HadSST4_[date.ix,grid.ix])
+      
         cur.HadSST4_ENS = list()
-        cur.HadSST4_ENS$X_pert = rep.row(HadSST4_[date.ix,], n = 200)[,grid.ix] + 
+        cur.HadSST4_ENS$X_pert = rep.row(HadSST4_MR, n = 200) + 
           t(sapply(X = bias.ens, FUN=function(x) x)) +
           rmvn(n = 200, mu = rep(0, dim(unc_cov)[1]), sigma = unc_cov)
-        cur.HadSST4_ENS$X_pert2 = rep.row(HadSST4_[date.ix,], n = 200)[,grid.ix] + 
+        cur.HadSST4_ENS$X_pert2 = rep.row(HadSST4_MR, n = 200) + 
           2 * t(sapply(X = bias.ens, FUN=function(x) x)) +
           2 * rmvn(n = 200, mu = rep(0, dim(unc_cov)[1]), sigma = unc_cov)
     }
@@ -274,7 +279,6 @@ for (mon in 1:12) {
     
     # 4.1 Predict GSAT:  
     {
-
         mod0.GSAT = cv.glmnet2(x = X$X_orig, y = cur.CMIP6.tos_monX_ct$Y$GSAT, alpha = 0,
                                   lambda = lambda.seq, foldid = crossclass, 
                                   penalty.factor = penalty.factor1, weights = train.weights,
@@ -295,7 +299,7 @@ for (mon in 1:12) {
 
         # save models for given time step:
         save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-             file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predGSAT_v3/", 
+             file = paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/02_trained_models/tos_MR/tos_MR_predGSAT/", 
                           format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
     }
 
@@ -322,35 +326,10 @@ for (mon in 1:12) {
       
       # save models for given time step:
       save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-           file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predGMST_v3/", 
+           file = paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/02_trained_models/tos_MR/tos_MR_predGMST/", 
                         format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
     }
     
-    # 4.3 Predict GMLSAT_MI:  
-    {
-      mod0.GMLSAT = cv.glmnet2(x = X$X_orig, y = cur.CMIP6.tos_monX_ct$Y$GMLSAT_MI, alpha = 0,
-                             lambda = lambda.seq, foldid = crossclass, 
-                             penalty.factor = penalty.factor1, weights = train.weights,
-                             nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p0)
-      mod_p0 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$GMLSAT_MI, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod0.GMLSAT, foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      mod1.GMLSAT = cv.glmnet2(x = X$X_pert, y = cur.CMIP6.tos_monX_ct$Y$GMLSAT_MI, alpha = 0,
-                             lambda = lambda.seq, foldid = crossclass, 
-                             penalty.factor = penalty.factor1, weights = train.weights,
-                             nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p1)
-      mod_p1 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$GMLSAT_MI, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod1.GMLSAT, foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # get gta model prediction:
-      mod_gta = validate.pert.dataset_gta(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$GMLSAT_MI, X_obs = cur.HadSST4_ENS, 
-                                            beta.gta = beta.gta, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # save models for given time step:
-      save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-           file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predGMLSAT_MI_v3/", 
-                        format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
-    }
 
     # 4.4 Predict GMLSAT_NI:  
     {
@@ -375,7 +354,7 @@ for (mon in 1:12) {
 
       # save models for given time step:
       save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-           file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predGMLSAT_NI_v3/", 
+           file = paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/02_trained_models/tos_MR/tos_MR_predGMLSAT_NI/", 
                         format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
     }
 
@@ -401,7 +380,7 @@ for (mon in 1:12) {
 
       # save models for given time step:
       save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-           file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predGMSST_v3/", 
+           file = paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/02_trained_models/tos_MR/tos_MR_predGMSST/", 
                         format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
     }
     
@@ -427,222 +406,8 @@ for (mon in 1:12) {
 
       # save models for given time step:
       save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-           file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predGMMSAT_v3/", 
+           file = paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/02_trained_models/tos_MR/tos_MR_predGMMSAT/", 
                         format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
-    }
-    
-    # 4.7 Predict TMLSAT:  
-    {
-      mod0.TMLSAT = cv.glmnet2(x = X$X_orig, y = cur.CMIP6.tos_monX_ct$Y$TMLSAT_40S_40N, alpha = 0,
-                               lambda = lambda.seq, foldid = crossclass, 
-                               penalty.factor = penalty.factor1, weights = train.weights,
-                               nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p0)
-      mod_p0 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$TMLSAT_40S_40N, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod0.TMLSAT, foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      mod1.TMLSAT = cv.glmnet2(x = X$X_pert, y = cur.CMIP6.tos_monX_ct$Y$TMLSAT_40S_40N, alpha = 0,
-                               lambda = lambda.seq, foldid = crossclass, 
-                               penalty.factor = penalty.factor1, weights = train.weights,
-                               nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p1)
-      mod_p1 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$TMLSAT_40S_40N, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod1.TMLSAT, foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # get gta model prediction:
-      mod_gta = validate.pert.dataset_gta(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$TMLSAT_40S_40N, X_obs = cur.HadSST4_ENS, 
-                                            beta.gta = beta.gta, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-
-      # save models for given time step:
-      save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-           file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predTMLSAT_v3/", 
-                        format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
-    }
-
-    # 4.8 Predict TMMSAT:  
-    {
-      mod0.TMMSAT = cv.glmnet2(x = X$X_orig, y = cur.CMIP6.tos_monX_ct$Y$TMMSAT_40S_40N, alpha = 0,
-                               lambda = lambda.seq, foldid = crossclass, 
-                               penalty.factor = penalty.factor1, weights = train.weights,
-                               nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p0)
-      mod_p0 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$TMMSAT_40S_40N, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod0.TMMSAT, foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      mod1.TMMSAT = cv.glmnet2(x = X$X_pert, y = cur.CMIP6.tos_monX_ct$Y$TMMSAT_40S_40N, alpha = 0,
-                               lambda = lambda.seq, foldid = crossclass, 
-                               penalty.factor = penalty.factor1, weights = train.weights,
-                               nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p1)
-      mod_p1 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$TMMSAT_40S_40N, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod1.TMMSAT, foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # get gta model prediction:
-      mod_gta = validate.pert.dataset_gta(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$TMMSAT_40S_40N, X_obs = cur.HadSST4_ENS, 
-                                            beta.gta = beta.gta, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # save models for given time step:
-      save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-           file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predTMMSAT_v3/", 
-                        format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
-    }
-    
-    # 4.9 Predict TMSST_40S_40N:  
-    {
-      mod0. = cv.glmnet2(x = X$X_orig, y = cur.CMIP6.tos_monX_ct$Y$TMSST_40S_40N, alpha = 0,
-                               lambda = lambda.seq, foldid = crossclass, 
-                               penalty.factor = penalty.factor1, weights = train.weights,
-                               nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p0)
-      mod_p0 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$TMSST_40S_40N, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod0., foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      mod1. = cv.glmnet2(x = X$X_pert, y = cur.CMIP6.tos_monX_ct$Y$TMSST_40S_40N, alpha = 0,
-                               lambda = lambda.seq, foldid = crossclass, 
-                               penalty.factor = penalty.factor1, weights = train.weights,
-                               nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p1)
-      mod_p1 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$TMSST_40S_40N, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod1., foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # get gta model prediction:
-      mod_gta = validate.pert.dataset_gta(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$TMSST_40S_40N, X_obs = cur.HadSST4_ENS, 
-                                          beta.gta = beta.gta, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # save models for given time step:
-      save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-           file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predTMSST_v4/", 
-                        format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
-      rm(mod0., mod_p0, mod1., mod_p1, mod_gta)
-    }
-    
-    # 4.10 Predict TMSST25:  
-    {
-      mod0. = cv.glmnet2(x = X$X_orig, y = cur.CMIP6.tos_monX_ct$Y$TMSST_25S_25N_, alpha = 0,
-                         lambda = lambda.seq, foldid = crossclass, 
-                         penalty.factor = penalty.factor1, weights = train.weights,
-                         nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p0)
-      mod_p0 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$TMSST_25S_25N_, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod0., foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      mod1. = cv.glmnet2(x = X$X_pert, y = cur.CMIP6.tos_monX_ct$Y$TMSST_25S_25N_, alpha = 0,
-                         lambda = lambda.seq, foldid = crossclass, 
-                         penalty.factor = penalty.factor1, weights = train.weights,
-                         nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p1)
-      mod_p1 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$TMSST_25S_25N_, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod1., foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # get gta model prediction:
-      mod_gta = validate.pert.dataset_gta(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$TMSST_25S_25N_, X_obs = cur.HadSST4_ENS, 
-                                          beta.gta = beta.gta, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # save models for given time step:
-      save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-           file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predTMSST25_v4/", 
-                        format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
-      rm(mod0., mod_p0, mod1., mod_p1, mod_gta)
-    }
-    
-    # 4.11 Predict IndianOcean:  
-    {
-      mod0. = cv.glmnet2(x = X$X_orig, y = cur.CMIP6.tos_monX_ct$Y$IndianOcean, alpha = 0,
-                         lambda = lambda.seq, foldid = crossclass, 
-                         penalty.factor = penalty.factor1, weights = train.weights,
-                         nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p0)
-      mod_p0 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$IndianOcean, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod0., foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      mod1. = cv.glmnet2(x = X$X_pert, y = cur.CMIP6.tos_monX_ct$Y$IndianOcean, alpha = 0,
-                         lambda = lambda.seq, foldid = crossclass, 
-                         penalty.factor = penalty.factor1, weights = train.weights,
-                         nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p1)
-      mod_p1 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$IndianOcean, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod1., foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # get gta model prediction:
-      mod_gta = validate.pert.dataset_gta(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$IndianOcean, X_obs = cur.HadSST4_ENS, 
-                                          beta.gta = beta.gta, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # save models for given time step:
-      save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-           file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predIndianOcean_v4/", 
-                        format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
-      rm(mod0., mod_p0, mod1., mod_p1, mod_gta)
-    }
-    
-    # 4.12 Predict WPacific:  
-    {
-      mod0. = cv.glmnet2(x = X$X_orig, y = cur.CMIP6.tos_monX_ct$Y$WPacific, alpha = 0,
-                         lambda = lambda.seq, foldid = crossclass, 
-                         penalty.factor = penalty.factor1, weights = train.weights,
-                         nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p0)
-      mod_p0 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$WPacific, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod0., foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      mod1. = cv.glmnet2(x = X$X_pert, y = cur.CMIP6.tos_monX_ct$Y$WPacific, alpha = 0,
-                         lambda = lambda.seq, foldid = crossclass, 
-                         penalty.factor = penalty.factor1, weights = train.weights,
-                         nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p1)
-      mod_p1 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$WPacific, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod1., foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # get gta model prediction:
-      mod_gta = validate.pert.dataset_gta(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$WPacific, X_obs = cur.HadSST4_ENS, 
-                                          beta.gta = beta.gta, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # save models for given time step:
-      save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-           file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predWPacific_v4/", 
-                        format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
-      rm(mod0., mod_p0, mod1., mod_p1, mod_gta)
-    }
-    
-    # 4.13 Predict EPacific:  
-    {
-      mod0. = cv.glmnet2(x = X$X_orig, y = cur.CMIP6.tos_monX_ct$Y$EPacific, alpha = 0,
-                         lambda = lambda.seq, foldid = crossclass, 
-                         penalty.factor = penalty.factor1, weights = train.weights,
-                         nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p0)
-      mod_p0 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$EPacific, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod0., foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      mod1. = cv.glmnet2(x = X$X_pert, y = cur.CMIP6.tos_monX_ct$Y$EPacific, alpha = 0,
-                         lambda = lambda.seq, foldid = crossclass, 
-                         penalty.factor = penalty.factor1, weights = train.weights,
-                         nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p1)
-      mod_p1 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$EPacific, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod1., foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # get gta model prediction:
-      mod_gta = validate.pert.dataset_gta(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$EPacific, X_obs = cur.HadSST4_ENS, 
-                                          beta.gta = beta.gta, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # save models for given time step:
-      save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-           file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predEPacific_v4/", 
-                        format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
-      rm(mod0., mod_p0, mod1., mod_p1, mod_gta)
-    }
-    
-    # 4.14 Predict WAtlantic:  
-    {
-      mod0. = cv.glmnet2(x = X$X_orig, y = cur.CMIP6.tos_monX_ct$Y$WAtlantic, alpha = 0,
-                         lambda = lambda.seq, foldid = crossclass, 
-                         penalty.factor = penalty.factor1, weights = train.weights,
-                         nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p0)
-      mod_p0 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$WAtlantic, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod0., foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      mod1. = cv.glmnet2(x = X$X_pert, y = cur.CMIP6.tos_monX_ct$Y$WAtlantic, alpha = 0,
-                         lambda = lambda.seq, foldid = crossclass, 
-                         penalty.factor = penalty.factor1, weights = train.weights,
-                         nr.cores = cv.nr.cores, nr.subsample = NULL, cv = "leave.model.out", nsim = NULL, include.all.mod.fit = F, ret.beta.only = T, fit.fun = "weighted.ridge", svd.list = svd_mod_p1)
-      mod_p1 = validate.pert.dataset(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$WAtlantic, X_obs = cur.HadSST4_ENS,
-                                     mod.glmnet = mod1., foldid = crossclass, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # get gta model prediction:
-      mod_gta = validate.pert.dataset_gta(X_pert = X, Y = cur.CMIP6.tos_monX_ct$Y$WAtlantic, X_obs = cur.HadSST4_ENS, 
-                                          beta.gta = beta.gta, ens.mem.split = ens.mem.split, ens.ix = ens.ix)
-      
-      # save models for given time step:
-      save(list = c("mod_p0", "mod_p1", "mod_gta", "CMIP6.df"), 
-           file = paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predWAtlantic_v4/", 
-                        format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
-      rm(mod0., mod_p0, mod1., mod_p1, mod_gta)
     }
     
   }

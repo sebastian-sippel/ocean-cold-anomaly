@@ -3,17 +3,20 @@
 # Evaluate tos reconstruction based on ocean cells.
 # ------------------------------------------------------------------------------------
 
+# screen -S process4evaluation
+# screen -S tos_process4evaluation
+
 # Sebastian Sippel
-# 08.2022
+# 11.2023
 library(hydroGOF)
 library(mvnfast)
 library(ncdf4)
 
 # 00.(a) load  respective functions & code:
 source("/net/h2o/climphys1/sippels/_code/tools/frenchcolormap.R")
-source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/code/_functions_CMIP6.R")
-source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/code/_ridge_fun_v2.R")
-source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v2/scripts/02a_load_global_observations.R")
+source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_functions_CMIP6.R")
+source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_ridge_fun_v2.R")
+source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/03a_load_global_observations.R")
 
 
 # 00.(b) Define names.vec for for-loop processing:
@@ -38,8 +41,8 @@ fill.na_from_outlier <- function(Yhat, outlier.ix, transform.Yhat = F) {
   new_Yhat = data.frame(matrix(data = NA, nrow = dim(Yhat)[1] + length(outlier.ix), ncol = dim(Yhat)[2]))
   names(new_Yhat) = names(Yhat)
   
-  if (length(CMIP6.df$outlier.ix) == 0) {
-    new_Yhat = Yhat
+  if (length(outlier.ix) == 0) {
+    new_Yhat[1:(dim(Yhat)[1] + length(outlier.ix)),] = Yhat
   } else {
   new_Yhat[-outlier.ix,] = Yhat
   }
@@ -216,7 +219,6 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
     }
   }
   
-  
   # 2. Process into time series of annual and monthly observations:
   # ---------------------------------------------------------------
   
@@ -244,7 +246,7 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
           
         }
       save(list = c("OBS.tas_land_"), 
-           file = "/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/OBS.tas_land_v4.RData")
+           file = "/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/OBS.tas_land_v5.RData")
     }
     
     # 2.2 4EVALUATION: Process MSE and annual files:
@@ -271,7 +273,6 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
           CMIP6.tas_land.df$mon_ME_sq$mod_gta_pt0 = lapply(X = OBS.tas_land[[cur.name]], FUN=function(x) sapply(X = x, FUN=function(y) mean(y$mod_gta$me.by.ensreal$pt0^2)))
           CMIP6.tas_land.df$mon_ME_sq$mod_gta_pt1 = lapply(X = OBS.tas_land[[cur.name]], FUN=function(x) sapply(X = x, FUN=function(y) mean(y$mod_gta$me.by.ensreal$pt1^2)))
           
-          
           # Process CMIP6 predictions into annual files (training eval):
           CMIP6.tas_land.df$ann[[cur.name]] = list()
           CMIP6.tas_land.df$ann[[cur.name]]$mod_p0 = data.frame(matrix(data = rowMeans(sapply(X = CMIP6.tas_land.df$mon, FUN=function(x) c(as.matrix(x$Yhat[[cur.name]]$mod_p0)))), ncol = 6))
@@ -280,9 +281,29 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
           
           names(CMIP6.tas_land.df$ann[[cur.name]]$mod_p0) <- names(CMIP6.tas_land.df$ann[[cur.name]]$mod_p1) <- names(CMIP6.tas_land.df$mon[[1]]$Yhat$GSAT$mod_p0)
           names(CMIP6.tas_land.df$ann[[cur.name]]$mod_gta) <- names(CMIP6.tas_land.df$mon[[1]]$Yhat$GSAT$mod_gta)
+          
+          # Calculate annual MSE:
+          CMIP6.tas_land.df$ann_MSE[[cur.name]] = list()
+          Y_ann = rowMeans(sapply(X = 1:12, FUN = function(mon.ix) CMIP6.tas_land.df$mon[[mon.ix]]$Y[[cur.name]]))               # 15626 entries...  -> works!!!
+          
+          CMIP6.tas_land.df$ann_MSE[[cur.name]] = data.frame(t(sapply(1:171, FUN=function(date.ix) {
+            Yhat_ann_p0_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) OBS.tas_land[[cur.name]][[mon.ix]][[date.ix]]$mod_p0$Yhat$pt0[,2]))   # 15626 entries...
+            Yhat_ann_p0_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) OBS.tas_land[[cur.name]][[mon.ix]][[date.ix]]$mod_p0$Yhat$pt1[,2]))   # 15626 entries...
+            Yhat_ann_p1_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) OBS.tas_land[[cur.name]][[mon.ix]][[date.ix]]$mod_p1$Yhat$pt0[,1]))   # 15626 entries...
+            Yhat_ann_p1_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) OBS.tas_land[[cur.name]][[mon.ix]][[date.ix]]$mod_p1$Yhat$pt1[,1]))   # 15626 entries...
+            Yhat_ann_gta_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) OBS.tas_land[[cur.name]][[mon.ix]][[date.ix]]$mod_gta$Yhat$pt0))   # 15626 entries...
+            Yhat_ann_gta_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) OBS.tas_land[[cur.name]][[mon.ix]][[date.ix]]$mod_gta$Yhat$pt1))   # 15626 entries...
+            return(c(mse(Y_ann, Yhat_ann_p0_pt0), mse(Y_ann, Yhat_ann_p0_pt1), 
+              mse(Y_ann, Yhat_ann_p1_pt0), mse(Y_ann, Yhat_ann_p1_pt1), 
+              mse(Y_ann, Yhat_ann_gta_pt0), mse(Y_ann, Yhat_ann_gta_pt1)))
+          })))
+          # test = data.frame(t(CMIP6.tas_land.df$ann_MSE[[cur.name]]))
+          # names(test) = c("mod_p0_pt0", "mod_p0_pt1", "mod_p1_pt0", "mod_p1_pt1", "mod_gta_pt0", "mod_gta_pt1")
+          names(CMIP6.tas_land.df$ann_MSE[[cur.name]]) = c("mod_p0_pt0", "mod_p0_pt1", "mod_p1_pt0", "mod_p1_pt1", "mod_gta_pt0", "mod_gta_pt1")
+          
         }
         save(list = c("CMIP6.tas_land.df"), 
-             file = "/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processed_CMIP6_4evaluation/CMIP6.tas_land.df_v4.RData")
+             file = "/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processed_CMIP6_4evaluation/CMIP6.tas_land.df_v5.RData")
       }
   
     # 2.3 LONG RECONSTRUCTION: 
@@ -300,7 +321,53 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
     }
       
     save(list = c("CMIP6.tas_land_all.df"), 
-         file = "/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedCMIP6_reconstr/CMIP6.tas_land_all.df_v4.RData")
+         file = "/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedCMIP6_reconstr/CMIP6.tas_land_all.df_v5.RData")
+    }
+  
+  # 2.4 Scatterplot illustration for 1895 and 1995 uncertainties:
+  # ---------------------------------------------------------------
+  {
+    # 1895
+    date.ix = 46
+    cur.name = "GMST_FM"
+    CMIP_illustration_1895 = list()
+    CMIP_illustration_1895$Y_ann = rowMeans(sapply(X = 1:12, FUN = function(mon.ix) CMIP6.tas_land.df$mon[[mon.ix]]$Y[[cur.name]]))               # 15626 entries...  -> works!!!
+    
+    Yhat_ann_mod_p0 = lapply(1:12, FUN=function(mon.ix)  fill.na_from_outlier(Yhat = OBS.tas_land[[cur.name]][[mon.ix]][[date.ix]]$mod_p0$Yhat, 
+                                                                              outlier.ix = CMIP6.tas_land.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = T))
+    Yhat_ann_mod_p1 = lapply(1:12, FUN=function(mon.ix) fill.na_from_outlier(Yhat = OBS.tas_land[[cur.name]][[mon.ix]][[date.ix]]$mod_p1$Yhat, 
+                                                                             outlier.ix = CMIP6.tas_land.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = T))
+    Yhat_ann_mod_gta = lapply(1:12, FUN=function(mon.ix) fill.na_from_outlier(Yhat = sapply(OBS.tas_land[[cur.name]][[mon.ix]][[date.ix]]$mod_gta$Yhat, FUN=function(x) x), 
+                                                                              outlier.ix = CMIP6.tas_land.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = F))
+    
+    CMIP_illustration_1895$Yhat_ann_p0_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p0[[mon.ix]]$pt0.1se))    # 15626 entries...
+    CMIP_illustration_1895$Yhat_ann_p0_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p0[[mon.ix]]$pt1.1se))    # 15626 entries...
+    CMIP_illustration_1895$Yhat_ann_p1_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p1[[mon.ix]]$pt0.min))    # 15626 entries...
+    CMIP_illustration_1895$Yhat_ann_p1_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p1[[mon.ix]]$pt1.min))    # 15626 entries...
+    CMIP_illustration_1895$Yhat_ann_gta_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_gta[[mon.ix]][,1]))
+    CMIP_illustration_1895$Yhat_ann_gta_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_gta[[mon.ix]][,2]))
+    
+    # 1995
+    date.ix = 146
+    CMIP_illustration_1995 = list()
+    CMIP_illustration_1995$Y_ann = rowMeans(sapply(X = 1:12, FUN = function(mon.ix) CMIP6.tas_land.df$mon[[mon.ix]]$Y[[cur.name]]))               # 15626 entries...  -> works!!!
+    
+    Yhat_ann_mod_p0 = lapply(1:12, FUN=function(mon.ix)  fill.na_from_outlier(Yhat = OBS.tas_land[[cur.name]][[mon.ix]][[date.ix]]$mod_p0$Yhat, 
+                                                                              outlier.ix = CMIP6.tas_land.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = T))
+    Yhat_ann_mod_p1 = lapply(1:12, FUN=function(mon.ix) fill.na_from_outlier(Yhat = OBS.tas_land[[cur.name]][[mon.ix]][[date.ix]]$mod_p1$Yhat, 
+                                                                             outlier.ix = CMIP6.tas_land.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = T))
+    Yhat_ann_mod_gta = lapply(1:12, FUN=function(mon.ix) fill.na_from_outlier(Yhat = sapply(OBS.tas_land[[cur.name]][[mon.ix]][[date.ix]]$mod_gta$Yhat, FUN=function(x) x), 
+                                                                              outlier.ix = CMIP6.tas_land.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = F))
+    
+    CMIP_illustration_1995$Yhat_ann_p0_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p0[[mon.ix]]$pt0.1se))    # 15626 entries...
+    CMIP_illustration_1995$Yhat_ann_p0_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p0[[mon.ix]]$pt1.1se))    # 15626 entries...
+    CMIP_illustration_1995$Yhat_ann_p1_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p1[[mon.ix]]$pt0.min))    # 15626 entries...
+    CMIP_illustration_1995$Yhat_ann_p1_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p1[[mon.ix]]$pt1.min))    # 15626 entries...
+    CMIP_illustration_1995$Yhat_ann_gta_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_gta[[mon.ix]][,1]))
+    CMIP_illustration_1995$Yhat_ann_gta_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_gta[[mon.ix]][,2]))
+    
+    save(list = c("CMIP_illustration_1895", "CMIP_illustration_1995"), 
+         file = "/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedCMIP6_reconstr/CMIP6.tas_land_CMIP6_illustration_v5.RData")
   }
 }
 
@@ -313,18 +380,15 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
 # 00.(A-2) load tos data from statistical models:
 # -------------------------------------------------------
 {
-  names.vec = c("GSAT", "GMSST", "GMLSAT_MI", "GMLSAT_NI", "GMST_FM", "GMMSAT", "TMLSAT_40S_40N", "TMMSAT_40S_40N", 
-                "TMSST_40S_40N", "TMSST_25S_25N_", "IndianOcean", "WPacific", "EPacific", "WAtlantic")
+  names.vec = c("GSAT", "GMSST", "GMLSAT_NI", "GMST_FM", "GMMSAT", "IndianOcean", "WPacific", "WAtlantic")
   
-  file.names = c("tos_predGSAT_v3", "tos_predGMSST_v3", "tos_predGMLSAT_MI_v3", "tos_predGMLSAT_NI_v3",
-                 "tos_predGMST_v3", "tos_predGMMSAT_v3", "tos_predTMLSAT_v3", "tos_predTMMSAT_v3",
-                 "tos_predTMSST_v4", "tos_predTMSST25_v4",
-                 "tos_predIndianOcean_v4", "tos_predWPacific_v4", "tos_predEPacific_v4", "tos_predWAtlantic_v4")
+  file.names = c("tos_predGSAT", "tos_predGMSST", "tos_predGMLSAT_NI", "tos_predGMST", 
+                 "tos_predGMMSAT", "tos_predIndianOcean", "tos_predWPacific", "tos_predWAtlantic")
   
   
   # Observational predictions:
-  OBS.tos = list(); OBS.tos[1:14] = sapply(1:14, FUN=function(i) OBS.tos[[i]] <- list() ); names(OBS.tos) = names.vec
-  OBS.tos_ = list(); OBS.tos_[1:14] = sapply(1:14, FUN=function(i) OBS.tos_[[i]] <- list() ); names(OBS.tos_) = names.vec
+  OBS.tos = list(); OBS.tos[1:8] = sapply(1:8, FUN=function(i) OBS.tos[[i]] <- list() ); names(OBS.tos) = names.vec
+  OBS.tos_ = list(); OBS.tos_[1:8] = sapply(1:8, FUN=function(i) OBS.tos_[[i]] <- list() ); names(OBS.tos_) = names.vec
   
   # 4EVALUATION:
   # Data frame that contains target values (for evaluation) and is the same for all different targets:
@@ -337,14 +401,14 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
     print(mon)
     
     ## 0.1 load CRU data:
-    load(paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/_processed_CRU/HadSST4_mon", mon, ".RData", sep=""))
+    load(paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/01_processed4train_CRU/HadSST4_mon", mon, ".RData", sep=""))
     
     ## 0.1 Load climate model monthly data & select training model indices:
     {
-      load(paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/_CMIP6_processed/CMIP6.tos_mon", mon, "_ct.RData", sep=""))
+      load(paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/01_processed4train_CMIP6/CMIP6.tos_mon", mon, "_ct.RData", sep=""))
       
       # select training model indices:
-      load(paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predGSAT_v3/1850-01.RData", sep=""))
+      load(paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/02_trained_models/tos_predGSAT/1850-01.RData", sep=""))
       modcl.un = unique(CMIP6.tos_monX_ct$M$modcl)
       train.ix = CMIP6.df$train.ix
     }
@@ -353,7 +417,7 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
     {
       # Observations: Set up list for respective month:
       {
-        for (i in 1:14) { OBS.tos[[i]][[mon]] = list() }
+        for (i in 1:8) { OBS.tos[[i]][[mon]] = list() }
       }
       
       # 4evaluation (training data!):
@@ -363,7 +427,7 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
         CMIP6.tos.df$mon[[mon]]$M = CMIP6.tos_monX_ct$M[train.ix,]
         CMIP6.tos.df$mon[[mon]]$Yhat = list();
         CMIP6.tos.df$mon[[mon]]$beta = list();
-        for (l in 1:14) {
+        for (l in 1:8) {
           CMIP6.tos.df$mon[[mon]]$Yhat[[l]] = lapply(X = 1:2, FUN=function(i) { ret.df = data.frame(matrix(NA, nrow = length(train.ix), ncol = 6)); names(ret.df) = c("pt0.min", "pt0.1se", "pt1.min", "pt1.1se", "pt2.min", "pt2.1se"); return(ret.df) })
           CMIP6.tos.df$mon[[mon]]$Yhat[[l]]$mod_gta = data.frame(matrix(NA, nrow = length(train.ix), ncol = 6)); names(CMIP6.tos.df$mon[[mon]]$Yhat[[l]]$mod_gta) = c("pt0", "pt1", "pt2", "pt0.raw", "pt1.raw", "pt2.raw")
           names(CMIP6.tos.df$mon[[mon]]$Yhat[[l]]) = c("mod_p0", "mod_p1", "mod_gta")
@@ -393,7 +457,7 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
       for (date.ix in 1:171) {
         print(date.ix)
         # Generate uncertainty estimates and bias ensemble:
-        load(paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/", "tos_predGSAT_v3","/", format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
+        load(paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/02_trained_models/", "tos_predGSAT","/", format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
         grid.ix[[date.ix]] = CMIP6.df$grid.ix
         
         # read covariance matrix for each time step:
@@ -410,7 +474,7 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
         # 
         unc_cov[[date.ix]] = tos_cov + diag(HadSST4_sampling_unc_[date.ix,grid.ix[[date.ix]]]) ^ 2 + diag(HadSST4_measurement_unc_[date.ix,grid.ix[[date.ix]]]) ^ 2
       }
-      X_pert = gen.pert.data_diff_grid(X = CMIP6.tos_monX_ct$X, M = CMIP6.tos_monX_ct$M, bias.ens = HadSST4_ENS_anom_, unc=unc_cov, grid.ix = grid.ix, ens.ix = 94:200, fact = 1, random.seed = 4)
+      X_pert = gen.pert.data_diff_grid(X = CMIP6.tos_monX_ct$X, M = CMIP6.tos_monX_ct$M, bias.ens = HadSST4_ENS_anom_, unc=unc_cov, grid.ix = grid.ix, ens.ix = 1:200, fact = 1, random.seed = 4)
     }
     
     for (date.ix in 1:171) {
@@ -423,7 +487,7 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
         print(cur.name)
         
         # Load trained model & Prepare OBS dataset:
-        load(paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/", file.names[i],"/", format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
+        load(paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/02_trained_models/", file.names[i],"/", format(HadSST4_calendar_[date.ix], "%Y"), "-", format(HadSST4_calendar_[date.ix], "%m"), ".RData", sep=""))
         OBS.tos[[cur.name]][[mon]][[date.ix]] = list()
         OBS.tos[[cur.name]][[mon]][[date.ix]]$mod_p0 = mod_p0; OBS.tos[[cur.name]][[mon]][[date.ix]]$mod_p1 = mod_p1; OBS.tos[[cur.name]][[mon]][[date.ix]]$mod_gta = mod_gta
         
@@ -436,6 +500,7 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
         CMIP6.tos.df$mon[[mon]]$beta[[cur.name]][[date.ix]]$mod_gta = mod_gta$beta
         CMIP6.tos.df$mon[[mon]]$beta[[cur.name]][[date.ix]]$grid.ix = CMIP6.df$grid.ix
         CMIP6.tos.df$mon[[mon]]$beta[[cur.name]][[date.ix]]$cur.land.weights = CMIP6.df$cur.land.weights
+        CMIP6.tos.df$mon[[mon]]$beta[[cur.name]][[date.ix]]$outlier.ix = CMIP6.df$outlier.ix
         
         # reconstruct Yhat for full data.frame:
         # only select those dates/times that are from the mon/date.ix:
@@ -482,7 +547,7 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
       
     }
     save(list = c("OBS.tos_"), 
-         file = "/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/OBS.tos_v4.RData")
+         file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedOBS_reconstr/OBS.tos.RData")
   }
   
   # 2.2 4EVALUATION: Process MSE and annual files:
@@ -517,9 +582,36 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
       
       names(CMIP6.tos.df$ann[[cur.name]]$mod_p0) <- names(CMIP6.tos.df$ann[[cur.name]]$mod_p1) <- names(CMIP6.tos.df$mon[[1]]$Yhat$GSAT$mod_p0)
       names(CMIP6.tos.df$ann[[cur.name]]$mod_gta) <- names(CMIP6.tos.df$mon[[1]]$Yhat$GSAT$mod_gta)
+      
+      # Calculate annual MSE:
+      CMIP6.tos.df$ann_MSE[[cur.name]] = list()
+      Y_ann = rowMeans(sapply(X = 1:12, FUN = function(mon.ix) CMIP6.tos.df$mon[[mon.ix]]$Y[[cur.name]]))               # 15626 entries...  -> works!!!
+      
+      CMIP6.tos.df$ann_MSE[[cur.name]] = data.frame(t(sapply(1:171, FUN=function(date.ix) {
+      
+        # fill in case of NA's:
+        Yhat_ann_mod_p0 = lapply(1:12, FUN=function(mon.ix)  fill.na_from_outlier(Yhat = OBS.tos[[cur.name]][[mon.ix]][[date.ix]]$mod_p0$Yhat, 
+                                                                                outlier.ix = CMIP6.tos.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = T))
+        Yhat_ann_mod_p1 = lapply(1:12, FUN=function(mon.ix) fill.na_from_outlier(Yhat = OBS.tos[[cur.name]][[mon.ix]][[date.ix]]$mod_p1$Yhat, 
+                                                                                 outlier.ix = CMIP6.tos.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = T))
+        Yhat_ann_mod_gta = lapply(1:12, FUN=function(mon.ix) fill.na_from_outlier(Yhat = sapply(OBS.tos[[cur.name]][[mon.ix]][[date.ix]]$mod_gta$Yhat, FUN=function(x) x), 
+                                                                                  outlier.ix = CMIP6.tos.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = F))
+        
+        Yhat_ann_p0_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p0[[mon.ix]]$pt0.1se))    # 15626 entries...
+        Yhat_ann_p0_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p0[[mon.ix]]$pt1.1se))    # 15626 entries...
+        Yhat_ann_p1_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p1[[mon.ix]]$pt0.min))    # 15626 entries...
+        Yhat_ann_p1_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p1[[mon.ix]]$pt1.min))    # 15626 entries...
+        Yhat_ann_gta_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_gta[[mon.ix]][,1]))
+        Yhat_ann_gta_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_gta[[mon.ix]][,2]))
+          
+        return(c(mse(Y_ann, Yhat_ann_p0_pt0), mse(Y_ann, Yhat_ann_p0_pt1), 
+                 mse(Y_ann, Yhat_ann_p1_pt0), mse(Y_ann, Yhat_ann_p1_pt1), 
+                 mse(Y_ann, Yhat_ann_gta_pt0), mse(Y_ann, Yhat_ann_gta_pt1)))
+      })))
+      names(CMIP6.tos.df$ann_MSE[[cur.name]]) = c("mod_p0_pt0", "mod_p0_pt1", "mod_p1_pt0", "mod_p1_pt1", "mod_gta_pt0", "mod_gta_pt1")
     }
     save(list = c("CMIP6.tos.df"), 
-         file = "/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processed_CMIP6_4evaluation/CMIP6.tos.df_v4.RData")
+         file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processed_CMIP6_4evaluation/CMIP6.tos.df.RData")
   }
   
   # 2.3 LONG RECONSTRUCTION: 
@@ -534,8 +626,56 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
       CMIP6.tos_all.df$ann$Y[[cur.name]] = rowMeans(sapply(X = CMIP6.tos_all.df$mon, FUN=function(x) x$Y[[cur.name]]))
     }
     save(list = c("CMIP6.tos_all.df"), 
-         file = "/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedCMIP6_reconstr/CMIP6.tos_all.df_v4.RData")
+         file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedCMIP6_reconstr/CMIP6.tos_all.df.RData")
   }
+  
+  # 2.4 Scatterplot illustration for 1895 and 1995 uncertainties:
+  # ---------------------------------------------------------------
+  {
+    # 1895
+    date.ix = 46
+    CMIP_illustration_1895 = list()
+    CMIP_illustration_1895$Y_ann = rowMeans(sapply(X = 1:12, FUN = function(mon.ix) CMIP6.tos.df$mon[[mon.ix]]$Y[[cur.name]]))               # 15626 entries...  -> works!!!
+    
+      Yhat_ann_mod_p0 = lapply(1:12, FUN=function(mon.ix)  fill.na_from_outlier(Yhat = OBS.tos[[cur.name]][[mon.ix]][[date.ix]]$mod_p0$Yhat, 
+                                                                                outlier.ix = CMIP6.tos.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = T))
+      Yhat_ann_mod_p1 = lapply(1:12, FUN=function(mon.ix) fill.na_from_outlier(Yhat = OBS.tos[[cur.name]][[mon.ix]][[date.ix]]$mod_p1$Yhat, 
+                                                                               outlier.ix = CMIP6.tos.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = T))
+      Yhat_ann_mod_gta = lapply(1:12, FUN=function(mon.ix) fill.na_from_outlier(Yhat = sapply(OBS.tos[[cur.name]][[mon.ix]][[date.ix]]$mod_gta$Yhat, FUN=function(x) x), 
+                                                                                outlier.ix = CMIP6.tos.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = F))
+      
+      CMIP_illustration_1895$Yhat_ann_p0_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p0[[mon.ix]]$pt0.1se))    # 15626 entries...
+      CMIP_illustration_1895$Yhat_ann_p0_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p0[[mon.ix]]$pt1.1se))    # 15626 entries...
+      CMIP_illustration_1895$Yhat_ann_p1_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p1[[mon.ix]]$pt0.min))    # 15626 entries...
+      CMIP_illustration_1895$Yhat_ann_p1_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p1[[mon.ix]]$pt1.min))    # 15626 entries...
+      CMIP_illustration_1895$Yhat_ann_gta_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_gta[[mon.ix]][,1]))
+      CMIP_illustration_1895$Yhat_ann_gta_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_gta[[mon.ix]][,2]))
+      
+      # 1995
+      date.ix = 146
+      cur.name = "GMST_FM"
+      CMIP_illustration_1995 = list()
+      CMIP_illustration_1995$Y_ann = rowMeans(sapply(X = 1:12, FUN = function(mon.ix) CMIP6.tos.df$mon[[mon.ix]]$Y[[cur.name]]))               # 15626 entries...  -> works!!!
+      
+      Yhat_ann_mod_p0 = lapply(1:12, FUN=function(mon.ix)  fill.na_from_outlier(Yhat = OBS.tos[[cur.name]][[mon.ix]][[date.ix]]$mod_p0$Yhat, 
+                                                                                outlier.ix = CMIP6.tos.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = T))
+      Yhat_ann_mod_p1 = lapply(1:12, FUN=function(mon.ix) fill.na_from_outlier(Yhat = OBS.tos[[cur.name]][[mon.ix]][[date.ix]]$mod_p1$Yhat, 
+                                                                               outlier.ix = CMIP6.tos.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = T))
+      Yhat_ann_mod_gta = lapply(1:12, FUN=function(mon.ix) fill.na_from_outlier(Yhat = sapply(OBS.tos[[cur.name]][[mon.ix]][[date.ix]]$mod_gta$Yhat, FUN=function(x) x), 
+                                                                                outlier.ix = CMIP6.tos.df$mon[[mon.ix]]$beta[[cur.name]][[date.ix]]$outlier.ix, transform.Yhat = F))
+      
+      CMIP_illustration_1995$Yhat_ann_p0_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p0[[mon.ix]]$pt0.1se))    # 15626 entries...
+      CMIP_illustration_1995$Yhat_ann_p0_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p0[[mon.ix]]$pt1.1se))    # 15626 entries...
+      CMIP_illustration_1995$Yhat_ann_p1_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p1[[mon.ix]]$pt0.min))    # 15626 entries...
+      CMIP_illustration_1995$Yhat_ann_p1_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_p1[[mon.ix]]$pt1.min))    # 15626 entries...
+      CMIP_illustration_1995$Yhat_ann_gta_pt0 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_gta[[mon.ix]][,1]))
+      CMIP_illustration_1995$Yhat_ann_gta_pt1 = rowMeans(sapply(1:12, FUN=function(mon.ix) Yhat_ann_mod_gta[[mon.ix]][,2]))
+      
+      save(list = c("CMIP_illustration_1895", "CMIP_illustration_1995"), 
+           file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedCMIP6_reconstr/CMIP6.tos_CMIP6_illustration.RData")
+  }
+  
+  
 }
 
 

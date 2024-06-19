@@ -3,7 +3,7 @@
 # Sebastian Sippel
 # 01.11.2022
 
-source("/net/h2o/climphys1/sippels/_code/tools/frenchcolormap.R")
+source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_convenience/frenchcolormap.R")
 library(R.matlab)
 
 # setwd("/Users/sippels/Desktop/AbrametalPAGES2k2016_Supp2_inputdata/")
@@ -93,6 +93,7 @@ get.ens.avg_Apr_Mar <- function(x, nrow = 200, ncol = 171) {
   return(ret.mat)
 }
 
+
 ## Get Tropics weighted average ensemble:
 WAtlantic_tas_land_ens = get.ens.avg_Apr_Mar(x =  OBS.tas_land_$WAtlantic$mon$mod_p1_min)[,1:170]
 WPacific_tas_land_ens = get.ens.avg_Apr_Mar(x =  OBS.tas_land_$WPacific$mon$mod_p1_min)[,1:170]
@@ -101,7 +102,7 @@ EPacific_tas_land_ens = get.ens.avg_Apr_Mar(x =  OBS.tas_land_$EPacific$mon$mod_
 Tropics_tas_land_ens = matrix(NA, nrow = 200, ncol = 171)
 WAtlantic_tos_ens = get.ens.avg_Apr_Mar(x =  OBS.tos_$WAtlantic$mon$mod_p1_min)[,1:170]
 WPacific_tos_ens = get.ens.avg_Apr_Mar(x =  OBS.tos_$WPacific$mon$mod_p1_min)[,1:170]
-EPacific_tos_ens = get.ens.avg_Apr_Mar(x =  OBS.tos_$EPacific$mon$mod_p1_min)[,1:170]
+# EPacific_tos_ens = get.ens.avg_Apr_Mar(x =  OBS.tos_$EPacific$mon$mod_p1_min)[,1:170]
 IndianOcean_tos_ens = get.ens.avg_Apr_Mar(x =  OBS.tos_$IndianOcean$mon$mod_p1_min)[,1:170]
 Tropics_tos_ens = matrix(NA, nrow = 200, ncol = 171)
 
@@ -115,11 +116,11 @@ for (i in 1:170) {
 Tropics.tas_land = get.df(Y = Tropics_tas_land_ens[,1:170], f = CMIP6.MMM[1:170], years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
 Tropics.tos = get.df(Y = Tropics_tos_ens[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
 
-TMSST_40S_40N.tas_land = get.df(Y = get.ens.avg_Apr_Mar(x =  OBS.tas_land_$TMSST_40S_40N$mon$mod_p1_min)[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-TMSST_40S_40N.tos = get.df(Y = get.ens.avg_Apr_Mar(x =  OBS.tos_$TMSST_40S_40N$mon$mod_p1_min)[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
+# TMSST_40S_40N.tas_land = get.df(Y = get.ens.avg_Apr_Mar(x =  OBS.tas_land_$TMSST_40S_40N$mon$mod_p1_min)[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
+# TMSST_40S_40N.tos = get.df(Y = get.ens.avg_Apr_Mar(x =  OBS.tos_$TMSST_40S_40N$mon$mod_p1_min)[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
 
-TMSST_25S_25N.tas_land = get.df(Y = get.ens.avg_Apr_Mar(x =  OBS.tas_land_$TMSST_25S_25N$mon$mod_p1_min)[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-TMSST_25S_25N.tos = get.df(Y = get.ens.avg_Apr_Mar(x =  OBS.tos_$TMSST_25S_25N$mon$mod_p1_min)[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
+# TMSST_25S_25N.tas_land = get.df(Y = get.ens.avg_Apr_Mar(x =  OBS.tas_land_$TMSST_25S_25N$mon$mod_p1_min)[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
+# TMSST_25S_25N.tos = get.df(Y = get.ens.avg_Apr_Mar(x =  OBS.tos_$TMSST_25S_25N$mon$mod_p1_min)[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
 
 
 

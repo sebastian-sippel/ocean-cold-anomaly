@@ -14,8 +14,6 @@ source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04c_comp
 
 
 
-
-
 # ------------------------------------------------------------------------------------
 # 02. Land-ocean warming ratio during ETCW:
 # ------------------------------------------------------------------------------------

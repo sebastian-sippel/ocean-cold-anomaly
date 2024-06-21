@@ -6,10 +6,9 @@
 # Sebastian Sippel
 # 23.10.2022
 
-# 00.(c) Load *new* reconstructions:
-load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/OBS.tas_land_v5.RData")
-#load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/OBS.tos_v4.RData")
-load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly//data/03_processedOBS_reconstr/OBS.tos.RData")
+# 00.(c) Load *new* reconstructions based on HadSST4 and CRUTEM5:
+load("data/03_processedOBS_reconstr/OBS.tas_land_v5.RData")
+load("data/03_processedOBS_reconstr/OBS.tos.RData")
 
 
 # 00.(d) Derive reconstructions+percentiles:
@@ -104,60 +103,22 @@ for (i in 1:length(names.vec)) {
 
 
 
-# 00.(e) Derive blended reconstructions:
-# ---------------------------------------------------------------
-library(matrixStats)
-
-# ocean-land blended "best estimate":
-land_fraction = 0.29 # https://www.nationsonline.org/oneworld/earth.htm#:~:text=Surface%3A,total%20surface%20of%20the%20Earth.
-ice_fraction =  0.04     # https://nsidc.org/learn/parts-cryosphere/sea-ice
-land_ice_fraction = 0.33
-  # Arctic average= (15.5+6.5) / 2 = 11 million square kilometers
-  # Antarctic coverage = (18.5+2.5)/2 = 10.5 million square kilometers
-  # -> 4% average sea ice. 21.5 * 10^6 / 509600000 # ( (2*6378)^2 * pi )
-sea_fraction = 1 - land_ice_fraction
-
-GSAT_blended_mon_mod_p1 = sapply(X = 1:12, FUN = function(mon) colMedians(OBS.tos_$GMMSAT$mon$mod_p1_min[[mon]])) * sea_fraction + sapply(X = 1:12, FUN = function(mon) colMedians(OBS.tas_land_$GMLSAT_MI$mon$mod_p1_min[[mon]])) * land_ice_fraction
-GSAT_blended_mon_mod_p0 = sapply(X = 1:12, FUN = function(mon) colMedians(OBS.tos_$GMMSAT$mon$mod_p0_min[[mon]])) * sea_fraction + sapply(X = 1:12, FUN = function(mon) colMedians(OBS.tas_land_$GMLSAT_MI$mon$mod_p0_min[[mon]])) * land_ice_fraction
-GSAT_blended_ann_mod_p1 = colMedians(OBS.tos_$GMMSAT$ann$mod_p1_min) * sea_fraction + colMedians(OBS.tas_land_$GMLSAT_MI$ann$mod_p1_min) * land_ice_fraction
-GSAT_blended_ann_mod_p0 = colMedians(OBS.tos_$GMMSAT$ann$mod_p0_min) * sea_fraction + colMedians(OBS.tas_land_$GMLSAT_MI$ann$mod_p0_min) * land_ice_fraction
-
-GMST_blended_mon_mod_p1 = sapply(X = 1:12, FUN = function(mon) colMedians(OBS.tos_$GMSST$mon$mod_p1_min[[mon]])) * sea_fraction + sapply(X = 1:12, FUN = function(mon) colMedians(OBS.tas_land_$GMLSAT_MI$mon$mod_p1_min[[mon]])) * land_ice_fraction
-GMST_blended_mon_mod_p0 = sapply(X = 1:12, FUN = function(mon) colMedians(OBS.tos_$GMSST$mon$mod_p1_min[[mon]])) * sea_fraction + sapply(X = 1:12, FUN = function(mon) colMedians(OBS.tas_land_$GMLSAT_MI$mon$mod_p1_min[[mon]])) * land_ice_fraction
-GMST_blended_ann_mod_p1 = colMedians(OBS.tos_$GMSST$ann$mod_p1_min) * sea_fraction + colMedians(OBS.tas_land_$GMLSAT_MI$ann$mod_p1_min) * land_ice_fraction
-GMST_blended_ann_mod_p0 = colMedians(OBS.tos_$GMSST$ann$mod_p1_min) * sea_fraction + colMedians(OBS.tas_land_$GMLSAT_MI$ann$mod_p1_min) * land_ice_fraction
-
-
-
-# GMST.tas_land.mon.blended = sapply(X = 1:12, FUN = function(mon) colMedians(GMSST.tas_land_$mon$mod_p1[[mon]])) * 67/100 + sapply(X = 1:12, FUN = function(mon) colMedians(GMLSAT.tas_land_$mon$mod_p1[[mon]])) * 33/100
-# GMST.tas_land.ann.blended_mod_p1 = colMeans(GMSST.tas_land_$ann$mod_p1) * 67/100 + colMeans(GMLSAT.tas_land_$ann$mod_p1) * 33/100
-# GMST.tas_land.ann.blended_mod_p0 = colMeans(GMSST.tas_land_$ann$mod_p0) * 67/100 + colMeans(GMLSAT.tas_land_$ann$mod_p0) * 33/100
-# GMST.tos.mon.blended = sapply(X = 1:12, FUN = function(mon) colMedians(GMSST.tos_$mon$mod_p1[[mon]])) * 67/100 + sapply(X = 1:12, FUN = function(mon) colMedians(GMLSAT.tos_$mon$mod_p1[[mon]])) * 33/100
-# GMST.tos.ann.blended_mod_p1 = colMeans(GMSST.tos_$ann$mod_p1) * 67/100 + colMeans(GMLSAT.tos_$ann$mod_p1) * 33/100
-# GMST.tos.ann.blended_mod_p0 = colMeans(GMSST.tos_$ann$mod_p1) * 67/100 + colMeans(GMLSAT.tos_$ann$mod_p0) * 33/100
-
-
 
 # (1) Load other reconstructed datasets:
 # ---------------------------------------------------------------
 
 # (A) ClassNMAT reconstruction:
-load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/OBS_CLASSNMAT.tas.RData")
+load("data/03_processedOBS_reconstr/OBS_CLASSNMAT.tas.RData")
 
 # (B) Cowtan Coastal hybrid reconstruction:
-# load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v2/data/03_processed_small_data/AGMT.tos_hybrid36_.RData")
-load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/OBS_hybrid36.tos.RData")
+load("data/03_processedOBS_reconstr/OBS_hybrid36.tos.RData")
 
 
 # (2) Load other variability reconstruction datasets:
 # ---------------------------------------------------------------
 
-# (A) PSL reconstruction:
-load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processedOBS_reconstr/_old/GSAT.HadSLP2_psl_v2.RData")
-GSAT.psl_ = colMedians(GSAT.psl_$ann$mod_p0_1_05)
-
-# (B) Mean Removed reconstruction:
-load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v2/data/03_processed_small_data/AGMT.tos_MR_.RData")
+# (A) Mean Removed reconstruction:
+load("data/03_processedOBS_reconstr/OBS.tos_MR.RData")
 
 
 

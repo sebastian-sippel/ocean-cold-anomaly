@@ -27,7 +27,6 @@ library(doParallel)
 # Sys.setlocale(category = "LC_COLLATE", locale = "en_US.UTF-8")
 
 # 0. Load functions needed:
-# source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/code/_functions_CMIP5_extr.R")
 source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/code/_functions_CMIP6.R")
 
 setwd("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/")

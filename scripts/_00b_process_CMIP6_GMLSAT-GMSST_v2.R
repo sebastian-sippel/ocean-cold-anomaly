@@ -619,18 +619,5 @@ for (m in 1:length(mod.un)) {
 
 
 
-## problems in fgoals?
-## problems in E3SM?
-
-
-plot(33/100 * CMIP6.tas_ann_ct$Y$GMLSAT_MI[ix] + 67 / 100 * CMIP6.tas_ann_ct$Y$GMSST[ix])
-plot(CMIP6.tas_ann_ct$Y$GSAT[ix])
-plot(33/100 * CMIP6.tas_ann_ct$Y$GMLSAT_MI[ix] + 67 / 100 * CMIP6.tas_ann_ct$Y$GMSST[ix], CMIP6.tas_ann_ct$Y$GSAT[ix], main = mod.un[m])
-
-plot(CMIP6.tas_ann_ct$Y$GMST[ix], CMIP6.tas_ann_ct$Y$GSAT[ix], main = mod.un[m])
-plot(CMIP6.tas_ann_ct$Y$GMST_FM[ix], CMIP6.tas_ann_ct$Y$GSAT[ix], main = mod.un[m])
-
-
-
 
 

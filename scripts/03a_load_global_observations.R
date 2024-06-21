@@ -202,15 +202,26 @@ Kadow.global.annual$Anomaly_cmipAI = get_annual_average(cur.ts = Kadow.global.mo
 # ncvar_get(nc = test, varid = "air") - 273.15
 
 
+# Save standard Global GMST datasets:
+save(list = c( "BEST.global.annual", "BEST.global.monthly", 
+               "CW2014.global.annual_had4_krig", "CW2014.global.monthly_had4_krig",
+               "GISS.global.annual", "GISS.global.monthly",
+               "HadCRUT5.global.annual", "HadCRUT5.global.monthly",
+               "JMA.global.annual",
+               "CRUTEM5.global.annual", "CRUTEM5.global.monthly",
+               "HadSST4.global.annual", "HadSST4.global.monthly"),
+     file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedOBS_reconstr/GMST_datasets.RData")
+
+
 # 10. Load Cowtan hybrid36 dataset:
 ## Read Cowtan-hybrid36:
-hybrid36 = read.table(file = "/net/h2o/climphys1/sippels/_DATASET/Cowtan_etal_2017_SSTBIAS/results/coastal_wt_y0/hybrid_36m.temp")
-names(hybrid36) = c("Year", "Anomaly")
-hybrid36.annual = data.frame(cbind(1850:2016, sapply(X = 1850:2016, FUN=function(year) mean(hybrid36$Anomaly[which(floor(hybrid36$Year) == year)]))))
-names(hybrid36.annual) = c("Year", "Anomaly")
+# hybrid36 = read.table(file = "/net/h2o/climphys1/sippels/_DATASET/Cowtan_etal_2017_SSTBIAS/results/coastal_wt_y0/hybrid_36m.temp")
+# names(hybrid36) = c("Year", "Anomaly")
+# hybrid36.annual = data.frame(cbind(1850:2016, sapply(X = 1850:2016, FUN=function(year) mean(hybrid36$Anomaly[which(floor(hybrid36$Year) == year)]))))
+# names(hybrid36.annual) = c("Year", "Anomaly")
 
 
 
-setwd("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/figures/")
+setwd("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/")
 
 

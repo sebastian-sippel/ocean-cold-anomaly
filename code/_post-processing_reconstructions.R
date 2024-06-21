@@ -104,6 +104,25 @@ get.trend <- function(x, trend.years = list(1900:1939, 1900:1950, 1980:2014), pe
 }
 
 
+
+
+get.period.mean <- function(x, period.years = list(1901:1920), years = 1850:2020) {
+  if (all(is.na(x))) return(rep(NA, length(trend.years)+1))
+  
+  period.mean.out = sapply(X = 1:length(period.years), FUN=function(i) {
+    ix = match(x = period.years[[i]], table = years)
+    return( mean(x[ix]) )
+  })
+  names(period.mean.out) = paste("pm", 1:length(period.years), sep="")
+  return(period.mean.out)
+}
+
+
+
+
+
+
+
 # get.trend(x = OBS.tos_$GMSST$ann$mod_p1_min[1,], trend.years = list(1900:1939, 1900:1950, 1980:2014), years = 1850:2020)
 # -> further changes to do: Good name for trends, or meta-file...  
 get.trend_ <- function(x, trend.length = 50, years = 1850:2014) {
@@ -213,6 +232,64 @@ get.linear.model.constraint_ens <- function(y, x, x_new, plot.constraint = T) {
   
   return(data.frame(mean_out=mean_out, sd_out = sd_out))
 }
+
+
+
+
+## Function to produce "matrix" of CMIP6 reconstructions:
+get.CMIP6.recon.matrix <- function(CMIP6.tas_land_all.df, CMIP6.tos_all.df) {
+  
+    # select CMIP6 historical members:
+    CMIP6.tas_land.all = data.frame(cbind(all = paste(CMIP6.tas_land_all.df$M$mod, "_", CMIP6.tas_land_all.df$M$scen, "_", CMIP6.tas_land_all.df$M$ens.mem, sep="")))
+    CMIP6.tos.all = data.frame(cbind(all = paste(CMIP6.tos_all.df$M$mod, "_", CMIP6.tos_all.df$M$scen, "_", CMIP6.tos_all.df$M$ens.mem, sep="")))
+    ens.mem = data.frame(cbind(mod=CMIP6.tas_land_all.df$M$mod, scen = CMIP6.tas_land_all.df$M$scen, ens.mem = CMIP6.tas_land_all.df$M$ens.mem, 
+                               all = paste(CMIP6.tas_land_all.df$M$mod, "_", CMIP6.tas_land_all.df$M$scen, "_", CMIP6.tas_land_all.df$M$ens.mem, sep="")))
+    ens.mem.un = unique(ens.mem)
+    ens.mem.un = ens.mem.un[which(ens.mem.un$scen == "historical"),]
+    # remove all ensemble members that contain NA's:
+    na.mems = unique(CMIP6.tos.all$all[which(is.na(CMIP6.tos_all.df$ann$Yhat$GMST_FM))])
+    omit.ix=na.omit(match(x = na.mems, table = ens.mem.un$all))
+    if (length(omit.ix) > 0)  ens.mem.un = ens.mem.un[-omit.ix,]
+    
+    CMIP6.tas_land_hist_mod_p1 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
+    CMIP6.tos_hist_mod_p1 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
+    CMIP6.tas_land_hist_mod_p1_pt1 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
+    CMIP6.tos_hist_mod_p1_pt1 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
+    CMIP6.tas_land_hist_mod_p0 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
+    CMIP6.tos_hist_mod_p0 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
+    CMIP6.tas_land_hist_mod_p0_pt1 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
+    CMIP6.tos_hist_mod_p0_pt1 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
+    
+
+    for (en in 1:dim(ens.mem.un)[1]) {
+      print(en)
+      
+      ix_tas_land = which(CMIP6.tas_land.all$all == ens.mem.un$all[en] & CMIP6.tas_land_all.df$M$year %in% 1850:2014)
+      ix_tos = which(CMIP6.tos.all$all == ens.mem.un$all[en] & CMIP6.tos_all.df$M$year %in% 1850:2014)
+      
+      CMIP6.tas_land_hist_mod_p1[en,] = CMIP6.tas_land_all.df$ann$Yhat$GMST_FM[ix_tas_land]
+      CMIP6.tos_hist_mod_p1[en,] = CMIP6.tos_all.df$ann$Yhat$GMST_FM[ix_tos]
+      CMIP6.tas_land_hist_mod_p1_pt1[en,] = CMIP6.tas_land_all.df$ann$Yhat_pt1$GMST_FM[ix_tas_land]
+      CMIP6.tos_hist_mod_p1_pt1[en,] = CMIP6.tos_all.df$ann$Yhat_pt1$GMST_FM[ix_tos]
+      
+      CMIP6.tas_land_hist_mod_p0[en,] = CMIP6.tas_land_all.df$ann$Yhat_mod_p0$GMST_FM[ix_tas_land]
+      CMIP6.tos_hist_mod_p0[en,] = CMIP6.tos_all.df$ann$Yhat_mod_p0$GMST_FM[ix_tos]
+      CMIP6.tas_land_hist_mod_p0_pt1[en,] = CMIP6.tas_land_all.df$ann$Yhat_mod_p0_pt1$GMST_FM[ix_tas_land]
+      CMIP6.tos_hist_mod_p0_pt1[en,] = CMIP6.tos_all.df$ann$Yhat_mod_p0_pt1$GMST_FM[ix_tos]
+    }
+    
+    ret.list = list(CMIP6.tas_land_hist_mod_p1, CMIP6.tos_hist_mod_p1, CMIP6.tas_land_hist_mod_p1_pt1, CMIP6.tos_hist_mod_p1_pt1, 
+                  CMIP6.tas_land_hist_mod_p0, CMIP6.tos_hist_mod_p0, CMIP6.tas_land_hist_mod_p0_pt1, CMIP6.tos_hist_mod_p0_pt1)
+    names(ret.list) = c("tas_land_mod_p1", "tos_mod_p1", "tas_land_mod_p1_pt1", "tos_mod_p1_pt1",
+                        "tas_land_mod_p0", "tos_mod_p0", "tas_land_mod_p0_pt1", "tos_mod_p0_pt1")
+    
+    return(ret.list)
+}
+
+
+
+
+
 
 
 

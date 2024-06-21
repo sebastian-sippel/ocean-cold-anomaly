@@ -13,7 +13,7 @@ library(mvnfast)
 library(ncdf4)
 
 # 00.(a) load  respective functions & code:
-source("/net/h2o/climphys1/sippels/_code/tools/frenchcolormap.R")
+source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_convenience/frenchcolormap.R")
 source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_functions_CMIP6.R")
 source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_ridge_fun_v2.R")
 source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/03a_load_global_observations.R")
@@ -330,6 +330,19 @@ gen.pert.data_diff_grid <- function(X, M, bias.ens, unc, grid.ix, ens.ix = 94:20
   
   
 }
+
+## 20.06.2024
+
+# (A) Rename mean Removed reconstruction:
+load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedOBS_reconstr/OBS.tos_MR.RData")
+OBS.tos_MR_ = OBS.tos_
+save(list = c("OBS.tos_MR_"), 
+     file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedOBS_reconstr/OBS.tos_MR.RData")
+
+load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processed_CMIP6_4evaluation/CMIP6.tos_MR.df.RData")
+CMIP6.tos_MR.df = CMIP6.tos.df
+save(list = c("CMIP6.tos_MR.df"), 
+     file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processed_CMIP6_4evaluation/CMIP6.tos_MR.df.RData")
 
 
 

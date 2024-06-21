@@ -397,14 +397,3 @@ for (mon in 1:12) {
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-plot(CRUTEM5_brick, 800)
-plot(CRUTEM5_brick, 1000)
-
-
-
-
-
-# HadISST1b from Chan et al, 2021, Sci. Adv.:
-# ------------------------------
-### CHECK PROCESSING IN global_mean_reconstr_v2 !!
-

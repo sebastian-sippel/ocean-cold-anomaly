@@ -83,15 +83,13 @@ get.trend <- function(x, trend.years = list(1900:1939, 1900:1950, 1980:2014), ye
 
 
 
-get.trend <- function(x, trend.years = list(1900:1939, 1900:1950, 1980:2014), period.diff.years = list(c(1901:1920), c(1871:1890)), years = 1850:2014) {
-  
+get.trend_perioddiff <- function(x, trend.years = list(1900:1939, 1900:1950, 1980:2014), period.diff.years = list(c(1901:1920), c(1871:1890)), years = 1850:2014) {
   if (all(is.na(x))) return(rep(NA, length(trend.years)+1))
   trends.out = sapply(X = 1:length(trend.years), FUN=function(i) {
     ix = match(x = trend.years[[i]], table = years)
     return(lm(x[ix] ~ years[ix])$coefficients[2] * length(ix))
   })
   names(trends.out) = paste("trend", 1:length(trend.years), sep="")
-  
   # period.diff:
   late.ix = match(x = period.diff.years[[1]], table = years)
   early.ix = match(x = period.diff.years[[2]], table = years)
@@ -107,7 +105,7 @@ get.trend <- function(x, trend.years = list(1900:1939, 1900:1950, 1980:2014), pe
 
 
 get.period.mean <- function(x, period.years = list(1901:1920), years = 1850:2020) {
-  if (all(is.na(x))) return(rep(NA, length(trend.years)+1))
+  #if (all(is.na(x))) return(rep(NA, length(trend.years)+1))
   
   period.mean.out = sapply(X = 1:length(period.years), FUN=function(i) {
     ix = match(x = period.years[[i]], table = years)
@@ -259,6 +257,8 @@ get.CMIP6.recon.matrix <- function(CMIP6.tas_land_all.df, CMIP6.tos_all.df) {
     CMIP6.tos_hist_mod_p0 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
     CMIP6.tas_land_hist_mod_p0_pt1 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
     CMIP6.tos_hist_mod_p0_pt1 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
+    CMIP6.GMLSAT_NI = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
+    CMIP6.GMSST = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
     
 
     for (en in 1:dim(ens.mem.un)[1]) {
@@ -276,12 +276,18 @@ get.CMIP6.recon.matrix <- function(CMIP6.tas_land_all.df, CMIP6.tos_all.df) {
       CMIP6.tos_hist_mod_p0[en,] = CMIP6.tos_all.df$ann$Yhat_mod_p0$GMST_FM[ix_tos]
       CMIP6.tas_land_hist_mod_p0_pt1[en,] = CMIP6.tas_land_all.df$ann$Yhat_mod_p0_pt1$GMST_FM[ix_tas_land]
       CMIP6.tos_hist_mod_p0_pt1[en,] = CMIP6.tos_all.df$ann$Yhat_mod_p0_pt1$GMST_FM[ix_tos]
+      
+      # get additional variables for reviewer:
+      CMIP6.GMLSAT_NI[en,] = CMIP6.tas_land_all.df$ann$Y$GMLSAT_NI[ix_tas_land]
+      CMIP6.GMSST[en,] = CMIP6.tas_land_all.df$ann$Y$GMSST[ix_tas_land]
     }
     
     ret.list = list(CMIP6.tas_land_hist_mod_p1, CMIP6.tos_hist_mod_p1, CMIP6.tas_land_hist_mod_p1_pt1, CMIP6.tos_hist_mod_p1_pt1, 
-                  CMIP6.tas_land_hist_mod_p0, CMIP6.tos_hist_mod_p0, CMIP6.tas_land_hist_mod_p0_pt1, CMIP6.tos_hist_mod_p0_pt1)
+                  CMIP6.tas_land_hist_mod_p0, CMIP6.tos_hist_mod_p0, CMIP6.tas_land_hist_mod_p0_pt1, CMIP6.tos_hist_mod_p0_pt1,
+                  CMIP6.GMLSAT_NI, CMIP6.GMSST, ens.mem.un)
     names(ret.list) = c("tas_land_mod_p1", "tos_mod_p1", "tas_land_mod_p1_pt1", "tos_mod_p1_pt1",
-                        "tas_land_mod_p0", "tos_mod_p0", "tas_land_mod_p0_pt1", "tos_mod_p0_pt1")
+                        "tas_land_mod_p0", "tos_mod_p0", "tas_land_mod_p0_pt1", "tos_mod_p0_pt1",
+                        "CMIP6.GMLSAT_NI", "CMIP6.GMSST", "ens.mem.un")
     
     return(ret.list)
 }

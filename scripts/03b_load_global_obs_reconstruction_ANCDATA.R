@@ -45,20 +45,22 @@ setwd("/net/h2o/climphys1/sippels/_DATASET/BEST/monthly_1d00/")
 # system("cdo -ymonsub Complete_TAVG_LatLong1_20211208.nc -ymonmean -seldate,1961-01-01,1990-12-31 Complete_TAVG_LatLong1_20211208.nc Complete_TAVG_LatLong1_20211208_anom.nc")
 # system("cdo -remapcon,/net/h2o/climphys1/sippels/_code/spatial_data/cdo_grids/Global/global_5d00.txt Complete_TAVG_LatLong1_20211208_anom.nc Complete_TAVG_LatLong1_20211208_anom_5d00.nc")
 BEST_Land_anom = brick("Complete_TAVG_LatLong1_20211208_anom.nc") + 0
-BEST_Land_anom_5d00 = brick("Complete_TAVG_LatLong1_20211208_anom_5d00.nc") + 0
+BEST_Land_anom_5d00 = brick("Complete_TAVG_LatLong1_20211208_anom_5d00_filled.nc") + 0
 BEST_Land_anom_5d00_ = t(values(BEST_Land_anom_5d00))
 
 BEST_Land.monthly = data.frame(matrix(NA, nrow = 3264, ncol = 59))
 names(BEST_Land.monthly) = c("Year", "Month", "Anomaly", c(sapply(X = names.vec, FUN=function(x) paste(x, "_", c("mod_p0_min", "mod_p0_1se", "mod_p1_min", "mod_p1_1se"), sep=""))))
 BEST_Land.monthly$Year = c(rep.row(1750:2021, 12))
 BEST_Land.monthly$Month = c(rep.col(1:12, 272))
+# vector of number NA's:
+BEST_LAND.monthly_na = rep(0, length(BEST_Land.monthly$Year))
 
 aw = values(raster::area(subset(BEST_Land_anom, 1)))
 
 
 # get weighted LAND average:
 for (i in 1:3261) {
-  print(i)
+  # print(i)
   w = aw
   BEST_Land.monthly$Anomaly[i] = weighted.mean(x = values(subset(BEST_Land_anom, i)), w = w, na.rm=T)
   
@@ -68,8 +70,10 @@ for (i in 1:3261) {
   
   tas = c(matrix(BEST_Land_anom_5d00_[i,], 72, 36)[,36:1])[CMIP6.tas_land.df$mon[[mon.ix]]$beta$GMSST[[year.ix]]$grid.ix]    # image.plot(matrix(HadISST_sst_anom_5d00_[i,], 72, 36)[,36:1])
   if (any(is.na(tas))) {
-    print("NA")
-    tas[which(is.na(tas))] = mean(tas, na.rm=T)
+    print(paste("NA in grid cell: ", length(which(is.na(tas)))))
+    print(paste("time step ", i))
+    BEST_LAND.monthly_na[i] = length(which(is.na(tas)))
+    # tas[which(is.na(tas))] = mean(tas, na.rm=T)
   }
   # load(paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predGMSST_v3/", HadISST.monthly$Year[i], "-", formatC(HadISST.monthly$Month[i], width = 2, format="d", flag = "0"), ".RData", sep=""))
   
@@ -90,76 +94,15 @@ for (i in 3:59) {
   BEST_Land.annual[[i]] = get_annual_average(cur.ts = BEST_Land.monthly[[i]])
 }
 
+#par(mfrow=c(1,1))
+#plot(BEST_Land.annual$Year, BEST_Land.annual$GMST_FM_mod_p1_min, xlim = c(1850,2020))
+# lines(BEST_Land.annual$Year, BEST_Land.annual$GMST_FM_mod_p1_min, col = "red")
 
 
-# tos
-names.vec = c("GSAT", "GMSST", "GMLSAT_NI", "GMST_FM", "GMMSAT", "IndianOcean", "WPacific", "WAtlantic")
-
-
-
-# 01 HadISST:
 # ---------------------------------------------
-# https://www.metoffice.gov.uk/hadobs/hadisst/data/download.html
-
-# load.files("/net/h2o/climphys1/sippels/_code/spatial_data/cdo_grids/Global/global_5d00.txt")
-
-setwd("/net/h2o/climphys1/sippels/_DATASET/HadISST/")
-
-# system("cd /net/h2o/climphys1/sippels/_DATASET/HadISST/")
-# system("cdo setrtomiss,-10000,-3 HadISST_sst.nc HadISST_sst_.nc")
-# system("cdo -ymonsub HadISST_sst_.nc -ymonmean -seldate,1961-01-01,1990-12-31 HadISST_sst_.nc HadISST_sst_anom.nc")
-# system("cdo -remapcon,/net/h2o/climphys1/sippels/_code/spatial_data/cdo_grids/Global/global_5d00.txt HadISST_sst_anom.nc HadISST_sst_anom_5d00.nc")
-
-HadISST_ice = brick("HadISST_ice.nc") + 0
-HadISST_sst_anom = brick("HadISST_sst_anom.nc") + 0
-HadISST_sst_anom_5d00 = brick("HadISST_sst_anom_5d00.nc") + 0
-HadISST_sst_anom_5d00_ = t(values(HadISST_sst_anom_5d00))
-
-HadISST.monthly = data.frame(matrix(NA, nrow = 1836, ncol = 59))
-names(HadISST.monthly) = c("Year", "Month", "Anomaly", c(sapply(X = names.vec, FUN=function(x) paste(x, "_", c("mod_p0_min", "mod_p0_1se", "mod_p1_min", "mod_p1_1se"), sep=""))))
-HadISST.monthly$Year = c(rep.row(1870:2022, 12))
-HadISST.monthly$Month = c(rep.col(1:12, 153))
-
-aw = values(raster::area(subset(HadISST_sst_anom, 1)))
-
-# get weighted SST average:
-for (i in 1:1833) {
-  print(i)
-  w = aw * values((1 - subset(HadISST_ice, i)))
-  HadISST.monthly$Anomaly[i] = weighted.mean(x = values(subset(HadISST_sst_anom, i)), w = w, na.rm=T)
-  
-  # PROJECT ON DIFFERENT FINGERPRINTS:
-  year.ix = match(HadISST.monthly$Year[i], 1850:2020); mon.ix = HadISST.monthly$Month[i]
-  if(is.na(year.ix)) next;
-  
-  tos = c(matrix(HadISST_sst_anom_5d00_[i,], 72, 36)[,36:1])[CMIP6.tos.df$mon[[mon.ix]]$beta$GMSST[[year.ix]]$grid.ix] # image.plot(matrix(HadISST_sst_anom_5d00_[i,], 72, 36)[,36:1])
-  if (any(is.na(tos))) {
-    print("NA")
-    tos[which(is.na(tos))] = mean(tos, na.rm=T)
-  }
-  # load(paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predGMSST_v3/", HadISST.monthly$Year[i], "-", formatC(HadISST.monthly$Month[i], width = 2, format="d", flag = "0"), ".RData", sep=""))
-  
-  for (cur.name.ix in 1:length(names.vec)) {
-    HadISST.monthly[[paste(names.vec[cur.name.ix], "_mod_p0_min", sep="")]][i] = tos %*% CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p0[,1] + CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p0_a0[1]
-    HadISST.monthly[[paste(names.vec[cur.name.ix], "_mod_p0_1se", sep="")]][i] = tos %*% CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p0[,2] + CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p0_a0[2]
-    HadISST.monthly[[paste(names.vec[cur.name.ix], "_mod_p1_min", sep="")]][i] = tos %*% CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p1[,1] + CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p1_a0[1]
-    HadISST.monthly[[paste(names.vec[cur.name.ix], "_mod_p1_1se", sep="")]][i] = tos %*% CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p1[,2] + CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p1_a0[2]
-  }
-}
-
-HadISST.annual = data.frame(matrix(NA, nrow = 153, ncol = 35))
-names(HadISST.annual) = c("Year", "Month", "Anomaly", c(sapply(X = names.vec, FUN=function(x) paste(x, "_", c("mod_p0_min", "mod_p0_1se", "mod_p1_min", "mod_p1_1se"), sep=""))))
-HadISST.annual$Year = c(1870:2022)
-
-for (i in 3:35) {
-  HadISST.annual[[i]] = get_annual_average(cur.ts = HadISST.monthly[[i]])
-}
-
-
-# plot(x = HadISST.annual$Year, y = HadISST.annual$Anomaly, type='l')
-# lines(x = HadISST.annual$Year, y = HadISST.annual$mod_p1_min, col = "red")
-
-
+# tos
+# ---------------------------------------------
+names.vec = c("GSAT", "GMSST", "GMLSAT_NI", "GMST_FM", "GMMSAT", "IndianOcean", "WPacific", "WAtlantic")
 
 
 # 02. COBE-SST
@@ -171,22 +114,27 @@ setwd("/net/h2o/climphys1/sippels/_DATASET/COBE-SST2/")
 #system("cd /net/h2o/climphys1/sippels/_DATASET/COBE-SST2/")
 # system("cdo -ymonsub sst.mon.mean.nc -ymonmean -seldate,1961-01-01,1990-12-31 sst.mon.mean.nc sst.mon.mean_anom.nc")
 # system("cdo -remapcon,/net/h2o/climphys1/sippels/_code/spatial_data/cdo_grids/Global/global_5d00.txt sst.mon.mean_anom.nc sst.mon.mean_anom_5d00.nc")
+# fill missing value to NN:
+# cdo -O -setmisstonn sst.mon.mean_anom_5d00.nc sst.mon.mean_anom_5d00_filled.nc
+
 
 COBE_SST2_ice = brick("icec.mon.mean.nc") + 0
 COBE_SST2_sst_anom = brick("sst.mon.mean_anom.nc") + 0
-COBE_SST2_sst_anom_5d00 = brick("sst.mon.mean_anom_5d00.nc") + 0
+COBE_SST2_sst_anom_5d00 = brick("sst.mon.mean_anom_5d00_filled.nc") + 0
 COBE_SST2_sst_anom_5d00_ = t(values(COBE_SST2_sst_anom_5d00))
 
 COBE_SST2.monthly = data.frame(matrix(NA, nrow = 2040, ncol = 59))
 names(COBE_SST2.monthly) = c("Year", "Month", "Anomaly", c(sapply(X = names.vec, FUN=function(x) paste(x, "_", c("mod_p0_min", "mod_p0_1se", "mod_p1_min", "mod_p1_1se"), sep=""))))
 COBE_SST2.monthly$Year = c(rep.row(1850:2019, 12))
 COBE_SST2.monthly$Month = c(rep.col(1:12, 170))
+# vector of number NA's:
+COBE_SST2.monthly_na = rep(0, length(COBE_SST2.monthly$Year))
 
 aw = values(raster::area(subset(COBE_SST2_sst_anom, 1)))
 
 # get weighted SST average:
 for (i in 1:2040) {
-  print(i)
+  # print(i)
   w = aw * values((1 - subset(COBE_SST2_ice, i)))
   COBE_SST2.monthly$Anomaly[i] = weighted.mean(x = values(subset(COBE_SST2_sst_anom, i)), w = w, na.rm=T)
   
@@ -196,7 +144,9 @@ for (i in 1:2040) {
   
   tos = c(matrix(COBE_SST2_sst_anom_5d00_[i,], 72, 36)[,36:1])[CMIP6.tos.df$mon[[mon.ix]]$beta$GMSST[[year.ix]]$grid.ix] # image.plot(matrix(COBE_SST2_sst_anom_5d00_[i,], 72, 36)[,36:1])
   if (any(is.na(tos))) {
-    print("NA")
+    print(paste("NA in grid cell: ", length(which(is.na(tos)))))
+    print(paste("time step ", i))
+    COBE_SST2.monthly_na[i] = length(which(is.na(tos)))
     tos[which(is.na(tos))] = mean(tos, na.rm=T)
   }
   # load(paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predGMSST_v3/", HadISST.monthly$Year[i], "-", formatC(HadISST.monthly$Month[i], width = 2, format="d", flag = "0"), ".RData", sep=""))
@@ -226,22 +176,27 @@ setwd("/net/h2o/climphys1/sippels/_DATASET/ERSST/v5/")
 # system("cd /net/h2o/climphys1/sippels/_DATASET/ERSST/v5/")
 # system("cdo -ymonsub /net/h2o/climphys1/sippels/_DATASET/ERSST/v5/sst.mnmean.nc -ymonmean -seldate,1961-01-01,1990-12-31 /net/h2o/climphys1/sippels/_DATASET/ERSST/v5/sst.mnmean.nc /net/h2o/climphys1/sippels/_DATASET/ERSST/v5/sst.mnmean_anom.nc")
 # system("cdo -remapcon,/net/h2o/climphys1/sippels/_code/spatial_data/cdo_grids/Global/global_5d00.txt sst.mnmean_anom.nc sst.mnmean_anom_5d00.nc")
+# fill missing value to NN:
+# cdo -O -setmisstonn sst.mnmean_anom_5d00.nc sst.mnmean_anom_5d00_filled.nc
 
 
 ERSSTv5_sst_anom = brick("sst.mnmean_anom.nc") + 0
-ERSSTv5_sst_anom_5d00 = brick("sst.mnmean_anom_5d00.nc") + 0
+ERSSTv5_sst_anom_5d00 = brick("sst.mnmean_anom_5d00_filled.nc") + 0
 ERSSTv5_sst_anom_5d00_ = t(values(ERSSTv5_sst_anom_5d00))
 
 ERSSTv5.monthly = data.frame(matrix(NA, nrow = 2028, ncol = 59))
 names(ERSSTv5.monthly) = c("Year", "Month", "Anomaly", c(sapply(X = names.vec, FUN=function(x) paste(x, "_", c("mod_p0_min", "mod_p0_1se", "mod_p1_min", "mod_p1_1se"), sep=""))))
 ERSSTv5.monthly$Year = c(rep.row(1854:2022, 12))
 ERSSTv5.monthly$Month = c(rep.col(1:12, 169))
+# vector of number NA's:
+ERSSTv5.monthly_na = rep(0, length(ERSSTv5.monthly$Year))
+
 
 aw = values(raster::area(subset(ERSSTv5_sst_anom, 1)))
 
 # get weighted SST average:
 for (i in 1:2025) {
-  print(i)
+  # print(i)
   w = aw # * values((1 - subset(ERSSTv5_ice, i)))
   ERSSTv5.monthly$Anomaly[i] = weighted.mean(x = values(subset(ERSSTv5_sst_anom, i)), w = w, na.rm=T)
   
@@ -251,7 +206,9 @@ for (i in 1:2025) {
   
   tos = c(matrix(ERSSTv5_sst_anom_5d00_[i,], 72, 36)[,36:1])[CMIP6.tos.df$mon[[mon.ix]]$beta$GMSST[[year.ix]]$grid.ix] # image.plot(matrix(ERSSTv5_sst_anom_5d00_[i,], 72, 36)[,36:1])
   if (any(is.na(tos))) {
-    print("NA")
+    print(paste("NA in grid cell: ", length(which(is.na(tos)))))
+    print(paste("time step ", i))
+    ERSSTv5.monthly_na[i] = length(which(is.na(tos)))
     tos[which(is.na(tos))] = mean(tos, na.rm=T)
   }
   # load(paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predGMSST_v3/", HadISST.monthly$Year[i], "-", formatC(HadISST.monthly$Month[i], width = 2, format="d", flag = "0"), ".RData", sep=""))
@@ -271,61 +228,6 @@ ERSSTv5.annual$Year = c(1854:2022)
 for (i in 3:35) {
   ERSSTv5.annual[[i]] = get_annual_average(cur.ts = ERSSTv5.monthly[[i]])
 }
-
-
-# 04. ERSST
-# ---------------------------------------------
-# Version 4: https://downloads.psl.noaa.gov/Datasets/noaa.ersst.v4/
-setwd("/net/h2o/climphys1/sippels/_DATASET/ERSST/v4/")
-#system("cd /net/h2o/climphys1/sippels/_DATASET/ERSST/v4/")
-# system("cdo -ymonsub /net/h2o/climphys1/sippels/_DATASET/ERSST/v4/sst.mnmean.nc -ymonmean -seldate,1961-01-01,1990-12-31 /net/h2o/climphys1/sippels/_DATASET/ERSST/v4/sst.mnmean.nc /net/h2o/climphys1/sippels/_DATASET/ERSST/v4/sst.mnmean_anom.nc")
-# system("cdo -remapcon,/net/h2o/climphys1/sippels/_code/spatial_data/cdo_grids/Global/global_5d00.txt sst.mnmean_anom.nc sst.mnmean_anom_5d00.nc")
-
-ERSSTv4_sst_anom = brick("sst.mnmean_anom.nc") + 0
-ERSSTv4_sst_anom_5d00 = brick("sst.mnmean_anom_5d00.nc") + 0
-ERSSTv4_sst_anom_5d00_ = t(values(ERSSTv4_sst_anom_5d00))
-
-ERSSTv4.monthly = data.frame(matrix(NA, nrow = 2004, ncol = 59))
-names(ERSSTv4.monthly) = c("Year", "Month", "Anomaly", c(sapply(X = names.vec, FUN=function(x) paste(x, "_", c("mod_p0_min", "mod_p0_1se", "mod_p1_min", "mod_p1_1se"), sep=""))))
-ERSSTv4.monthly$Year = c(rep.row(1854:2020, 12))
-ERSSTv4.monthly$Month = c(rep.col(1:12, 167))
-
-aw = values(raster::area(subset(ERSSTv4_sst_anom, 1)))
-
-# get weighted SST average:
-for (i in 1:1994) {
-  print(i)
-  w = aw # * values((1 - subset(ERSSTv5_ice, i)))
-  ERSSTv4.monthly$Anomaly[i] = weighted.mean(x = values(subset(ERSSTv4_sst_anom, i)), w = w, na.rm=T)
-  
-  # PROJECT ON DIFFERENT FINGERPRINTS:
-  year.ix = match(ERSSTv4.monthly$Year[i], 1850:2020); mon.ix = ERSSTv4.monthly$Month[i]
-  if(is.na(year.ix)) next;
-  
-  tos = c(matrix(ERSSTv4_sst_anom_5d00_[i,], 72, 36)[,36:1])[CMIP6.tos.df$mon[[mon.ix]]$beta$GMSST[[year.ix]]$grid.ix] # image.plot(matrix(ERSSTv5_sst_anom_5d00_[i,], 72, 36)[,36:1])
-  if (any(is.na(tos))) {
-    print("NA")
-    tos[which(is.na(tos))] = mean(tos, na.rm=T)
-  }
-  # load(paste("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/02_trained_models/tos_predGMSST_v3/", HadISST.monthly$Year[i], "-", formatC(HadISST.monthly$Month[i], width = 2, format="d", flag = "0"), ".RData", sep=""))
-  
-  for (cur.name.ix in 1:length(names.vec)) {
-    ERSSTv4.monthly[[paste(names.vec[cur.name.ix], "_mod_p0_min", sep="")]][i] = tos %*% CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p0[,1] + CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p0_a0[1]
-    ERSSTv4.monthly[[paste(names.vec[cur.name.ix], "_mod_p0_1se", sep="")]][i] = tos %*% CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p0[,2] + CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p0_a0[2]
-    ERSSTv4.monthly[[paste(names.vec[cur.name.ix], "_mod_p1_min", sep="")]][i] = tos %*% CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p1[,1] + CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p1_a0[1]
-    ERSSTv4.monthly[[paste(names.vec[cur.name.ix], "_mod_p1_1se", sep="")]][i] = tos %*% CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p1[,2] + CMIP6.tos.df$mon[[mon.ix]]$beta[[names.vec[cur.name.ix]]][[year.ix]]$mod_p1_a0[2]
-  }
-}
-
-
-ERSSTv4.annual = data.frame(matrix(NA, nrow = 167, ncol = 35))
-names(ERSSTv4.annual) = c("Year", "Month", "Anomaly", c(sapply(X = names.vec, FUN=function(x) paste(x, "_", c("mod_p0_min", "mod_p0_1se", "mod_p1_min", "mod_p1_1se"), sep=""))))
-ERSSTv4.annual$Year = c(1854:2020)
-
-for (i in 3:35) {
-  ERSSTv4.annual[[i]] = get_annual_average(cur.ts = ERSSTv4.monthly[[i]])
-}
-
 
 
 
@@ -427,8 +329,16 @@ lines(ERSSTv4.annual$Year, ERSSTv4.annual$Anomaly, col = "red")
 lines(ERSSTv4.annual$Year, ERSSTv4.annual$GMSST_mod_p1_min, col = "red", lty = 2)
 
 
-save(list = c("HadISST.annual", "HadISST.monthly", "COBE_SST2.annual", "COBE_SST2.monthly",
-              "ERSSTv5.annual", "ERSSTv5.monthly", "ERSSTv4.annual", "ERSSTv4.monthly",
+# save NA vectors (from running non-infilled files):
+# BEST_Land.monthly_navec = cbind(BEST_Land.monthly$Year, BEST_LAND.monthly_na)
+# COBE_SST2.monthly_navec = cbind(COBE_SST2.monthly$Year, COBE_SST2.monthly_na)
+# ERSSTv5.monthly_navec = cbind(ERSSTv5.monthly$Year, ERSSTv5.monthly_na)
+# save(list = c("BEST_Land.monthly_navec", "COBE_SST2.monthly_navec", "ERSSTv5.monthly_navec"),
+#  file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedOBS_reconstr/na_vec.RData")
+
+
+save(list = c("COBE_SST2.annual", "COBE_SST2.monthly",
+              "ERSSTv5.annual", "ERSSTv5.monthly", 
               "HadSST_ua.annual", "HadSST_ua.monthly"), 
      file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedOBS_reconstr/SST_datasets.RData")
 

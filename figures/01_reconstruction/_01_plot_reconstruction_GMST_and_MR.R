@@ -17,9 +17,9 @@ source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04a_mast
 
 # 09. Read-In of Kadow et al. AI tool for ocean->land and land->ocean extrapolation:
 # ------------------------------------------------------------------------------------
-setwd("/net/h2o/climphys1/sippels/_DATASET/Kadow_land-vs-ocean/")
-kadow_crutem5_gmst = ncvar_get(nc_open("cmip6ctaspadzens-2_tas_mon-gl-72x36_crutem5.0.2_observation_all-avg_1850-2...FM_SUBCLIM"))
-kadow_hadsst4_gmst = ncvar_get(nc_open("cmip6ctaspadzens-2_tas_mon-gl-72x36_hadsst4_observation_all-avg_1850-2023_...FM_SUBCLIM"))
+# setwd("/net/h2o/climphys1/sippels/_DATASET/Kadow_land-vs-ocean/")
+kadow_crutem5_gmst = ncvar_get(nc_open("data/00_DATASET/obs/Kadow-etal-2020/cmip6ctaspadzens-2_tas_mon-gl-72x36_crutem5.0.2_observation_all-avg_1850-2...FM_SUBCLIM"))
+kadow_hadsst4_gmst = ncvar_get(nc_open("data/00_DATASET/obs/Kadow-etal-2020/cmip6ctaspadzens-2_tas_mon-gl-72x36_hadsst4_observation_all-avg_1850-2023_...FM_SUBCLIM"))
 
 
 
@@ -31,23 +31,25 @@ kadow_hadsst4_gmst = ncvar_get(nc_open("cmip6ctaspadzens-2_tas_mon-gl-72x36_hads
 
 # 01_main_reconstruction: AGMT anomalies | the !main! reconstructions (no uncertainties/sensitivities!):
 # ------------------------------------------------------------------------------------
-setwd("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/figures/01_reconstruction/")
+# setwd("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/figures/01_reconstruction/")
 
 library(RColorBrewer)
 col = brewer.pal(n = 8, name = "Dark2")
+
+
 
 
 ## GMST-annual reconstruction:
 {
   
   # GMST reconstruction-mod_p0:
-  pdf(file = "SI05_GMST_land_vs_ocean_reconstruction_mod_p0.pdf", width = 8, height=4)
+  pdf(file = "figures/01_reconstruction/SI01_GMST_land_vs_ocean_reconstruction.pdf", width = 8, height=8)
   {
-    par(mfrow=c(1, 1), mar=c(2,4,1,1))
+    par(mfrow=c(2, 1), mar=c(2,4,1,1))
     ylim = c(-1, 1); xlim = c(1850,2020)
     
     plot(x = 1850:2020, y = 1850:2020, type="n", 
-         ylab = "Temperature Anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1)
+         ylab = "Global mean surface temperature anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1)
     axis(side = 1, at = seq(min(xlim), max(xlim), 5), tcl=0.2, labels=F)
     axis(side = 2, at = seq(min(ylim), max(ylim), 0.1), tcl=0.2, labels=F)
     
@@ -84,15 +86,11 @@ col = brewer.pal(n = 8, name = "Dark2")
     legend("topleft", c("HadCRUT5", "CRUTEM5-reconstr.", "CRUTEM5-reconstr. (Kadow et al.)", "HadSST4-reconstr.", "HadSST4-reconstr. (Kadow et al.)", "CW2014", "CW2014-COBE2", "JMA-GMST", "BEST", "NOAA-GlobalTemp-v5", "NASA-GISS"),
            lty = c(1, 1, 1, 1, 1, 2, 3, 3, 2, 4, 5), col = c("wheat4", "darkorange", "gold1", "darkblue", "lightblue", "grey40", "grey40", "black", "black", "black", "black"), lwd = c(1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1), inset = 0.02, 
            cex = 0.7, ncol = 2, title = "GMST reconstruction (no unc./bias in training), Kadow et al. reconstruction and GMST datasets")
-    dev.off()
-  }
-  
-  # GMST reconstruction-mod_p1:
-  pdf(file = "SI05_GMST_land_vs_ocean_reconstruction_mod_p1.pdf", width = 8, height=4)
-  {
-    par(mfrow=c(1, 1), mar=c(2,4,1,1))
-    ylim = c(-1, 1); xlim = c(1850,2020)
+
     
+    # ------------------------------------------------------------
+    # Now replot for mod_p1:
+    # ------------------------------------------------------------
     plot(x = 1850:2020, y = 1850:2020, type="n", 
          ylab = "Temperature Anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1)
     axis(side = 1, at = seq(min(xlim), max(xlim), 5), tcl=0.2, labels=F)
@@ -106,11 +104,11 @@ col = brewer.pal(n = 8, name = "Dark2")
     polygon(x = c(1850:2020, 2020:1850), y = c(OBS.tas_land$GMST_FM$ann$mod_p1_min_2.5, 
                                                rev(OBS.tas_land$GMST_FM$ann$mod_p1_min_97.5)), 
             col = make.transparent.color("darkorange", alpha = 50), border = make.transparent.color("darkorange", 100))
-
+    
     polygon(x = c(1850:2020, 2020:1850), y = c(OBS.tos$GMST_FM$ann$mod_p1_min_2.5, 
                                                rev(OBS.tos$GMST_FM$ann$mod_p1_min_97.5)), 
             col = make.transparent.color("blue", alpha = 50), border = make.transparent.color("darkblue", 100))
-
+    
     lines(x = CW2014.global.annual_had4sst4_krig$Year, y = CW2014.global.annual_had4sst4_krig$Anomaly, col = "grey40", lty = 2)
     lines(x = CW2014.global.annual_cobe2cru_krig$Year - 0.5, y = CW2014.global.annual_cobe2cru_krig$Anomaly, col = "grey40", lty = 3)
     
@@ -131,58 +129,12 @@ col = brewer.pal(n = 8, name = "Dark2")
     dev.off()
   }
   
-  
-  # GMST reconstruction-mod_p1-simplified:
-  pdf(file = "01_GMST_land_vs_ocean_reconstruction_mod_p1_simple.pdf", width = 8, height=4)
-  {
-    par(mfrow=c(1, 1), mar=c(2,4,1,1))
-    ylim = c(-1, 1); xlim = c(1850,2020)
-    
-    plot(x = 1850:2020, y = 1850:2020, type="n", 
-         ylab = "Temperature Anomaly [°C]", xlab = "", main = "Annual Global Mean Surface Temperature", ylim = ylim, xlim = xlim, las=1)
-    axis(side = 1, at = seq(min(xlim), max(xlim), 5), tcl=0.2, labels=F)
-    axis(side = 2, at = seq(min(ylim), max(ylim), 0.1), tcl=0.2, labels=F)
-    
-    ## polygons for uncertainties:
-    polygon(x = c(1850:2021, 2021:1850), y = c(HadCRUT5.global.annual$lower_CI2.5, 
-                                               rev(HadCRUT5.global.annual$upper_CI97.5)), 
-            col = make.transparent.color("wheat4", alpha = 50), border = make.transparent.color("wheat4", 100))
-    
-    polygon(x = c(1850:2020, 2020:1850), y = c(OBS.tas_land$GMST_FM$ann$mod_p1_min_2.5, 
-                                               rev(OBS.tas_land$GMST_FM$ann$mod_p1_min_97.5)), 
-            col = make.transparent.color("darkorange", alpha = 50), border = make.transparent.color("darkorange", 100))
-    
-    polygon(x = c(1850:2020, 2020:1850), y = c(OBS.tos$GMST_FM$ann$mod_p1_min_2.5, 
-                                               rev(OBS.tos$GMST_FM$ann$mod_p1_min_97.5)), 
-            col = make.transparent.color("blue", alpha = 50), border = make.transparent.color("darkblue", 100))
-    
-    # lines(x = CW2014.global.annual_had4sst4_krig$Year, y = CW2014.global.annual_had4sst4_krig$Anomaly, col = "grey40", lty = 2)
-    # lines(x = CW2014.global.annual_cobe2cru_krig$Year - 0.5, y = CW2014.global.annual_cobe2cru_krig$Anomaly, col = "grey40", lty = 3)
-    
-    # lines(x = JMA.global.annual$Year, y = JMA.global.annual$Global - mean(JMA.global.annual$Global[match(x = 1961:1990, table = JMA.global.annual$Year)]), col = "black", lty = 3)
-    # lines(x = BEST.global.annual$Year, y = BEST.global.annual$Anomaly - mean(BEST.global.annual$Anomaly[match(x = 1961:1990, table = BEST.global.annual$Year)]), col = "black", lty = 2)
-    # lines(x = NOAA.global.annual$Year, y = NOAA.global.annual$Anomaly - mean(NOAA.global.annual$Anomaly[match(x = 1961:1990, table = NOAA.global.annual$Year)]), col = "black", lty = 4)
-    # lines(x = GISS.global.annual$Year, y = GISS.global.annual$Anomaly - mean(GISS.global.annual$Anomaly[match(x = 1961:1990, table = GISS.global.annual$Year)]), col = "black", lty = 5)
-    
-    # Lines for main reconstructions:
-    lines(x = 1850:2020, y = OBS.tas_land$GMST_FM$ann$mod_p1_min, col = "darkorange", lwd = 2)
-    lines(x = 1850:2020, y = OBS.tos$GMST_FM$ann$mod_p1_min, col = "darkblue", lwd = 2)
-    lines(x = 1850:2021, y = HadCRUT5.global.annual$Anomaly, col = "grey40", lwd = 2)
-    
-    
-    legend("topleft", c("HadCRUT5", "CRUTEM5-reconstr.", "HadSST4-reconstr."),
-           lty = c(1, 1, 1), col = c("wheat4", "darkorange", "darkblue"), lwd = c(2, 2, 2), inset = 0.02, cex = 1)
-    dev.off()
-  }
 }
 
 
 
-
-
-
 ## CRUTEM5 vs. HadSST4:
-pdf(file = "SI06_CRUTEM5_HadSST4.pdf", width = 8, height=4)
+pdf(file = "figures/01_reconstruction/02_CRUTEM5_vs_HadSST4.pdf", width = 8, height=4)
 {
   par(mfrow=c(1, 1), mar=c(2,4,1,1))
   ylim = c(-1.2, 1.2); xlim = c(1850,2020)
@@ -230,11 +182,11 @@ lm(c(HadSST4.global.annual$Anomaly[52:90]) ~ c(1901:1939))$coefficients[2]
 
 
 
-## SI09 GMST-annual vs. Mean-removed!
+## SI05 GMST-annual vs. Mean-removed!
 {
 
   # GMST reconstruction-mod_p1:
-  pdf(file = "SI09_GMST_land_vs_ocean_correlation_MR_mod_p1.pdf", width = 8, height=8)
+  pdf(file = "figures/01_reconstruction/SI05_GMST_land_vs_ocean_correlation_MR_mod_p1.pdf", width = 8, height=8)
   {
     par(mfrow=c(2, 1), mar=c(2,4,1,1))
     ylim = c(-1, 1); xlim = c(1850,2020)
@@ -288,7 +240,7 @@ lm(c(HadSST4.global.annual$Anomaly[52:90]) ~ c(1901:1939))$coefficients[2]
                         "Land- vs. SST(m.r.) reconstr. (OBS)", 
                         "SST- vs. SST(m.r.) reconstr. (OBS)"), 
            col = c("darkgray", col.paired[8], col.paired[2]), bg = "white", lty = c(1, 1, 1), lwd = 2, 
-           title = "Pearson Correlation", inset=0.02, cex = 0.7)
+           title = "Pearson Correlation \n in 50-year window", inset=0.02, cex = 0.7)
     
   }
   dev.off()

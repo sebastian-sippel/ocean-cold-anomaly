@@ -18,7 +18,7 @@ source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04c_comp
 # 02. Land-ocean warming ratio during ETCW:
 # ------------------------------------------------------------------------------------
 
-setwd("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/figures/05_ETCW/")
+# setwd("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/figures/05_ETCW/")
 
 
 library(plotrix)
@@ -36,7 +36,7 @@ xlim = c(-0.5, 2)
 # 40-years figure
 # ------------------------------------------------------------------------------------
 
-pdf(file = "05_land_ocean_40_years.pdf", width = 8, height = 5)
+pdf(file = "figures/05_ETCW/05_land_ocean_40_years.pdf", width = 8, height = 5)
 par(mar = c(4,4,1,0), cex.lab = 1, cex.axis=1, mfrow=c(1,1))
 layout(matrix(1:2, ncol = 2, byrow = T), widths = c(9,4), heights = c(4,9))
 
@@ -155,9 +155,9 @@ for (i in 1:7) {
          liw = qnorm(p = 0.975) * neukom_constraint$sd_out, col = "grey", add = T, pch = NA, cex = 2, err = "y", lwd = 2, sfrac=0.01)
 }
 # Crowley:
-# crowley_constraint = get.linear.model.constraint(y = CMIP6.GMSST_true.trends[,2], x = CMIP6.GMST_true.trends[,2], x_new = crowley2014.trend[2], plot.constraint = F)
-#plotCI(x = 1.25, y = crowley_constraint$mean_out, uiw = qnorm(p = 0.975) * crowley_constraint$sd_out, 
-#       liw = qnorm(p = 0.975) * crowley_constraint$sd_out, col = "darkblue", add = T, pch = NA, cex = 2, err = "y", lwd = 2, sfrac=0.01)
+crowley_constraint = get.linear.model.constraint(y = CMIP6.GMSST_true.trends[,2], x = CMIP6.GMST_true.trends[,2], x_new = crowley2014.trend[2], plot.constraint = F)
+plotCI(x = 1.25, y = crowley_constraint$mean_out, uiw = qnorm(p = 0.975) * crowley_constraint$sd_out, 
+       liw = qnorm(p = 0.975) * crowley_constraint$sd_out, col = "darkblue", add = T, pch = NA, cex = 2, err = "y", lwd = 2, sfrac=0.01)
 # CRUTEM5 based constraint:
 land_constraint2 = get.linear.model.constraint_ens(y = CMIP6.GMSST_true.trends[,2], x = CMIP6.GMLSAT_NI_tas_land.trends[,2], x_new = OBS.GMLSAT_tas_land.trends[2,], plot.constraint = F)
 plotCI(x = 1.3, y = land_constraint2$mean_out, uiw = qnorm(p = 0.975) * land_constraint2$sd_out, 
@@ -187,9 +187,9 @@ for (i in 1:7) {
          liw = qnorm(p = 0.975) * neukom_constraint$sd_out, col = "grey", add = T, pch = NA, cex = 2, err = "y", lwd = 2, sfrac=0.01)
 }
 # Crowley:
-# crowley_constraint = get.linear.model.constraint(y = CMIP6.GMSST_true.trends[,3], x = CMIP6.GMST_true.trends[,3], x_new = crowley2014.trend[3], plot.constraint = F)
-#plotCI(x = 2.25, y = crowley_constraint$mean_out, uiw = qnorm(p = 0.975) * crowley_constraint$sd_out, 
-#       liw = qnorm(p = 0.975) * crowley_constraint$sd_out, col = "darkblue", add = T, pch = NA, cex = 2, err = "y", lwd = 2, sfrac=0.01)
+crowley_constraint = get.linear.model.constraint(y = CMIP6.GMSST_true.trends[,3], x = CMIP6.GMST_true.trends[,3], x_new = crowley2014.trend[3], plot.constraint = F)
+plotCI(x = 2.25, y = crowley_constraint$mean_out, uiw = qnorm(p = 0.975) * crowley_constraint$sd_out, 
+       liw = qnorm(p = 0.975) * crowley_constraint$sd_out, col = "darkblue", add = T, pch = NA, cex = 2, err = "y", lwd = 2, sfrac=0.01)
 
 # CRUTEM5 based constraint:
 land_constraint3 = get.linear.model.constraint_ens(y = CMIP6.GMSST_true.trends[,3], x = CMIP6.GMLSAT_NI_tas_land.trends[,3], x_new = OBS.GMLSAT_tas_land.trends[3,], plot.constraint = F)

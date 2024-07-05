@@ -3,12 +3,12 @@
 # Sebastian Sippel
 # 01.11.2022
 
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/code/_convenience/frenchcolormap.R")
+source("code/_convenience/frenchcolormap.R")
 library(R.matlab)
 
 # setwd("/Users/sippels/Desktop/AbrametalPAGES2k2016_Supp2_inputdata/")
 # setwd("/net/h2o/climphys1/sippels/_DATASET/Abram-et-al_PAGES2k/")
-test = readMat("/net/h2o/climphys1/sippels/_DATASET/Abram-et-al_PAGES2k/archive_p2k_regional_reconstructions.mat")
+test = readMat("data/00_DATASET/paleoclimate/Abram-et-al_PAGES2k/archive_p2k_regional_reconstructions.mat")
 
 # Western Atlantic:
 WAtlantic = data.frame(cbind(test$archive.p2k.regional.reconstructions[,,5]$data[,,1]$year, test$archive.p2k.regional.reconstructions[,,5]$data[,,1]$rec, test$archive.p2k.regional.reconstructions[,,5]$data[,,1]$uncertainty))
@@ -25,29 +25,6 @@ names(IOcean) = c("year", "rec", "uncertainty")
 # Indian Ocean, 25.5 × 106 km2; western Pacific, 26.9 × 106 km2; western Atlantic, 5.1 × 106 km2.
 w_WAtlantic = 5.5; w_WPacific = 26.9; w_IOcean = 25.5;
 w = c(w_WAtlantic, w_WPacific, w_IOcean)
-
-
-## read continental reconstructions and check whether there is any indication in the terrestrial for a cooling:
-# Arctic 1
-# Europe 2
-# Asia 3
-# North America 4
-# Australasia 8
-# South America 9
-# Antarctica 10
-
-## Construct terrestrial average record and compare to HadSST4 change:
-w_terrestrial = c(34.4, 13.0, 31.1, 12.5, 37.9, 20.0, 34.4)  # According to Abram et al. 
-# Arctic, 34.4 × 106 km2; Europe, 13.0 × 106 km2; Asia, 31.1 × 106 km2; North America, 12.5 × 106 km2; Australasia, 37.9 × 106 km2; South America, 20.0 × 106 km2; Antarctica, 34.4 × 106 km2
-Terrestrial_recon = data.frame(matrix(data=NA, nrow = 151, ncol = 9))
-names(Terrestrial_recon) = c("Year", "Arctic", "Europe", "Asia", "North America", "Australasia", "South America", "Antarctica", "Average")
-Terrestrial_recon$Year = 1850:2000
-
-loc = c(1, 2, 3, 4, 8, 9, 10)
-# loc.name = c("Arctic", "Europe", "Asia", "North America", "Australasia", "South America", "Antarctica")
-
-
-
 
 
 # range of overlap years: 
@@ -68,7 +45,7 @@ for (cur.year in 1621:2001) {
 }
 # plot(ocean2k$year, ocean2k$Tropics)
 # ocean2k$year[451]  # End: Year2001
-ocean2k_ = get.df(Y = ocean2k$Tropics[match(x = 1850:2001, table = ocean2k$year)], f = CMIP6.MMM, years = 1850:2001, center = T, ens.ix = NULL, years.DA = 1850:2001)
+ocean2k_ = get.df(Y = ocean2k$Tropics[match(x = 1850:2001, table = ocean2k$year)], f = rowMeans(CMIP6.GMST.f, na.rm=T), years = 1850:2001, center = T, ens.ix = NULL, years.DA = 1850:2001)
 
 
 
@@ -113,21 +90,19 @@ for (i in 1:170) {
 }
 # plot(Tropics_ens[1,]); lines(Tropics_ens[2,])
 
-Tropics.tas_land = get.df(Y = Tropics_tas_land_ens[,1:170], f = CMIP6.MMM[1:170], years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-Tropics.tos = get.df(Y = Tropics_tos_ens[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-
-# TMSST_40S_40N.tas_land = get.df(Y = get.ens.avg_Apr_Mar(x =  OBS.tas_land_$TMSST_40S_40N$mon$mod_p1_min)[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-# TMSST_40S_40N.tos = get.df(Y = get.ens.avg_Apr_Mar(x =  OBS.tos_$TMSST_40S_40N$mon$mod_p1_min)[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-
-# TMSST_25S_25N.tas_land = get.df(Y = get.ens.avg_Apr_Mar(x =  OBS.tas_land_$TMSST_25S_25N$mon$mod_p1_min)[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-# TMSST_25S_25N.tos = get.df(Y = get.ens.avg_Apr_Mar(x =  OBS.tos_$TMSST_25S_25N$mon$mod_p1_min)[,1:170], f = CMIP6.MMM, years = 1850:2019, center = T, ens.ix = 94:200, years.DA = 1850:2014)
+Tropics.tas_land = get.df(Y = Tropics_tas_land_ens[,1:170], f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = 1850:2019, center = T, ens.ix = 1:200, years.DA = 1850:2014)
+Tropics.tos = get.df(Y = Tropics_tos_ens[,1:170], f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = 1850:2019, center = T, ens.ix = 1:200, years.DA = 1850:2014)
 
 
-
-
-Tierney_best = readMat("/net/h2o/climphys1/sippels/_DATASET/Tierney-etal-ocean2k-Paleoceanography/data/rec_best.mat")
-Tierney_regions = readMat("/net/h2o/climphys1/sippels/_DATASET/Tierney-etal-ocean2k-Paleoceanography/data/rec_alliters.mat")
+Tierney_best = readMat("data/00_DATASET/paleoclimate/Tierney-etal-ocean2k-Paleoceanography/data/rec_best.mat")
+Tierney_regions = readMat("data/00_DATASET/paleoclimate/Tierney-etal-ocean2k-Paleoceanography/data/rec_alliters.mat")
 # str(Tierney_regions$readme)
+
+
+# str(Tierney_regions$atlantic[[7]])
+# str(Tierney_best$atlantic[[5]])
+# plot(x = WAtlantic$year, y = WAtlantic$rec, type='l')
+# lines(x = Tierney_regions$atlantic[[5]], y = Tierney_best$atlantic[[2]], col = "red")
 
 
 

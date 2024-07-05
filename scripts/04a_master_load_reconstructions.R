@@ -34,7 +34,7 @@ load("data/03_processedOBS_reconstr/TLand_datasets.RData")
 source("scripts/03b_load_global_obs_reconstruction.R")
 
 
-# 03. Load CMIP reconstructions (for >100.000 CMIP years):
+# 03. Load long CMIP reconstructions (for >100.000 CMIP years):
 # ------------------------------------------------------------------------------------
 load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedCMIP6_reconstr/CMIP6.tas_land_all.df_v5.RData")
 load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedCMIP6_reconstr/CMIP6.tos_all.df.RData")
@@ -101,12 +101,10 @@ for (i in 1:length(names)) {
 library("dplR") # package for band-pass filtering
 
     # GSAT Prepare data for plotting:
-    GSAT.tas_land = get.df(Y = OBS.tas_land_$GSAT$ann$mod_p1_min, f = rowMeans(CMIP6.GSAT.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-    GSAT.tos = get.df(Y = OBS.tos_$GSAT$ann$mod_p1_min, f = rowMeans(CMIP6.GSAT.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-    GSAT.HadISST = get.df(Y = HadISST.annual$GSAT_mod_p1_min[1:151], f = rowMeans(CMIP6.GSAT.f, na.rm=T), years = HadISST.annual$Year[1:151], center = T, ens.ix = NULL, years.DA = 1850:2014)
+    GSAT.tas_land = get.df(Y = OBS.tas_land_$GSAT$ann$mod_p1_min, f = rowMeans(CMIP6.GSAT.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 1:200, years.DA = 1850:2014)
+    GSAT.tos = get.df(Y = OBS.tos_$GSAT$ann$mod_p1_min, f = rowMeans(CMIP6.GSAT.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 1:200, years.DA = 1850:2014)
     GSAT.COBE_SST2 = get.df(Y = COBE_SST2.annual$GSAT_mod_p1_min, f = rowMeans(CMIP6.GSAT.f, na.rm=T), years = COBE_SST2.annual$Year, center = T, ens.ix = NULL, years.DA = 1850:2014)
     GSAT.ERSSTv5 = get.df(Y = ERSSTv5.annual$GSAT_mod_p1_min[1:167], f = rowMeans(CMIP6.GSAT.f, na.rm=T), years = ERSSTv5.annual$Year[1:167], center = T, ens.ix = NULL, years.DA = 1850:2014)
-    GSAT.ERSSTv4 = get.df(Y = ERSSTv4.annual$GSAT_mod_p1_min, f = rowMeans(CMIP6.GSAT.f, na.rm=T), years = ERSSTv4.annual$Year, center = T, ens.ix = NULL, years.DA = 1850:2014)
     GSAT.BEST_Land = get.df(Y = BEST_Land.annual$GSAT_mod_p1_min[101:271], f = rowMeans(CMIP6.GSAT.f, na.rm=T), years = BEST_Land.annual$Year[101:271], center = T, ens.ix = NULL, years.DA = 1850:2014)
     GSAT.hybrid36 = get.df(Y = colMedians(OBS_hybrid36.tos_$GSAT$ann$mod_p1_min), f = rowMeans(CMIP6.GSAT.f, na.rm=T), years = 1850:2016, center = T, ens.ix = NULL, years.DA = 1850:2014)
     GSAT.tas_sea = get.df(Y = colMedians(OBS_CLASSNMAT.tas_$GSAT$ann$mod_p1_min), f = rowMeans(CMIP6.GSAT.f, na.rm=T), years = 1880:2019, center = T, ens.ix = NULL, years.DA = 1850:2014)
@@ -114,12 +112,10 @@ library("dplR") # package for band-pass filtering
     
     # GMSST Prepare data for plotting:
     GMSST.HadSST4 = get.df(Y = HadSST4.global.annual$Anomaly[1:171], f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = 1850:2020, center = T, ens.ix = NULL, years.DA = 1850:2014)
-    GMSST.tas_land = get.df(Y = OBS.tas_land_$GMSST$ann$mod_p1_min, f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-    GMSST.tos = get.df(Y = OBS.tos_$GMSST$ann$mod_p1_min, f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-    GMSST.HadISST = get.df(Y = HadISST.annual$GMSST_mod_p1_min[1:151], f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = HadISST.annual$Year[1:151], center = T, ens.ix = NULL, years.DA = 1850:2014)
+    GMSST.tas_land = get.df(Y = OBS.tas_land_$GMSST$ann$mod_p1_min, f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 1:200, years.DA = 1850:2014)
+    GMSST.tos = get.df(Y = OBS.tos_$GMSST$ann$mod_p1_min, f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 1:200, years.DA = 1850:2014)
     GMSST.COBE_SST2 = get.df(Y = COBE_SST2.annual$GMSST_mod_p1_min, f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = COBE_SST2.annual$Year, center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMSST.ERSSTv5 = get.df(Y = ERSSTv5.annual$GMSST_mod_p1_min[1:167], f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = ERSSTv5.annual$Year[1:167], center = T, ens.ix = NULL, years.DA = 1850:2014)
-    GMSST.ERSSTv4 = get.df(Y = ERSSTv4.annual$GMSST_mod_p1_min, f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = ERSSTv4.annual$Year, center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMSST.BEST_Land = get.df(Y = BEST_Land.annual$GMSST_mod_p1_min[101:271], f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = BEST_Land.annual$Year[101:271], center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMSST.hybrid36 = get.df(Y = colMedians(OBS_hybrid36.tos_$GMSST$ann$mod_p1_min), f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = 1850:2016, center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMSST.tas_sea = get.df(Y = colMedians(OBS_CLASSNMAT.tas_$GMSST$ann$mod_p1_min), f = rowMeans(CMIP6.GMSST.f, na.rm=T), years = 1880:2019, center = T, ens.ix = NULL, years.DA = 1850:2014)
@@ -128,12 +124,10 @@ library("dplR") # package for band-pass filtering
     
     # GMLSAT Prepare data for plotting:
     GMLSAT_NI.CRUTEM5 = get.df(Y = CRUTEM5.global.annual$Anomaly[8:171], f = rowMeans(CMIP6.GMLSAT.f, na.rm=T), years = c(1850:2020)[8:171], center = T, ens.ix = NULL, years.DA = 1850:2014)
-    GMLSAT_NI.tas_land = get.df(Y = OBS.tas_land_$GMLSAT_NI$ann$mod_p1_min, f = rowMeans(CMIP6.GMLSAT.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-    GMLSAT_NI.tos = get.df(Y = OBS.tos_$GMLSAT_NI$ann$mod_p1_min, f = rowMeans(CMIP6.GMLSAT.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 94:200, years.DA = 1850:2014)
-    GMLSAT_NI.HadISST = get.df(Y = HadISST.annual$GMLSAT_NI_mod_p1_min[1:151], f = rowMeans(CMIP6.GMLSAT.f, na.rm=T), years = HadISST.annual$Year[1:151], center = T, ens.ix = NULL, years.DA = 1850:2014)
+    GMLSAT_NI.tas_land = get.df(Y = OBS.tas_land_$GMLSAT_NI$ann$mod_p1_min, f = rowMeans(CMIP6.GMLSAT.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 1:200, years.DA = 1850:2014)
+    GMLSAT_NI.tos = get.df(Y = OBS.tos_$GMLSAT_NI$ann$mod_p1_min, f = rowMeans(CMIP6.GMLSAT.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 1:200, years.DA = 1850:2014)
     GMLSAT_NI.COBE_SST2 = get.df(Y = COBE_SST2.annual$GMLSAT_NI_mod_p1_min, f = rowMeans(CMIP6.GMLSAT.f, na.rm=T), years = COBE_SST2.annual$Year, center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMLSAT_NI.ERSSTv5 = get.df(Y = ERSSTv5.annual$GMLSAT_NI_mod_p1_min[1:167], f = rowMeans(CMIP6.GMLSAT.f, na.rm=T), years = ERSSTv5.annual$Year[1:167], center = T, ens.ix = NULL, years.DA = 1850:2014)
-    GMLSAT_NI.ERSSTv4 = get.df(Y = ERSSTv4.annual$GMLSAT_NI_mod_p1_min, f = rowMeans(CMIP6.GMLSAT.f, na.rm=T), years = ERSSTv4.annual$Year, center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMLSAT_NI.BEST_Land = get.df(Y = BEST_Land.annual$GMLSAT_NI_mod_p1_min[101:271], f = rowMeans(CMIP6.GMLSAT.f, na.rm=T), years = BEST_Land.annual$Year[101:271], center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMLSAT_NI.hybrid36 = get.df(Y = colMedians(OBS_hybrid36.tos_$GMLSAT_NI$ann$mod_p1_min), f = rowMeans(CMIP6.GMLSAT.f, na.rm=T), years = 1850:2016, center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMLSAT_NI.tas_sea = get.df(Y = colMedians(OBS_CLASSNMAT.tas_$GMLSAT_NI$ann$mod_p1_min), f = rowMeans(CMIP6.GMLSAT.f, na.rm=T), years = 1880:2019, center = T, ens.ix = NULL, years.DA = 1850:2014)
@@ -142,12 +136,10 @@ library("dplR") # package for band-pass filtering
     
     # GMST Prepare data for plotting:
     GMST.CRUTEM5 = get.df(Y = CRUTEM5.global.annual$Anomaly[8:171], f = rowMeans(CMIP6.GMST.f, na.rm=T), years = c(1850:2020)[8:171], center = T, ens.ix = NULL, years.DA = 1850:2014)
-    GMST.tas_land = get.df(Y = OBS.tas_land_$GMST_FM$ann$mod_p1_min, f = rowMeans(CMIP6.GMST.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 94:200, years.DA = 1850:2014)
+    GMST.tas_land = get.df(Y = OBS.tas_land_$GMST_FM$ann$mod_p1_min, f = rowMeans(CMIP6.GMST.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 1:200, years.DA = 1850:2014)
     GMST.tos = get.df(Y = OBS.tos_$GMST$ann$mod_p1_min, f = rowMeans(CMIP6.GMST.f, na.rm=T), years = 1850:2020, center = T, ens.ix = 1:200, years.DA = 1850:2014)
-    GMST.HadISST = get.df(Y = HadISST.annual$GMST_FM_mod_p1_min[1:151], f = rowMeans(CMIP6.GMST.f, na.rm=T), years = HadISST.annual$Year[1:151], center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMST.COBE_SST2 = get.df(Y = COBE_SST2.annual$GMST_FM_mod_p1_min, f = rowMeans(CMIP6.GMST.f, na.rm=T), years = COBE_SST2.annual$Year, center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMST.ERSSTv5 = get.df(Y = ERSSTv5.annual$GMST_FM_mod_p1_min[1:167], f = rowMeans(CMIP6.GMST.f, na.rm=T), years = ERSSTv5.annual$Year[1:167], center = T, ens.ix = NULL, years.DA = 1850:2014)
-    GMST.ERSSTv4 = get.df(Y = ERSSTv4.annual$GMST_FM_mod_p1_min, f = rowMeans(CMIP6.GMST.f, na.rm=T), years = ERSSTv4.annual$Year, center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMST.BEST_Land = get.df(Y = BEST_Land.annual$GMST_FM_mod_p1_min[101:271], f = rowMeans(CMIP6.GMST.f, na.rm=T), years = BEST_Land.annual$Year[101:271], center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMST.hybrid36 = get.df(Y = colMedians(OBS_hybrid36.tos_$GMST_FM$ann$mod_p1_min), f = rowMeans(CMIP6.GMST.f, na.rm=T), years = 1850:2016, center = T, ens.ix = NULL, years.DA = 1850:2014)
     GMST.tas_sea = get.df(Y = colMedians(OBS_CLASSNMAT.tas_$GMST_FM$ann$mod_p1_min), f = rowMeans(CMIP6.GMST.f, na.rm=T), years = 1880:2019, center = T, ens.ix = NULL, years.DA = 1850:2014)
@@ -165,14 +157,14 @@ OBS_mod_p1_min = get.diff.window.cor_ens(x = OBS.tos_$GMST_FM$ann$mod_p1_min, y 
 OBS_mod_p0 = get.diff.window.cor_ens(x = OBS.tos_$GMST_FM$ann$mod_p0, y = OBS.tas_land_$GMST_FM$ann$mod_p0, years = 1850:2020, w.width = 51, W = 20, center = T, center.ens.means = T, ens.ix = 1:200)
 
 CMIP6_matrix = get.CMIP6.recon.matrix(CMIP6.tas_land_all.df, CMIP6.tos_all.df)
-CMIP6_mod_p1_min = get.diff.window.cor_ens(x = CMIP6_matrix$tas_land_mod_p1, y = CMIP6_matrix$tos_mod_p1, years = 1850:2014, w.width = 51, W = 20, center = T, center.ens.means = F, ens.ix = 1:602)
-CMIP6_mod_p1_min_pt1 = get.diff.window.cor_ens(x = CMIP6_matrix$tas_land_mod_p1_pt1, y = CMIP6_matrix$tos_mod_p1_pt1, years = 1850:2014, w.width = 51, W = 20, center = T, center.ens.means = F, ens.ix = 1:602)
-CMIP6_mod_p0 = get.diff.window.cor_ens(x = CMIP6_matrix$tas_land_mod_p0, y = CMIP6_matrix$tos_mod_p0, years = 1850:2014, w.width = 51, W = 20, center = F, center.ens.means = F, ens.ix = 1:602)
-CMIP6_mod_p0_pt1 = get.diff.window.cor_ens(x = CMIP6_matrix$tas_land_mod_p0_pt1, y = CMIP6_matrix$tos_mod_p0_pt1, years = 1850:2014, w.width = 51, W = 20, center = F, center.ens.means = F, ens.ix = 1:602)
+CMIP6_mod_p1_min = get.diff.window.cor_ens(y = CMIP6_matrix$tas_land_mod_p1, x = CMIP6_matrix$tos_mod_p1, years = 1850:2014, w.width = 51, W = 20, center = T, center.ens.means = F, ens.ix = 1:602)
+CMIP6_mod_p1_min_pt1 = get.diff.window.cor_ens(y = CMIP6_matrix$tas_land_mod_p1_pt1, x = CMIP6_matrix$tos_mod_p1_pt1, years = 1850:2014, w.width = 51, W = 20, center = T, center.ens.means = F, ens.ix = 1:602)
+CMIP6_mod_p0 = get.diff.window.cor_ens(y = CMIP6_matrix$tas_land_mod_p0, x = CMIP6_matrix$tos_mod_p0, years = 1850:2014, w.width = 51, W = 20, center = F, center.ens.means = F, ens.ix = 1:602)
+CMIP6_mod_p0_pt1 = get.diff.window.cor_ens(y = CMIP6_matrix$tas_land_mod_p0_pt1, x = CMIP6_matrix$tos_mod_p0_pt1, years = 1850:2014, w.width = 51, W = 20, center = F, center.ens.means = F, ens.ix = 1:602)
 
 
 ########################################################################
-## CONTINUE HERE LATER
+## Differences in OBS periods:
 ########################################################################
 
 
@@ -185,66 +177,34 @@ OBS.GMST_tos_mod_p0.pm = apply(X = OBS.tos_$GMST$ann$mod_p0, MARGIN = 1, FUN=get
 OBS.GMST_tas_land_mod_p1.pm = apply(X = OBS.tas_land_$GMST$ann$mod_p1_min, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
 OBS.GMST_tas_land_mod_p0.pm = apply(X = OBS.tas_land_$GMST$ann$mod_p0, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
 
-CMIP6.tos_hist_mod_p1.pm = apply(X = CMIP6.tos_hist_mod_p1, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
-CMIP6.tas_land_hist_mod_p1.pm = apply(X = CMIP6.tas_land_hist_mod_p1, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
+mean(OBS.GMST_tos_mod_p1.pm[2,] - OBS.GMST_tas_land_mod_p1.pm[2,])
+mean(OBS.GMST_tos_mod_p0.pm[2,] - OBS.GMST_tas_land_mod_p0.pm[2,])
+
+mean(OBS.GMST_tos_mod_p1.pm[3,] - OBS.GMST_tas_land_mod_p1.pm[3,])
+mean(OBS.GMST_tos_mod_p0.pm[3,] - OBS.GMST_tas_land_mod_p0.pm[3,])
+
+
+CMIP6.tos_hist_mod_p1.pm = apply(X = CMIP6_matrix$tos_mod_p1, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
+CMIP6.tas_land_hist_mod_p1.pm = apply(X = CMIP6_matrix$tas_land_mod_p1, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
+CMIP6.tos_hist_mod_p0.pm = apply(X = CMIP6_matrix$tos_mod_p0, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
+CMIP6.tas_land_hist_mod_p0.pm = apply(X = CMIP6_matrix$tas_land_mod_p0, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
 
 
 
-ix = 2
+ix = 3
 # mean(OBS.GMST_tos_mod_p1.pm[2,] - OBS.GMST_tas_land_mod_p1.pm[2,])
 # min(OBS.GMST_tos_mod_p1.pm[2,] - OBS.GMST_tas_land_mod_p1.pm[2,])
-quantile(OBS.GMST_tos_mod_p0.pm[ix,] - OBS.GMST_tas_land_mod_p0.pm[ix,], probs = c(0.975))
+quantile(OBS.GMST_tos_mod_p1.pm[ix,] - OBS.GMST_tas_land_mod_p1.pm[ix,], probs = c(0.95))
 # mean(CMIP6.tos_hist_mod_p1.pm[2,] - CMIP6.tas_land_hist_mod_p1.pm[2,])
 # quantile(CMIP6.tos_hist_mod_p1.pm[2,] - CMIP6.tas_land_hist_mod_p1.pm[2,], probs = c(0.975))
-quantile(CMIP6.tos_hist_mod_p1.pm[ix,] - CMIP6.tas_land_hist_mod_p1.pm[ix,], probs = c(0.025))
-
-
-# look at differences in the warming:
+quantile(CMIP6.tos_hist_mod_p1.pm[ix,] - CMIP6.tas_land_hist_mod_p1.pm[ix,], probs = c(0.05))
 
 
 
 
-
-# CMIP Window correlation:
-{
-  
-  # select CMIP6 historical members:
-  CMIP6.tas_land.all = data.frame(cbind(all = paste(CMIP6.tas_land_all.df$M$mod, "_", CMIP6.tas_land_all.df$M$scen, "_", CMIP6.tas_land_all.df$M$ens.mem, sep="")))
-  CMIP6.tos.all = data.frame(cbind(all = paste(CMIP6.tos_all.df$M$mod, "_", CMIP6.tos_all.df$M$scen, "_", CMIP6.tos_all.df$M$ens.mem, sep="")))
-  ens.mem = data.frame(cbind(mod=CMIP6.tas_land_all.df$M$mod, scen = CMIP6.tas_land_all.df$M$scen, ens.mem = CMIP6.tas_land_all.df$M$ens.mem, 
-                             all = paste(CMIP6.tas_land_all.df$M$mod, "_", CMIP6.tas_land_all.df$M$scen, "_", CMIP6.tas_land_all.df$M$ens.mem, sep="")))
-  ens.mem.un = unique(ens.mem)
-  ens.mem.un = ens.mem.un[which(ens.mem.un$scen == "historical"),]
-  # remove all ensemble members that contain NA's:
-  na.mems = unique(CMIP6.tos.all$all[which(is.na(CMIP6.tos_all.df$ann$Yhat$GMST_FM))])
-  omit.ix=na.omit(match(x = na.mems, table = ens.mem.un$all))
-  if (length(omit.ix) > 0)  ens.mem.un = ens.mem.un[-omit.ix,]
-  
-  CMIP6.tas_land_hist_mod_p1 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
-  CMIP6.tos_hist_mod_p1 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
-  CMIP6.tas_land_hist_mod_p1_pt1 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
-  CMIP6.tos_hist_mod_p1_pt1 = matrix(NA, nrow = dim(ens.mem.un)[1], ncol = 165)
-  
-  for (en in 1:dim(ens.mem.un)[1]) {
-    print(en)
-    
-    ix_tas_land = which(CMIP6.tas_land.all$all == ens.mem.un$all[en] & CMIP6.tas_land_all.df$M$year %in% 1850:2014)
-    ix_tos = which(CMIP6.tos.all$all == ens.mem.un$all[en] & CMIP6.tos_all.df$M$year %in% 1850:2014)
-    
-    CMIP6.tas_land_hist_mod_p1[en,] = CMIP6.tas_land_all.df$ann$Yhat$GMST_FM[ix_tas_land]
-    CMIP6.tos_hist_mod_p1[en,] = CMIP6.tos_all.df$ann$Yhat$GMST_FM[ix_tos]
-    
-    CMIP6.tas_land_hist_mod_p1_pt1[en,] = CMIP6.tas_land_all.df$ann$Yhat_pt1$GMST_FM[ix_tas_land]
-    CMIP6.tos_hist_mod_p1_pt1[en,] = CMIP6.tos_all.df$ann$Yhat_pt1$GMST_FM[ix_tos]
-  }
-  
-  CMIP6_mod_p1_min = get.diff.window.cor_ens(x = CMIP6.tos_hist_mod_p1, y = CMIP6.tas_land_hist_mod_p1, years = 1850:2014, w.width = 51, W = 20, center = T, center.ens.means = F, ens.ix = 1:599)
-  CMIP6_mod_p1_min_pt1 = get.diff.window.cor_ens(x = CMIP6.tos_hist_mod_p1_pt1, y = CMIP6.tas_land_hist_mod_p1_pt1, years = 1850:2014, w.width = 51, W = 20, center = F, center.ens.means = F, ens.ix = 1:599)
-}
-
-
-
-
+########################################################################
+## Differences in OBS periods:
+########################################################################
 
 ## make table for ens.mem.un:
 train.table = read.table(file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/CMIP6-table-train.txt", header = F)

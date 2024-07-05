@@ -106,6 +106,7 @@ CW2014.global.monthly_had4_krig_ENS = read.table("had4_krig_ensemble_v2_0_0.txt"
 CW2014.global.annual_had4_krig_ENS = apply(X = CW2014.global.monthly_had4_krig_ENS[1:2052,], MARGIN = 2, FUN=get_annual_average)
 
 
+
 # 03. NASA GISSTEMP:
 # ---------------------------------------------
 # https://data.giss.nasa.gov/gistemp/
@@ -205,8 +206,10 @@ Kadow.global.annual$Anomaly_cmipAI = get_annual_average(cur.ts = Kadow.global.mo
 # Save standard Global GMST datasets:
 save(list = c( "BEST.global.annual", "BEST.global.monthly", 
                "CW2014.global.annual_had4_krig", "CW2014.global.monthly_had4_krig",
+               "CW2014.global.annual_cobe2cru_krig", "CW2014.global.annual_had4sst4_krig",
                "GISS.global.annual", "GISS.global.monthly",
                "HadCRUT5.global.annual", "HadCRUT5.global.monthly",
+               "NOAA.global.annual", "NOAA.global.monthly",
                "JMA.global.annual",
                "CRUTEM5.global.annual", "CRUTEM5.global.monthly",
                "HadSST4.global.annual", "HadSST4.global.monthly"),

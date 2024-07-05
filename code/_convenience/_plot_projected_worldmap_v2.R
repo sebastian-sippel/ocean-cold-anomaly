@@ -18,10 +18,9 @@ library(terra)
 
 
 # source("../../code/_convenience/convert.to.eurocentric.R")
-# land.polygon <- readOGR("/net/h2o/climphys1/sippels/_code/spatial_data/shp_global110/", "110m_land_0_360")
-setwd("/net/h2o/climphys1/sippels/_projects/low_freq_anchor_v2/code/")
-land.polygon <- readOGR("../code/_convenience/shp_global110/", "110m_land_0_360")
-land.polygon_eucentric <- readOGR("../code/_convenience/shp_global110/", "110m_land")
+# setwd("/net/h2o/climphys1/sippels/_projects/low_freq_anchor_v2/code/")
+land.polygon <- readOGR("code/spatial_utils/shp_global110/", "110m_land_0_360")
+land.polygon_eucentric <- readOGR("code/spatial_utils/shp_global110/", "110m_land")
 
 
 {

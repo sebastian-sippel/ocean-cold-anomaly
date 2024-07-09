@@ -164,11 +164,10 @@ get.RE_score <- function(cur.region ) {
 # y = CMIP6.trends$GMSST3_true
 # x = CMIP6.trends$Tropics3_true
 # x_new = ocean2k_trends[3]
-
-
-
+# follows from Cox et al. (2013): Sensitivity of tropical carbon to climate change constrained by carbon dioxide variability
 get.linear.model.constraint <- function(y, x, x_new, plot.constraint = T) {
   dat = data.frame(y = y, x = x)
+  print(paste("R =", round(cor(x, y, use = "complete.obs"), 2)))
   new.dat = data.frame(x = x_new)
   reg.mod = lm(y ~ x, data = dat)
   
@@ -177,11 +176,11 @@ get.linear.model.constraint <- function(y, x, x_new, plot.constraint = T) {
   s2 = 1/(n - 2) * RSS  # MSE
   sigma_x = sqrt( var(dat$x, na.rm=T) )
   new.dat.pred = predict(reg.mod, newdata = new.dat)
-  sigma_f_x = sqrt(s2) * sqrt(1 + 1/n + (median(new.dat.pred) - mean(dat$x, na.rm = T)) / (n * sigma_x^2) )
+  sigma_f_x = sqrt(s2) * sqrt(1 + 1/n + (new.dat.pred - mean(dat$x, na.rm = T)) / (n * sigma_x^2) )
   
-  # combine variances in quadrature:
-  mean_out =  median(new.dat.pred)
-  sd_out =  sqrt(sigma_f_x^2) # + var(new.dat.pred))
+  # 
+  mean_out =  new.dat.pred
+  sd_out =  sqrt(sigma_f_x^2) 
   
   
   # plot emergent constraint for an ensemble:
@@ -199,9 +198,10 @@ get.linear.model.constraint <- function(y, x, x_new, plot.constraint = T) {
 }
 
 
-get.linear.model.constraint_ens <- function(y, x, x_new, plot.constraint = T) {
+get.linear.model.constraint_ens_emp <- function(y, x, x_new, plot.constraint = T) {
   
   dat = data.frame(y = y, x = x)
+  print(paste("R =", round(cor(x, y, use = "complete.obs"), 2)))
   new.dat = data.frame(x = x_new)
   reg.mod = lm(y ~ x, data = dat)
   
@@ -209,26 +209,31 @@ get.linear.model.constraint_ens <- function(y, x, x_new, plot.constraint = T) {
   RSS = sum((reg.mod$residuals)^2)
   s2 = 1/(n - 2) * RSS  # MSE
   sigma_x = sqrt( var(dat$x, na.rm = T) )
-  new.dat.pred = predict(reg.mod, newdata = new.dat)
-  sigma_f_x = sqrt(s2) * sqrt(1 + 1/n + (median(new.dat.pred) - mean(dat$x, na.rm = T)) / (n * sigma_x^2) )
   
-  # combine variances in quadrature:
+  new.dat.pred = predict(reg.mod, newdata = new.dat)
+  sigma_f_x = sqrt(s2) * sqrt(1 + 1/n + (new.dat.pred - mean(dat$x, na.rm = T)) / (n * sigma_x^2) )
+  
+  new.sample = rep.row(new.dat.pred, 100) + sapply(X = sigma_f_x, FUN=function(x) rnorm(100, mean = 0, sd = x) )
+  
+  # return the quantiles of the entire sample:
+  q975 = quantile(c(new.sample), probs = 0.975)
+  q025 = quantile(c(new.sample), probs = 0.025)
   mean_out =  median(new.dat.pred)
   sd_out =  sqrt(sigma_f_x^2 + var(new.dat.pred))
   
   
   # plot emergent constraint for an ensemble:
   if(plot.constraint == T) {
-    plot(x, y, col="red")
+    plot(x, y, col="black")
     abline(reg.mod, col ="red")
     
     plotCI(x = median(x_new), y = 0, li = quantile(x_new, 0.025), ui = quantile(x_new, 0.975), 
            err = "x", add = T, col = "grey40", pch = 16, lwd = 2, lty = 2)
-    plotCI(x = median(x_new), y = mean_out, li = mean_out - 2 * sd_out, ui = mean_out + 2 * sd_out, 
+    plotCI(x = median(x_new), y = mean(c(new.sample)), li = quantile(c(new.sample), 0.025), ui = quantile(c(new.sample), 0.975), 
            err = "y", add = T, col = "grey40", pch = 16, lwd = 2, lty = 2)
   }
   
-  return(data.frame(mean_out=mean_out, sd_out = sd_out))
+  return(data.frame(mean_out=mean_out, q025 = q025, q975 = q975))
 }
 
 

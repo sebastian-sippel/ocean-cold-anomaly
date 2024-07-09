@@ -6,3 +6,4 @@ data/00_DATASET/obs/CRUTEM5/
 data/00_DATASET/obs/HadSST4.0.1.0/
 *.mat
 data/00_DATASET/paleoclimate/
+figures4review

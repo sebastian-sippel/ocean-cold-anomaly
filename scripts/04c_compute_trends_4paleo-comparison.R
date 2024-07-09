@@ -104,8 +104,8 @@ OBS.GMLSAT_tas_land.trends = apply(X = OBS.tas_land_$GMLSAT_NI$ann$mod_p1_min, M
 OBS.GMLSAT_tas_land.trends_q = apply(X = OBS.GMLSAT_tas_land.trends, MARGIN = 1, FUN=function(x) quantile(x, probs=probs))
 
 #OBS.GMSST_hybrid36.trends = get.trend(x = hybrid36.annual$Anomaly, trend.years = trend.years, years = 1850:2020)
-OBS.GMSST_hybrid36cor.trends = apply(X = OBS.tos_GMSST_cor, MARGIN = 1, FUN=get.trend_perioddiff, trend.years = trend.years, years = 1850:2020)
-OBS.GMSST_hybrid36cor.trends_q = apply(X = OBS.GMSST_hybrid36cor.trends, MARGIN = 1, FUN=function(x) quantile(x, probs=probs))
+OBS.GMSST_hybrid36.trends = apply(X = OBS_hybrid36.tos_$GMSST$ann$mod_p1_min, MARGIN = 1, FUN=get.trend_perioddiff, trend.years, years= 1850:2020)
+OBS.GMSST_hybrid36.trends_q = apply(X = OBS.GMSST_hybrid36.trends[,1:100], MARGIN = 1, FUN=function(x) quantile(x, probs=probs))
 
 # Reconstructions processed to Apr.-Mar year for paleo-comparison:
 OBS.Tropics_tas_land.trends = apply(X = Tropics_tas_land_ens, MARGIN = 1, FUN=get.trend_perioddiff, trend.years = trend.years, years = 1850:2020)
@@ -229,6 +229,6 @@ CMIP6.Tropics_ = apply(X = CMIP6.Tropics, MARGIN = 1, FUN=function(x) weighted.m
     CMIP6.GMST_true.trends[en,] = get.trend_perioddiff(x = CMIP6.tos_all.df$ann$Y$GMST_FM[ix_tos], trend.years = trend.years, years = 1850:2014)
   }
 }
-
+CMIP6.GMSST_tos.trends[which(CMIP6.GMSST_tos.trends>2, arr.ind=T)] = NA
 
 

@@ -7,8 +7,8 @@
 # 25.10.2023
 
 ## Load MR observations:
-load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedOBS_reconstr/OBS.tos_MR.RData")
-OBS.tos_MR_ = OBS.tos_
+#load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedOBS_reconstr/OBS.tos_MR.RData")
+#OBS.tos_MR_ = OBS.tos_
 
 ## load all data for reconstructions:
 source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04a_master_load_reconstructions.R")

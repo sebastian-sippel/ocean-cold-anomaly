@@ -51,18 +51,10 @@ CMIP6.tos_all.df$ann$Yhat$GSAT[which(CMIP6.tos_all.df$ann$Yhat$GSAT > 20)] = NA
 
 # 05. Estimate forced response:
 # ------------------------------------------------------------------------------------
-# load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/CMIP6_DAMIP/_processed/CMIP6.tas_ann_ALL_ct_f.RData")
-# CMIP6.MMM = rowMeans((CMIP6.tas_ann_ALL_ct_f$AGMT_f_hist))
-# load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/CMIP6_DAMIP/_processed/CMIP6.tas_ann_HISTssp245_ct_f.RData")
-# load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/CMIP6_DAMIP/_processed/CMIP6.tas_ann_HIST_ct_f.RData")
-# names = names(CMIP6.tas_ann_HISTssp245_ct_f$AGMT_f_hist)
 
-names = c("ACCESS-CM2", "ACCESS-ESM1-5", "CanESM5", "CanESM5-CanOE", "CESM2", "CESM2-WACCM",
-"CNRM-CM6-1", "CNRM-ESM2-1", "EC-Earth3", "EC-Earth3-Veg", "FGOALS-g3", "FIO-ESM-2-0", 
-"GFDL-ESM4", "GISS-E2-1-G", "GISS-E2-1-H", "GISS-E2-2-G", "HadGEM3-GC31-LL", "IPSL-CM6A-LR",
-"KACE-1-0-G", "MIROC-ES2L", "MIROC6", "MPI-ESM1-2-LR", "MRI-ESM2-0", "NorESM2-LM", "UKESM1-0-LL")
-
-# unique(CMIP6.tos_all.df$M$mod[which(!is.na(CMIP6.tos_all.df$ann$Yhat$GSAT))])
+# select models with at least 5 ensemble members to calculate the forced response:
+names = unique(CMIP6.tos_all.df$M$mod)[which(sapply(unique(CMIP6.tos_all.df$M$mod), 
+                                                    FUN=function(cur.mod) length(unique(CMIP6.tos_all.df$M$ens.mem[which(cur.mod == CMIP6.tos_all.df$M$mod & CMIP6.tos_all.df$M$scen == "historical")]))) >= 3)]
 
 CMIP6.GSAT.f = matrix(data = NA, nrow=165, ncol = length(names))
 CMIP6.GMSST.f = matrix(data = NA, nrow=165, ncol = length(names))
@@ -161,64 +153,6 @@ CMIP6_mod_p1_min = get.diff.window.cor_ens(y = CMIP6_matrix$tas_land_mod_p1, x =
 CMIP6_mod_p1_min_pt1 = get.diff.window.cor_ens(y = CMIP6_matrix$tas_land_mod_p1_pt1, x = CMIP6_matrix$tos_mod_p1_pt1, years = 1850:2014, w.width = 51, W = 20, center = T, center.ens.means = F, ens.ix = 1:602)
 CMIP6_mod_p0 = get.diff.window.cor_ens(y = CMIP6_matrix$tas_land_mod_p0, x = CMIP6_matrix$tos_mod_p0, years = 1850:2014, w.width = 51, W = 20, center = F, center.ens.means = F, ens.ix = 1:602)
 CMIP6_mod_p0_pt1 = get.diff.window.cor_ens(y = CMIP6_matrix$tas_land_mod_p0_pt1, x = CMIP6_matrix$tos_mod_p0_pt1, years = 1850:2014, w.width = 51, W = 20, center = F, center.ens.means = F, ens.ix = 1:602)
-
-
-########################################################################
-## Differences in OBS periods:
-########################################################################
-
-
-# calculate period differences:
-period.mean.years = list(1871:1890, 1901:1920, 1901:1930)
-
-OBS.GMST_tos_mod_p1.pm = apply(X = OBS.tos_$GMST$ann$mod_p1_min, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
-OBS.GMST_tos_mod_p0.pm = apply(X = OBS.tos_$GMST$ann$mod_p0, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
-
-OBS.GMST_tas_land_mod_p1.pm = apply(X = OBS.tas_land_$GMST$ann$mod_p1_min, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
-OBS.GMST_tas_land_mod_p0.pm = apply(X = OBS.tas_land_$GMST$ann$mod_p0, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
-
-mean(OBS.GMST_tos_mod_p1.pm[2,] - OBS.GMST_tas_land_mod_p1.pm[2,])
-mean(OBS.GMST_tos_mod_p0.pm[2,] - OBS.GMST_tas_land_mod_p0.pm[2,])
-
-mean(OBS.GMST_tos_mod_p1.pm[3,] - OBS.GMST_tas_land_mod_p1.pm[3,])
-mean(OBS.GMST_tos_mod_p0.pm[3,] - OBS.GMST_tas_land_mod_p0.pm[3,])
-
-
-CMIP6.tos_hist_mod_p1.pm = apply(X = CMIP6_matrix$tos_mod_p1, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
-CMIP6.tas_land_hist_mod_p1.pm = apply(X = CMIP6_matrix$tas_land_mod_p1, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
-CMIP6.tos_hist_mod_p0.pm = apply(X = CMIP6_matrix$tos_mod_p0, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
-CMIP6.tas_land_hist_mod_p0.pm = apply(X = CMIP6_matrix$tas_land_mod_p0, MARGIN = 1, FUN=get.period.mean, period.years = period.mean.years, years = 1850:2020)
-
-
-
-ix = 3
-# mean(OBS.GMST_tos_mod_p1.pm[2,] - OBS.GMST_tas_land_mod_p1.pm[2,])
-# min(OBS.GMST_tos_mod_p1.pm[2,] - OBS.GMST_tas_land_mod_p1.pm[2,])
-quantile(OBS.GMST_tos_mod_p1.pm[ix,] - OBS.GMST_tas_land_mod_p1.pm[ix,], probs = c(0.95))
-# mean(CMIP6.tos_hist_mod_p1.pm[2,] - CMIP6.tas_land_hist_mod_p1.pm[2,])
-# quantile(CMIP6.tos_hist_mod_p1.pm[2,] - CMIP6.tas_land_hist_mod_p1.pm[2,], probs = c(0.975))
-quantile(CMIP6.tos_hist_mod_p1.pm[ix,] - CMIP6.tas_land_hist_mod_p1.pm[ix,], probs = c(0.05))
-
-
-
-
-########################################################################
-## Differences in OBS periods:
-########################################################################
-
-## make table for ens.mem.un:
-train.table = read.table(file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/CMIP6-table-train.txt", header = F)
-train.table[,3] = round(train.table[,3] / 165)
-train.test = train.table
-train.test[,4] <- rep(NA, 64)
-
-for (m in 1:length(train.table[,1])) {
-  print(train.table[m,1])
-  train.test[m,4] = length(which(ens.mem.un$mod == train.table[m,1]))
-}
-
-write.table(x = train.test, file = "/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/CMIP6-table-test.txt", 
-            quote = F, row.names = F, col.names = F, sep = "&")
 
 
 

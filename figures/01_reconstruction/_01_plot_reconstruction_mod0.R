@@ -40,9 +40,9 @@ source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04a_mast
 ## 01b. Get correction vector(s):
 ## ----------------------------------------
 {
-# get correction vector from Cowtan:
-cor_vec_hybrid36 = GMST.hybrid36$mod_p1_min_50[1:167] - GMST.tos$mod_p1_min_50[1:167]
-cor_vec_hadsst4 = GMST.tos$mod_p1_min_50 - GMST.tos_ua$mod_p1_min_50
+  # get correction vector from Cowtan:
+  cor_vec_hybrid36 = GMST.hybrid36$mod_p1_min_50[1:167] - GMST.tos$mod_p1_min_50[1:167]
+  cor_vec_hadsst4 = GMST.tos$mod_p1_min_50 - GMST.tos_ua$mod_p1_min_50
 }
 
 

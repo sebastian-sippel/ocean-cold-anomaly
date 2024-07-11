@@ -38,7 +38,7 @@ raw.data.scale = get.diff.window.cor(x = ocean.raw.scale[8:171], y = land.raw.sc
 
 pdf(file = "figures/02_cmip6/fig2.pdf", width = 8, height=10)
 {
-  par(mfrow=c(1, 1), mar=c(3,5,1,5))
+  par(mfrow=c(1, 1), mar=c(3,6,1,5))
   ylim = c(-3.5, 6.3); xlim = c(1848,2022)
   
   plot(x = 1850:2020, y = 1850:2020, type="n", 
@@ -46,8 +46,19 @@ pdf(file = "figures/02_cmip6/fig2.pdf", width = 8, height=10)
   
   # mtext(text = "Temperature difference \n GMST(ocean) minus GMST(land) [°C]", side = 2, line = 3, at = 3.5, adj = 0.5)
   #mtext(text = "Temperature difference between ocean- and land \n based GMST reconstruction [°C], ", side = 2, line = 3, at = 3.5, adj = 0.5)
-  mtext(paste("Temperature difference between ocean- and land- \n based GMST reconstruction [°C]"), side = 2, line = 3, at = 3.5, adj = 0.5)
-  mtext(text = "Pearson Correlation between ocean- \n and land- based GMST reconstruction", side = 2, line = 3, at = -1.5, adj = 0.5)
+  #mtext(paste("Temperature difference between ocean- and land- \n based GMST reconstruction [°C]"), side = 2, line = 3, at = 3.5, adj = 0.5)
+  
+  mtext("Temperature difference between ocean- and land- ", side = 2, line = 5, at = 3.5, adj = 0.5)
+  mtext(expression("based GMST reconstruction ["*hat(T)[Ocean]-hat(T)[Land]*", in °C]"),
+        side = 2, line = 3.6, at = 3.5, adj = 0.5)
+  
+  mtext("Pearson Correlation between ocean- and land-", side = 2, line = 5, at = -1.5, adj = 0.5)
+  mtext(expression("based GMST reconstruction ["*rho*"("*hat(T)[Ocean]*", "*hat(T)[Land]*")]"),
+        side = 2, line = 3.6, at = -1.5, adj = 0.5)
+  
+  
+  # mtext(text = "Pearson Correlation between ocean- \n and land- based GMST reconstruction", side = 2, line = 3, at = -1.5, adj = 0.5)
+  
   
   {
     # Add the rectangle polygon to the plot
@@ -176,7 +187,10 @@ pdf(file = "figures/02_cmip6/fig2.pdf", width = 8, height=10)
     lines(x = 1850:2020, y = OBS_mod_p1_min$cor_x.high_y.high_50 * sc + c, col = "grey40", lwd = 2)
   }
   
-  legend("bottomright", c("HadSST4 vs. CRUTEM5 (GMST reconstructions)", "Raw HadSST4 vs. raw CRUTEM5 (scaled into GMST)", "CMIP6 Ocean vs. Land  (GMST reconstructions)"), 
+  legend("bottomright", c(expression("Observational GMST reconstructions ("*hat(T)[HadSST4]*" and "*hat(T)[CRUTEM5]*")"), 
+                          "Original HadSST4 vs. original CRUTEM5 (scaled into GMST)", 
+                          expression("CMIP6 GMST reconstructions ("*hat(T)[CMIP6-Ocean]*" and "*hat(T)[CMIP6-Land]*")")),
+                          # "CMIP6 Ocean vs. Land  (GMST reconstructions)"), 
          col = c("grey40", "black", "red"),  
          cex = 0.8, ncol = 1, inset = 0.02, lwd = 2, lty = c(1, 5, 1), bg = "white")
 }

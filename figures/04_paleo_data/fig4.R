@@ -38,6 +38,8 @@ pdf(file = file.name, width = 5, height = 2.5)
          ylab = paste("Regional sea surface temperature \n  change [°C], [1901-20] vs. [1871-90]", sep = ""), xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, bty = "n", yaxs="i", xaxt="n", xaxs="i", cex.axis = 0.8, cex.lab = 0.8)
     lines(x = c(0, 1000), y = c(0,0), col = "lightgrey")
     axis(side = 2, at = seq(-0.5, 0.5, 0.1), tcl=0.2, labels=F)
+    # mtext("a", side = 3, line = 0, at = -0.9, adj = 0, cex = 1.1, font = 2)
+    mtext("b", side = 3, line = 0, at = -2, adj = 0, cex = 0.9, font = 2)
     
     {
       # Tropics, full reconstruction:
@@ -45,6 +47,7 @@ pdf(file = file.name, width = 5, height = 2.5)
       vioplot(x = OBS.Tropics_tas_land.trends[trend.ix,], at = at, wex = wex, col = make.transparent.color("darkorange", alpha = 75), side = "left", add = T, pchMed = 21, yaxt="n")
       vioplot(x = OBS.Tropics_tas_land.trends[trend.ix,], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = at, wex = 1.5, 
               axes = F, add = T, pchMed = 21)
+      #points(x = at + 0.2, y = BEST_Tropics[9], pch = 25, bg = make.transparent.color("darkblue", 250), cex = 1.5)
       
       vioplot(x = HadSST4.Tropics.trends[trend.ix,], at = at + 0.1, wex = wex, col = make.transparent.color("blue", alpha = 75), side = "right", add = T, pchMed = 21, yaxt="n")
       vioplot(x = HadSST4.Tropics.trends[trend.ix,], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = at + 0.1, wex = 1.5, 
@@ -58,7 +61,7 @@ pdf(file = file.name, width = 5, height = 2.5)
       vioplot(x = OBS.WPacific_tas_land.trends[trend.ix,], at = at, wex = wex, col = make.transparent.color("darkorange", alpha = 75), side = "left", add = T, pchMed = 21, yaxt="n")
       vioplot(x = OBS.WPacific_tas_land.trends[trend.ix,], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = at, wex = 1.5, 
               axes = F, add = T, pchMed = 21)
-      
+      #points(x = at + 0.2, y = BEST_WPacific.trend[9], pch = 25, bg = make.transparent.color("darkblue", 250), cex = 1.5)
       vioplot(x = HadSST4.WPacific.trends[trend.ix,], at = at + 0.1, wex = wex, col = make.transparent.color("blue", alpha = 75), side = "right", add = T, pchMed = 21, yaxt="n")
       vioplot(x = HadSST4.WPacific.trends[trend.ix,], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = at + 0.1, wex = 1.5, 
               axes = F, add = T, pchMed = 21)
@@ -67,7 +70,7 @@ pdf(file = file.name, width = 5, height = 2.5)
       paleo.trend.best = get.trend_perioddiff(x = Tierney_best$wpacific[[2]], trend.years = trend.years, years = Tierney_best$wpacific[[1]])[trend.ix]
       
       vioplot(x = paleo.trend, at = at + 0.8, wex = wex, col = make.transparent.color("darkorchid4", alpha = 100), side = "left", add = T, pchMed = 21, yaxt="n")
-      points(x = at + 1, y = paleo.trend.best, pch = 25, bg = make.transparent.color("darkorchid4", alpha = 100), cex = 1.5)
+      points(x = at + 1, y = paleo.trend.best, pch = 25, bg = make.transparent.color("darkorchid4", alpha = 100), cex = 1)
       lines(x = c(4,4), y = c(-1, 1))
       
       # Indian Ocean:  
@@ -75,6 +78,7 @@ pdf(file = file.name, width = 5, height = 2.5)
       vioplot(x = OBS.IndianOcean_tas_land.trends[trend.ix,], at = at, wex = wex, col = make.transparent.color("darkorange", alpha = 75), side = "left", add = T, pchMed = 21, yaxt="n")
       vioplot(x = OBS.IndianOcean_tas_land.trends[trend.ix,], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = at, wex = 1.5, 
               axes = F, add = T, pchMed = 21)
+      #points(x = at + 0.2, y = BEST_Indian_Ocean.trend[9], pch = 25, bg = make.transparent.color("darkblue", 250), cex = 1.5)
       
       vioplot(x = HadSST4.IndianOcean.trends[trend.ix,], at = at + 0.1, wex = wex, col = make.transparent.color("blue", alpha = 75), side = "right", add = T, pchMed = 21, yaxt="n")
       vioplot(x = HadSST4.IndianOcean.trends[trend.ix,], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = at + 0.1, wex = 1.5, 
@@ -84,7 +88,7 @@ pdf(file = file.name, width = 5, height = 2.5)
       paleo.trend.best = get.trend_perioddiff(x = Tierney_best$indian[[2]], trend.years = trend.years, years = Tierney_best$indian[[1]])[trend.ix]
       
       vioplot(x = paleo.trend, at = at + 0.8, wex = 0.5, col = make.transparent.color("darkorchid4", alpha = 100), side = "left", add = T, pchMed = 21, yaxt="n")
-      points(x = at + 1, y = paleo.trend.best, pch = 25, bg = make.transparent.color("darkorchid4", alpha = 100), cex = 1.5)
+      points(x = at + 1, y = paleo.trend.best, pch = 25, bg = make.transparent.color("darkorchid4", alpha = 100), cex = 1)
       lines(x = c(6,6), y = c(-1, 1))
       
       # WAtlantic:
@@ -92,6 +96,7 @@ pdf(file = file.name, width = 5, height = 2.5)
       vioplot(x = OBS.WAtlantic_tas_land.trends[trend.ix,], at = at, wex = wex, col = make.transparent.color("darkorange", alpha = 75), side = "left", add = T, pchMed = 21, yaxt="n")
       vioplot(x = OBS.WAtlantic_tas_land.trends[trend.ix,], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = at, wex = 1.5, 
               axes = F, add = T, pchMed = 21)
+      #points(x = at + 0.2, y = BEST_WAtlantic.trend[9], pch = 25, bg = make.transparent.color("darkblue", 250), cex = 1.5)
       
       vioplot(x = HadSST4.WAtlantic.trends[trend.ix,], at = at + 0.1, wex = wex, col = make.transparent.color("blue", alpha = 75), side = "right", add = T, pchMed = 21, yaxt="n")
       vioplot(x = HadSST4.WAtlantic.trends[trend.ix,], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = at + 0.1, wex = 1.5, 
@@ -101,7 +106,7 @@ pdf(file = file.name, width = 5, height = 2.5)
       paleo.trend.best = get.trend_perioddiff(x = Tierney_best$atlantic[[2]], trend.years = trend.years, years = Tierney_best$atlantic[[1]])[trend.ix]
       
       vioplot(x = paleo.trend, at = at + 0.8, wex = 0.5, col = make.transparent.color("darkorchid4", alpha = 100), side = "left", add = T, pchMed = 21, yaxt="n")
-      points(x = at + 1, y = paleo.trend.best, pch = 25, bg = make.transparent.color("darkorchid4", alpha = 100), cex = 1.5)
+      points(x = at + 1, y = paleo.trend.best, pch = 25, bg = make.transparent.color("darkorchid4", alpha = 100), cex = 1)
       lines(x = c(8,8), y = c(-1, 1))
     }
     
@@ -116,7 +121,7 @@ pdf(file = file.name, width = 5, height = 2.5)
     legend("bottomleft", c("Land-based reconstruction \n of ocean region", "HadSST4, region average", "Best reconstruction \n (Tierney et al., 2015)",
                            "Range (Tierney et al., 2015)"), col = c(make.transparent.color("orange", 75), 
                                                                    make.transparent.color("blue", 75),
-                                                                   "black", make.transparent.color("darkorchid4", 100)), lwd = c(6,6, NA, 6), pch = c(NA, NA, 25, NA), pt.bg = c(NA, NA, make.transparent.color("darkorchid4", 100), NA), cex = 0.55,
+                                                                   "black", make.transparent.color("darkorchid4", 100)), lwd = c(6,6, NA, 6), pch = c(NA, NA, 25, NA), pt.bg = c(NA, NA, make.transparent.color("darkorchid4", 100), NA), cex = 0.5,
            inset = 0.01, ncol = 2, bg = "white", pt.cex = 1)
   }
 dev.off()
@@ -144,6 +149,7 @@ trend.ix = 9
          main = "", ylim = ylim, xlim = xlim, las=1, yaxs="i", xaxt="n", xaxs="i", cex.axis = 0.8, cex.lab = 0.8)
     lines(x = c(0, 1000), y = c(0,0), col = "lightgrey")
     axis(side = 2, at = seq(-0.5, 0.5, 0.1), tcl=0.2, labels=F)
+    mtext("a", side = 3, line = -0.5, at = -1.5, adj = 0, cex = 0.9, font = 2)
     
     at = 0.5; wex = 0.6; cex = 0.5
     
@@ -154,8 +160,8 @@ trend.ix = 9
     vioplot(x = OBS.GMST_tos.trends[trend.ix,], at = at + 0.1, wex = wex, col = make.transparent.color("blue", alpha = 75), side = "right", add = T, pchMed = 21, yaxt="n", frame.plot = F)
     vioplot(x = OBS.GMST_tos.trends[trend.ix,], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = at + 0.1, wex = 1.5, 
             axes = F, add = T, pchMed = 21, frame.plot = F)
-    text(x = at-0.1, y = ylim[2]-0.2, labels = "CRUTEM5-based GMST", srt = 90, cex = cex)
-    text(x = at+0.2, y = ylim[2]-0.2, labels = "HadSST4-based GMST", srt = 90, cex = cex)
+    text(x = at-0.1, y = ylim[2]-0.2, labels = c(expression(hat(T)[CRUTEM5]^{GMST})), srt = 90, cex = cex)
+    text(x = at+0.2, y = ylim[2]-0.2, labels = c(expression(hat(T)[HadSST4]^{GMST})), srt = 90, cex = cex)
     
     # add Obs. GMST datasets for comparison:
     HadCRUT5.trend = get.trend_perioddiff(x = HadCRUT5.global.annual$Anomaly, trend.years = trend.years, years = HadCRUT5.global.annual$Year)
@@ -172,10 +178,10 @@ trend.ix = 9
     points(x = at + 1 + 0.2, y =  CW14.trend[trend.ix], cex = 1, pch = 3)
     points(x = at + 1 + 0.4, y =  CW14_COBE.trend[trend.ix], cex = 1, pch = 4)
     
-    text(x = at + 1 - 0.25, y = 0.3, labels = "HadCRUT5 (non-infilled)", srt = 90, cex = cex)
-    text(x = at + 1, y = 0.3, labels = "Berkeley Earth", srt = 90, cex = cex)
-    text(x = at + 1 + 0.25, y = 0.3, labels = "CW14 (w. HadSST4)", srt = 90, cex = cex)
-    text(x = at + 1 + 0.5, y = 0.3, labels = "CW14 (w. COBE-SST2)", srt = 90, cex = cex)
+    text(x = at + 1 - 0.25, y = 0.48, labels = "HadCRUT5 (non-infilled)", srt = 90, cex = cex, adj = 1)
+    text(x = at + 1, y = 0.48, labels = "Berkeley Earth", srt = 90, cex = cex, adj = 1)
+    text(x = at + 1 + 0.25, y = 0.48, labels = "CW14 (HadSST4 based)", srt = 90, cex = cex, adj = 1)
+    text(x = at + 1 + 0.5, y = 0.48, labels = "CW14 (COBE-SST2 based)", srt = 90, cex = cex, adj = 1)
     
     
     # Neukom GMST estimates:

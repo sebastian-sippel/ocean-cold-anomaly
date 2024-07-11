@@ -90,7 +90,7 @@ pdf(file = "figures/01_reconstruction/fig1_mod_p0.pdf", width = 8, height=11)
   ylim = c(-4.6, 6.3); xlim = c(1848,2022)
   
   plot(x = 1850:2020, y = 1850:2020, type="n", 
-       ylab = "Global mean surface temperature anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
+       ylab = expression("Predicted global mean surface temperature anomaly [" * hat(T) * ", in °C]"), xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
   
   {
     # Add the rectangle polygon to the plot

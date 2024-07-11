@@ -22,7 +22,8 @@ trend.years = list(1851:1890, 1871:1910, 1901:1940, 1975:2014, 1851:1900, 1871:1
 source("code/_convenience/convert.to.eurocentric.R")
 raster.template = raster(res = 5, xmn = 0, xmx=360, ymn = -90, ymx=90)
 areaw = c(matrix(values(raster::area(raster.template)), 72, 36)[,36:1]) / sum(c(matrix(values(raster::area(raster.template)), 72, 36)[,36:1]))
-land_fraction = c(matrix(values(convert.to.pacificcentric(raster("/net/h2o/climphys1/sippels/_DATA/grid/5d00_static/cmip5_masks/sftlf_g025.nc"))), 72, 36)[,36:1])
+# land_fraction = c(matrix(values(convert.to.pacificcentric(raster("/net/h2o/climphys1/sippels/_DATA/grid/5d00_static/cmip5_masks/sftlf_g025.nc"))), 72, 36)[,36:1])
+land_fraction = c(matrix(values(subset(brick("data/00_DATASET/obs/HadCRUT5/5d00_monthly_noninfilled/HadCRUT.5.0.1.0.weights.nc"), 2058)), 72, 36)[,36:1])
 lon = c(matrix(coordinates(raster.template)[,1], 72, 36)[,36:1])
 lat = c(matrix(coordinates(raster.template)[,2], 72, 36)[,36:1])
 
@@ -78,16 +79,57 @@ Tropics_ann_ens = t(sapply(X = 1:200, FUN = function(ix) {
 
 
 
+
+# 02. Ocean regions from BEST:
+# ------------------------------------------------------------------------------------
+{
+  
+  ## Get BerkeleyEarth raw estimates:
+  BEST_HadSST4 = brick("/net/h2o/climphys1/sippels/_DATASET/BEST/_orig/v202302/average_temperature_SSTatSeaIce/Land_and_Ocean_Alternate_LatLong1_short_OCEANONLY_base61_90.nc") + 0
+  BEST_HadSST4_ = values(BEST_HadSST4)
+  BEST_HadSST4_landfrac = brick("/net/h2o/climphys1/sippels/_DATASET/BEST/_orig/v202302/average_temperature_SSTatSeaIce/BEST_landmask.nc") + 0
+  
+  # Indian Ocean (20◦N–15◦S, 40–100◦E):
+  BEST_coord = coordinates(BEST_HadSST4)
+  BEST_area = raster::area(BEST_HadSST4)
+  grid.ix = which(BEST_coord[,2] < 20 & BEST_coord[,2] > -15 & BEST_coord[,1] > 40 & BEST_coord[,1] < 100)
+  w = BEST_area[grid.ix] * (1-values(BEST_HadSST4_landfrac)[grid.ix]) / sum(BEST_area[grid.ix] * (1-values(BEST_HadSST4_landfrac)[grid.ix]))  
+  BEST_Indian_Ocean = matrix(sapply(X = 1:dim(BEST_HadSST4_)[2], FUN=function(i) weighted.mean(x = (BEST_HadSST4_[grid.ix,i]), w = w, na.rm = T)), nrow = 12, ncol = 171)
+  BEST_Indian_Ocean = colMeans(get.ens.avg_Apr_Mar(lapply(X = 1:12, FUN=function(mon) t(cbind(BEST_Indian_Ocean[mon,], BEST_Indian_Ocean[mon,]))), nrow = 2))
+  BEST_Indian_Ocean.trend = get.trend_perioddiff(x = BEST_Indian_Ocean, trend.years = trend.years)
+  
+  # Western Pacific (25◦N–25◦S, 110–155◦E)
+  grid.ix = which(BEST_coord[,2] < 25 & BEST_coord[,2] > -25 & BEST_coord[,1] > 110 & BEST_coord[,1] < 155)
+  w = BEST_area[grid.ix] * (1-values(BEST_HadSST4_landfrac)[grid.ix]) / sum(BEST_area[grid.ix] * (1-values(BEST_HadSST4_landfrac)[grid.ix]))  
+  BEST_WPacific = matrix(sapply(X = 1:dim(BEST_HadSST4_)[2], FUN=function(i) weighted.mean(x = (BEST_HadSST4_[grid.ix,i]), w = w, na.rm = T)), nrow = 12, ncol = 171)
+  BEST_WPacific = colMeans(get.ens.avg_Apr_Mar(lapply(X = 1:12, FUN=function(mon) t(cbind(BEST_WPacific[mon,], BEST_WPacific[mon,]))), nrow = 2))
+  BEST_WPacific.trend = get.trend_perioddiff(x = BEST_WPacific, trend.years = trend.years)
+  
+  # Eastern Pacific (10◦N–10◦S, 175◦E–85◦W)
+  grid.ix = which( (BEST_coord[,2] < 10 & BEST_coord[,2] > -10 & BEST_coord[,1] > 175) | (BEST_coord[,2] < 10 & BEST_coord[,2] > -10 & BEST_coord[,1] < -85))
+  w = BEST_area[grid.ix] * (1-values(BEST_HadSST4_landfrac)[grid.ix]) / sum(BEST_area[grid.ix] * (1-values(BEST_HadSST4_landfrac)[grid.ix]))  
+  BEST_EPacific = matrix(sapply(X = 1:dim(BEST_HadSST4_)[2], FUN=function(i) weighted.mean(x = (BEST_HadSST4_[grid.ix,i]), w = w, na.rm = T)), nrow = 12, ncol = 171)
+  BEST_EPacific = colMeans(get.ens.avg_Apr_Mar(lapply(X = 1:12, FUN=function(mon) t(cbind(BEST_EPacific[mon,], BEST_EPacific[mon,]))), nrow = 2))
+  BEST_EPacific.trend = get.trend_perioddiff(x = BEST_EPacific, trend.years = trend.years)
+  
+  # Western Atlantic (15–30◦N, 60–90◦W)
+  grid.ix = which(BEST_coord[,2] < 30 & BEST_coord[,2] > 15 & BEST_coord[,1] > -90 & BEST_coord[,1] < -60)
+  w = BEST_area[grid.ix] * (1-values(BEST_HadSST4_landfrac)[grid.ix]) / sum(BEST_area[grid.ix] * (1-values(BEST_HadSST4_landfrac)[grid.ix]))  
+  BEST_WAtlantic = matrix(sapply(X = 1:dim(BEST_HadSST4_)[2], FUN=function(i) weighted.mean(x = (BEST_HadSST4_[grid.ix,i]), w = w, na.rm = T)), nrow = 12, ncol = 171)
+  BEST_WAtlantic = colMeans(get.ens.avg_Apr_Mar(lapply(X = 1:12, FUN=function(mon) t(cbind(BEST_WAtlantic[mon,], BEST_WAtlantic[mon,]))), nrow = 2))
+  BEST_WAtlantic.trend = get.trend_perioddiff(x = BEST_WAtlantic, trend.years = trend.years)
+  
+  # Tropics Average:
+  BEST_Tropics = sapply(1:9, FUN=function(i) weighted.mean(x = c(BEST_Indian_Ocean.trend[i], BEST_WAtlantic.trend[i], BEST_WPacific.trend[i]), 
+                                                           w = c(w_IOcean, w_WAtlantic, w_WPacific), na.rm = T))
+  
+}
+
+
+
+
 # 03. Calculate trends in instrumental observations (Figure 4 and Figure 5): 
 # ------------------------------------------------------------------------------------
-
-## Correction of HadSST4 dataset with hybrid36-Cowtan et al. in the period 1891-1950:
-hybrid.cor = rep(0, 171)
-hybrid.cor[41:100] = -GMSST.tos$res_lp_50[41:100] + GMSST.hybrid36$res_lp_50[41:100]
-OBS.tos_GMSST_cor = OBS.tos_$GMSST$ann$mod_p1_min + rep.row(x = hybrid.cor, n = 200)
-hybrid.cor[1:167] = -GMSST.tos$res_lp_50[1:167] + GMSST.hybrid36$res_lp_50[1:167]
-OBS.tos_GMSST_cor = OBS.tos_$GMSST$ann$mod_p1_min + rep.row(x = hybrid.cor, n = 200)
-
 
 # Calculate trends in OBS from different reconstructions:
 OBS.GMST_tos.trends = apply(X = OBS.tos_$GMST$ann$mod_p1_min, MARGIN = 1, FUN=get.trend_perioddiff, trend.years = trend.years, years = 1850:2020)

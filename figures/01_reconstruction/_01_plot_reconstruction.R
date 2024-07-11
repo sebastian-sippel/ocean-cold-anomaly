@@ -64,7 +64,8 @@ pdf(file = "figures/01_reconstruction/fig1.pdf", width = 8, height=11)
   ylim = c(-4.6, 6.3); xlim = c(1848,2022)
   
   plot(x = 1850:2020, y = 1850:2020, type="n", 
-       ylab = "Global mean surface temperature anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
+       ylab = expression("Predicted global mean surface temperature anomaly [" * hat(T) * ", in °C]"), 
+       xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
   
   {
     # Add the rectangle polygon to the plot
@@ -285,15 +286,26 @@ pdf(file = "figures/01_reconstruction/fig1.pdf", width = 8, height=11)
   }
   
   
-  # legend("top", c("CRUTEM5", "HadSST4", "HadSST4-unadj.", "COBE2-SST", "ERSSTv5", "ClassNMAT", "BEST-Land", "Cowtan-HybridSST"),
-  #       lty = c(1, 1, 1, 1, 1, 1, 1, 1), col = c(col.CRUTEM5, col.HadSST4, col.HadSST4_ua, col.COBE2, col.ERSST5, col.CLASSNMAT, col.BEST, col.hybrid36),  
-  #       cex = 0.75, ncol = 3, bg = "white")
   legend("top", c("CRUTEM5", "HadSST4", "HadSST4-unadj", "ClassNMAT", "CoastalHybridSST"),
           lty = 1, col = c(col.CRUTEM5, col.HadSST4, col.HadSST4_ua, col.CLASSNMAT, col.hybrid36),  
-          cex = 0.75, lwd = 2, ncol = 3, bg = "white")
+          cex = 0.7, lwd = 2, ncol = 3, bg = "white", title = "Dataset used for GMST reconstruction")
   
+  # legend("top", 
+  #       legend = c(expression(hat(T)[CRUTEM5]), 
+  #                  expression(hat(T)[HadSST4]), 
+  #                  expression(hat(T)[HadSST4-unadj]),
+  #                  expression(hat(T)[ClassNMAT]),
+  #                  expression(hat(T)[CoastalHybridSST])), 
+  #       lty = 1, 
+  #       col = c(col.CRUTEM5, col.HadSST4, col.HadSST4_ua, col.CLASSNMAT, col.hybrid36),  
+  #       cex = 0.75, 
+  #       lwd = 2, 
+  #       ncol = 3, 
+  #       bg = "white")
   
-  legend("bottomright", c("HadSST4", "CoastalHybridSST"),
+  legend("bottomright", 
+         legend = c(expression(hat(T)[HadSST4] - hat(T)[HadSST4-unadj]), 
+                    expression(hat(T)[CoastalHybridSST] - hat(T)[HadSST4-unadj])),
          col = c(col.HadSST4, col.hybrid36),  
          cex = 0.7, ncol = 2, bg = "white", inset = 0.01, lwd = 2)
 
@@ -307,13 +319,14 @@ dev.off()
 ## ----------------------------------------------------------------------------------------
 
 # mod_p1:
-pdf(file = "figures/01_reconstruction/fig1_1850-1960.pdf", width = 8, height=10)
+pdf(file = "figures/01_reconstruction/fig1_1850-1960.pdf", width = 8, height=11.5)
 {
   par(mfrow=c(1, 1), mar=c(2,5,1,4))
   ylim = c(-3.6, 6.3); xlim = c(1848,1962)
   
   plot(x = 1850:2020, y = 1850:2020, type="n", 
-       ylab = "Global mean surface temperature anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
+       ylab = expression("Predicted global mean surface temperature anomaly [" * hat(T) * ", in °C]"), 
+       xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
   
   {
     # Add the rectangle polygon to the plot
@@ -513,6 +526,7 @@ pdf(file = "figures/01_reconstruction/fig1_1850-1960.pdf", width = 8, height=10)
   }
 
   legend("top", c("CRUTEM5", "HadSST4", "HadSST4-unadj", "COBE2-SST", "ERSSTv5", "ClassNMAT", "BEST-Land", "CoastalHybridSST"),
+         title = "Dataset used for GMST reconstruction",
          lty = c(1, 1, 1, 5, 5, 1, 5, 1), lwd = 1.5, col = c(col.CRUTEM5, col.HadSST4, col.HadSST4_ua, col.COBE2, col.ERSST5, col.CLASSNMAT, col.BEST, col.hybrid36),  
          cex = 0.75, ncol = 3, bg = "white")
 
@@ -525,13 +539,13 @@ dev.off()
 ## ----------------------------------------------------------------------------------------
 
 # mod_p1:
-pdf(file = "figures/01_reconstruction/fig1_a-c.pdf", width = 8, height=5)
+pdf(file = "figures/01_reconstruction/fig1_a-c.pdf", width = 8, height=5.5)
 {
-  par(mfrow=c(1, 1), mar=c(2,4,1,4))
+  par(mfrow=c(1, 1), mar=c(2,5,1,4))
   ylim = c(1, 6.3); xlim = c(1848,2022)
   
   plot(x = 1850:2020, y = 1850:2020, type="n", 
-       ylab = "Global mean surface temperature anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
+       ylab = expression("Predicted global mean surface temperature anomaly [" * hat(T) * ", in °C]"), xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
   
   {
     # Add the rectangle polygon to the plot
@@ -644,7 +658,8 @@ pdf(file = "figures/01_reconstruction/fig1_a-c.pdf", width = 8, height=5)
   
   legend("top", c("CRUTEM5", "HadSST4", "HadSST4-unadj", "COBE2-SST", "ERSSTv5", "ClassNMAT", "BEST-Land", "CoastalHybridSST"),
          lty = c(1, 1, 1, 5, 5, 1, 5, 1), lwd = c(1.5), col = c(col.CRUTEM5, col.HadSST4, col.HadSST4_ua, col.COBE2, col.ERSST5, col.CLASSNMAT, col.BEST, col.hybrid36),  
-         cex = 0.75, ncol = 3, bg = "white")
+         cex = 0.75, ncol = 3, bg = "white",
+         title = "Dataset used for reconstruction")
 }
 dev.off()
 
@@ -655,13 +670,13 @@ dev.off()
 ## ----------------------------------------------------------------------------------------
 
 # mod_p1:
-pdf(file = "figures/01_reconstruction/fig1_a-c_1860-1960.pdf", width = 8, height=6)
+pdf(file = "figures/01_reconstruction/fig1_a-c_1860-1960.pdf", width = 8, height=7)
 {
-  par(mfrow=c(1, 1), mar=c(2,4,1,4))
+  par(mfrow=c(1, 1), mar=c(2,5,1,4))
   ylim = c(1, 6.3); xlim = c(1858,1962)
   
   plot(x = 1850:2020, y = 1850:2020, type="n", 
-       ylab = "Global mean surface temperature anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
+       ylab = expression("Predicted global mean surface temperature anomaly [" * hat(T) * ", in °C]"), xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
   
   {
     # Add the rectangle polygon to the plot
@@ -774,7 +789,8 @@ pdf(file = "figures/01_reconstruction/fig1_a-c_1860-1960.pdf", width = 8, height
   
   legend("top", c("CRUTEM5", "HadSST4", "HadSST4-unadj", "COBE2-SST", "ERSSTv5", "ClassNMAT", "BEST-Land", "CoastalHybridSST"),
          lty = c(1, 1, 1, 5, 5, 1, 5, 1), lwd = c(1.5), col = c(col.CRUTEM5, col.HadSST4, col.HadSST4_ua, col.COBE2, col.ERSST5, col.CLASSNMAT, col.BEST, col.hybrid36),  
-         cex = 0.75, ncol = 3, bg = "white")
+         cex = 0.75, ncol = 3, bg = "white",
+         title = "Dataset used for reconstruction")
 }
 dev.off()
 
@@ -788,11 +804,11 @@ dev.off()
 # mod_p1:
 pdf(file = "figures/01_reconstruction/01_GSAT_land_vs_ocean_reconstruction_mod_p1.pdf", width = 8, height=10)
 {
-  par(mfrow=c(1, 1), mar=c(2,4,1,4))
+  par(mfrow=c(1, 1), mar=c(2,5,1,4))
   ylim = c(-3.6, 6.3); xlim = c(1848,2022)
   
   plot(x = 1850:2020, y = 1850:2020, type="n", 
-       ylab = "Global surface air temperature anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
+       ylab = "Predicted global mean surface air temperature anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
   
   {
     # Add the rectangle polygon to the plot
@@ -1006,11 +1022,11 @@ dev.off()
 # mod_p1:
 pdf(file = "figures/01_reconstruction/01_GMSST_land_vs_ocean_reconstruction_mod_p1.pdf", width = 8, height=10)
 {
-  par(mfrow=c(1, 1), mar=c(2,4,1,4))
+  par(mfrow=c(1, 1), mar=c(2,5,1,4))
   ylim = c(-3.6, 6.3); xlim = c(1848,2022)
   
   plot(x = 1850:2020, y = 1850:2020, type="n", 
-       ylab = "Global mean sea surface temperature anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
+       ylab = ("Predicted global mean sea surface temperature anomaly [°C]"), xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
   
   {
     # Add the rectangle polygon to the plot
@@ -1226,11 +1242,11 @@ dev.off()
 # mod_p1:
 pdf(file = "figures/01_reconstruction/01_GMLSAT_NI_land_vs_ocean_reconstruction_mod_p1.pdf", width = 8, height=10)
 {
-  par(mfrow=c(1, 1), mar=c(2,4,1,4))
+  par(mfrow=c(1, 1), mar=c(2,5,1,4))
   ylim = c(-3.6, 6.3); xlim = c(1848,2022)
   
   plot(x = 1850:2020, y = 1850:2020, type="n", 
-       ylab = "Global mean land surface air temperature anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
+       ylab = "Predicted global mean land surface air temperature anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
   
   {
     # Add the rectangle polygon to the plot

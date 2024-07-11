@@ -8,7 +8,7 @@
 
 
 ## load all data for reconstructions:
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04a_master_load_reconstructions.R")
+source("scripts/04a_master_load_reconstructions.R")
 
 # code for plots:
 source("code/_convenience/frenchcolormap.R")

@@ -4,7 +4,7 @@
 
 # Code for post-processing of simulations
 # ------------------------------------------------------
-
+library(zoo)
 # Define functions for post-processing of simulations: 
 # ------------------------------------------------------
 

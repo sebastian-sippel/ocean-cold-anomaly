@@ -52,6 +52,7 @@ col = brewer.pal(n = 8, name = "Dark2")
          ylab = "Global mean surface temperature anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1)
     axis(side = 1, at = seq(min(xlim), max(xlim), 5), tcl=0.2, labels=F)
     axis(side = 2, at = seq(min(ylim), max(ylim), 0.1), tcl=0.2, labels=F)
+    mtext("a", side = 3, line = 0, at = 1830, adj = 0, cex = 0.9, font = 2)
     
     ## polygons for uncertainties:
     polygon(x = c(1850:2021, 2021:1850), y = c(HadCRUT5.global.annual$lower_CI2.5, 
@@ -95,6 +96,7 @@ col = brewer.pal(n = 8, name = "Dark2")
          ylab = "Temperature Anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1)
     axis(side = 1, at = seq(min(xlim), max(xlim), 5), tcl=0.2, labels=F)
     axis(side = 2, at = seq(min(ylim), max(ylim), 0.1), tcl=0.2, labels=F)
+    mtext("b", side = 3, line = 0, at = 1830, adj = 0, cex = 0.9, font = 2)
     
     ## polygons for uncertainties:
     polygon(x = c(1850:2021, 2021:1850), y = c(HadCRUT5.global.annual$lower_CI2.5, 
@@ -193,6 +195,7 @@ lm(c(HadSST4.global.annual$Anomaly[52:90]) ~ c(1901:1939))$coefficients[2]
     
     plot(x = 1850:2020, y = 1850:2020, type="n", 
          ylab = "Temperature Anomaly [°C]", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1)
+    mtext("a", side = 3, line = 0, at = 1830, adj = 0, cex = 1.1, font = 2)
     axis(side = 1, at = seq(min(xlim), max(xlim), 5), tcl=0.2, labels=F)
     axis(side = 2, at = seq(min(ylim), max(ylim), 0.1), tcl=0.2, labels=F)
     
@@ -229,6 +232,7 @@ lm(c(HadSST4.global.annual$Anomaly[52:90]) ~ c(1901:1939))$coefficients[2]
     
     plot(x = 1850:2020, y = 1850:2020, type="n", 
          ylab = "Pearson Correlation", xlab = "", main = "", ylim = c(-0.2,1), xlim = xlim, las=1)
+    mtext("b", side = 3, line = 0, at = 1830, adj = 0, cex = 1.1, font = 2)
     axis(side = 1, at = seq(min(xlim), max(xlim), 5), tcl=0.2, labels=F)
     axis(side = 2, at = seq(min(ylim), max(ylim), 0.1), tcl=0.2, labels=F)
     
@@ -240,7 +244,7 @@ lm(c(HadSST4.global.annual$Anomaly[52:90]) ~ c(1901:1939))$coefficients[2]
                         "Land- vs. SST(m.r.) reconstr. (OBS)", 
                         "SST- vs. SST(m.r.) reconstr. (OBS)"), 
            col = c("darkgray", col.paired[8], col.paired[2]), bg = "white", lty = c(1, 1, 1), lwd = 2, 
-           title = "Pearson Correlation \n in 50-year window", inset=0.02, cex = 0.7)
+           title = "Pearson Correlation \n in 51-year window", inset=0.02, cex = 0.7)
     
   }
   dev.off()

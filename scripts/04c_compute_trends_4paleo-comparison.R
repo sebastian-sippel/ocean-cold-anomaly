@@ -41,24 +41,28 @@ lat = c(matrix(coordinates(raster.template)[,2], 72, 36)[,36:1])
     
     # Indian Ocean (20◦N–15◦S, 40–100◦E):
     grid.ix = which(lat < 20 & lat > -15 & lon > 40 & lon < 100)
-    w = areaw[grid.ix] * (1-land_fraction[grid.ix]) / sum(areaw[grid.ix] * (1-land_fraction[grid.ix]))  
+    # w = areaw[grid.ix] * (1-land_fraction[grid.ix]) / sum(areaw[grid.ix] * (1-land_fraction[grid.ix]), na.rm = T)  
+    w = areaw[grid.ix] / sum(areaw[grid.ix], na.rm = T)  
     IndianOcean_[[mon]] = sapply(X = 1:dim(HadSST4_)[1], FUN=function(i) sapply(1:200, FUN=function(ens) weighted.mean(x = (HadSST4_[i,grid.ix] + HadSST4_ENS_anom_[[ens]][i,grid.ix]), w = w, na.rm = T)))
     
     # Western Pacific (25◦N–25◦S, 110–155◦E)
     grid.ix = which(lat < 25 & lat > -25 & lon > 110 & lon < 155)
-    w = areaw[grid.ix] * (1-land_fraction[grid.ix]) / sum(areaw[grid.ix] * (1-land_fraction[grid.ix]))
+    # w = areaw[grid.ix] * (1-land_fraction[grid.ix]) / sum(areaw[grid.ix] * (1-land_fraction[grid.ix]))
+    w = areaw[grid.ix] / sum(areaw[grid.ix], na.rm = T)  
     WPacific_[[mon]] = sapply(X = 1:dim(HadSST4_)[1], FUN=function(i) sapply(1:200, FUN=function(ens) weighted.mean(x = (HadSST4_[i,grid.ix] + HadSST4_ENS_anom_[[ens]][i,grid.ix]), w = w, na.rm = T)))
     
     # Eastern Pacific (10◦N–10◦S, 175◦E–85◦W)
     grid.ix = which(lat < 10 & lat > -10 & lon > 175 & lon < 275)
     # land_fraction1 = land_fraction; land_fraction1[grid.ix] = 5; image.plot(matrix(land_fraction1, 72, 36)); 
-    w = areaw[grid.ix] * (1-land_fraction[grid.ix]) / sum(areaw[grid.ix] * (1-land_fraction[grid.ix]))
+    # w = areaw[grid.ix] * (1-land_fraction[grid.ix]) / sum(areaw[grid.ix] * (1-land_fraction[grid.ix]))
+    w = areaw[grid.ix] / sum(areaw[grid.ix], na.rm = T)  
     EPacific_[[mon]] = sapply(X = 1:dim(HadSST4_)[1], FUN=function(i) sapply(1:200, FUN=function(ens) weighted.mean(x = (HadSST4_[i,grid.ix] + HadSST4_ENS_anom_[[ens]][i,grid.ix]), w = w, na.rm = T)))
     
     # Western Atlantic (15–30◦N, 60–90◦W)
     grid.ix = which(lat < 30 & lat > 15 & lon > 270 & lon < 300)
     # land_fraction1 = land_fraction; land_fraction1[grid.ix] = 5; image.plot(matrix(land_fraction1, 72, 36)); 
-    w = areaw[grid.ix] * (1-land_fraction[grid.ix]) / sum(areaw[grid.ix] * (1-land_fraction[grid.ix]))
+    # w = areaw[grid.ix] * (1-land_fraction[grid.ix]) / sum(areaw[grid.ix] * (1-land_fraction[grid.ix]))
+    w = areaw[grid.ix] / sum(areaw[grid.ix], na.rm = T)  
     WAtlantic_[[mon]] = sapply(X = 1:dim(HadSST4_)[1], FUN=function(i) sapply(1:200, FUN=function(ens) weighted.mean(x = (HadSST4_[i,grid.ix] + HadSST4_ENS_anom_[[ens]][i,grid.ix]), w = w, na.rm = T)))
   }
   

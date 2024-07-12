@@ -11,23 +11,23 @@
 # R
 
 # 00.(a) load  respective functions & code:
-source("/net/h2o/climphys1/sippels/_code/tools/frenchcolormap.R")
+source("code/_convenience/frenchcolormap.R")
 # source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v2/code/_functions_CMIP5_extr.R")
-source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/code/_functions_CMIP6.R")
+source("code/_functions_CMIP6.R")
 
 # get plotting for fingerprints:
-source("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v2/code/_plot_projected_worldmap_v2.R")
+source("code/_convenience/_plot_projected_worldmap_v2.R")
 
 
 # 00.(c) Load GSAT/GMST reconstructions:
-load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processed_CMIP6_4evaluation/CMIP6.tas_land.df_v5.RData")
-load("/net/h2o/climphys1/sippels/_projects/global_mean_reconstr_v3/data/03_processed_CMIP6_4evaluation/CMIP6.tos.df_v5.RData")
+load("data/03_processed_CMIP6_4evaluation/CMIP6.tas_land.df_v5.RData")
+load("data/03_processed_CMIP6_4evaluation/CMIP6.tos.df.RData")
 
 
 
 ### 1a. Evaluation of reconstruction MSE:
 ### -----------------------------------
-setwd("/net/h2o/climphys1/sippels/_projects/ocean_cold_anomaly/figures/00_evaluation/")
+# setwd("/net/h2o/climphys1/sippels/_projects/ocean_cold_anomaly/figures/00_evaluation/")
 
 library(RColorBrewer)
 col = colorRampPalette(rev(brewer.pal(n = 9, name = "RdBu")))(99)
@@ -43,7 +43,7 @@ paired.col = brewer.pal(n = 12, name = "Paired")
 cur.var = "GMST_FM"
 
 
-pdf("01_annual_evaluation_GMST-reconstr_MSE.pdf", height=7, width=8)
+pdf("figures/00_evaluation/01_annual_evaluation_GMST-reconstr_MSE.pdf", height=7, width=8)
 par(mfrow=c(2,2), mar=c(3,4.5,2,0.5))
 {
   ylim = c(0, 0.04)
@@ -52,6 +52,8 @@ par(mfrow=c(2,2), mar=c(3,4.5,2,0.5))
   ### Land-based reconstruction:
   plot(c(1,1), xlim = xlim, ylim = ylim, type='l', las = 1,
        ylab = expression("Annual temperature reconstruction MSE [" ~ K^2 ~ "]"), xlab = "", main = "Land-based GMST Reconstruction")
+  mtext("a", side = 3, line = 0.5, at = 1820, adj = 0, cex = 0.9, font = 2)
+  
   axis(side = 1, at = seq(min(xlim), max(xlim), 5), tcl=0.2, labels=F)
   axis(side = 2, at = seq(min(ylim), max(ylim), 0.002), tcl=0.2, labels=F)
   
@@ -73,6 +75,7 @@ par(mfrow=c(2,2), mar=c(3,4.5,2,0.5))
   ### SST-based reconstruction:
   plot(c(1,1), xlim = xlim, ylim = ylim, type='l', las = 1,
        ylab = expression("Annual temperature reconstruction MSE [" ~ K^2 ~ "]"), xlab = "", main = "SST-based GMST Reconstruction")
+  mtext("b", side = 3, line = 0.5, at = 1820, adj = 0, cex = 0.9, font = 2)
   axis(side = 1, at = seq(min(xlim), max(xlim), 5), tcl=0.2, labels=F)
   axis(side = 2, at = seq(min(ylim), max(ylim), 0.002), tcl=0.2, labels=F)
   
@@ -93,6 +96,7 @@ par(mfrow=c(2,2), mar=c(3,4.5,2,0.5))
   plot(c(1,1), xlim = c(1850,2020), ylim = ylim, type='l', las = 1,
        ylab = "MSE [in %] relative to GTA-estimator", xlab = "", 
        main = "")
+  mtext("c", side = 3, line = 0.5, at = 1820, adj = 0, cex = 0.9, font = 2)
   axis(side = 1, at = seq(min(xlim), max(xlim), 5), tcl=0.2, labels=F)
   axis(side = 2, at = seq(min(ylim), max(ylim), 5), tcl=0.2, labels=F)
   
@@ -108,6 +112,7 @@ par(mfrow=c(2,2), mar=c(3,4.5,2,0.5))
   plot(c(1,1), xlim = c(1850,2020), ylim = ylim, type='l', las = 1,
        ylab = "MSE [in %] relative to GTA-estimator", xlab = "", 
        main = "")
+  mtext("d", side = 3, line = 0.5, at = 1820, adj = 0, cex = 0.9, font = 2)
   axis(side = 1, at = seq(min(xlim), max(xlim), 5), tcl=0.2, labels=F)
   axis(side = 2, at = seq(min(ylim), max(ylim), 5), tcl=0.2, labels=F)
   

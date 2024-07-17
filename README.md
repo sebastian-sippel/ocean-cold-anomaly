@@ -4,74 +4,114 @@
 Early 20th century cold bias in observational ocean surface temperature
 
 ## Description
-This repository contains code to reproduce the findings of the paper 'Early 20th century cold bias in observational ocean surface temperature' (by Sippel, Kent, Meinshausen, Chan, Kadow, Neukom, Fischer, Humphrey, Rohde, de Vries, and Knutti; Nature manuscript 2024-05-09800)
+This repository contains code to reproduce the findings of the paper 'Early 20th century cold bias in observational ocean surface temperature' (by Sippel, Kent, Meinshausen, Chan, Kadow, Neukom, Fischer, Humphrey, Rohde, de Vries, and Knutti), and this README describes the code and data for reproducibility. 
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Code availability: We provide all code to reproduce the main results and all figures of the paper. Either browse/download files individually or clone the repository to your local machine (git clone https://github.com/sebastian-sippel/ocean-cold-anomaly.git).
+Data availability: We provide the newly derived reconstructions as .txt files under data/04_final in this repository (described below). We provide all preprocessed intermediate data and post-processed data needed to reproduce the study's results and figures, all of which are available under https://data.iac.ethz.ch/Sippel_et_al_2024_ocean-cold-anomaly/. Due to storage and copyright constraints, original observational datasets and CMIP6 data have to be downloaded from their original sources (given in Data Availability Statement).
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+This README file contains:
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+1. Directory Structure 
+2. Reproduction of figures
+3. Statistical Learning code for reconstruction of global mean surface temperature (GMST).
+4. Processing data from original sources
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+### 1. Directory Structure 
+We describe the most important functions and directories.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+	/figures
+		Contains sub-directories with scripts to reproduce respective figures. We describe how to reproduce in detail below (2. Reproduction of figures).
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+	/code
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+		/_convenience
+			Contains convenience functions and methods projection and plotting of spatial data.
+		_functions_CMIP6.R / 
+			Contains all functions to read CMIP6 data. 
+		_attribution_hildreth-lu.R
+			Attribution method based on Hildreth-Lu regression
+		_ridge_fun_v2.R 
+			Functions to generate statistical reconstructions.
+
+	/data
+		Contains the newly derived reconstructions, and all intermediate data to reproduce the study's results. Due to storage constraints, the data directories /00_ up to /_03 are available under: https://data.iac.ethz.ch/Sippel_et_al_2024_ocean-cold-anomaly/.
+
+		/04_final
+			This directory contains the new, final reconstructions as .txt files. The reconstructions presented in the main text are labeled as GMST_reconstructions.txt, and the reconstructions without adding bias and uncertainty estimates for training are labeled as GMST_reconstructions_no-training-bias-unc.txt. Both files contain 13 columns with GMST reconstructions based on CRUTEM5, HadSST4, HadSST4-unadj, ClassNMAT, CoastalHybridSST, ERSSTv5, COBE-SST2, and BEST-Land, as described in the paper. For CRUTEM5 and HadSST4, the 2.5th and 97.5 percentiles (shown in Fig. 1) are also given.
+
+		Further directories available from https://data.iac.ethz.ch/Sippel_et_al_2024_ocean-cold-anomaly/:
+
+		/00_DATASET
+			Should be set up to contain all original datasets used in the present study. These include the datasets described in the paper and are futher specified below:	
+			/cmip6
+				All cmip6 data files as described in Supplementary Table 4 for the variables tas and tos.
+		/01_processed4train_CMIP6
+			This folder contains .RData files, stratified by month for tos and tas, which are used in the statistical model training step.
+		/01_processed4train_CRU
+			This folder contains .RData files of the HadSST4 and CRUTEM5 observations, which are used as input to the trained statistical models. 
+		/02_trained_models
+			This folder contains .RData files that contain the trained statistical regression models (as well as evaluation metrics), stratified by predictor setup (tas, tos, tos_MR, etc.) and the reconstruction target metric (GMST, GMLSAT, etc.).
+		/03_processed4analysis
+			This folder contains .RData files that are ready for the analyses presented in the paper. 
+		/03_processedCMIP6_reconstr
+			Folder contains CMIP6 reconstructions (based on observational coverage and errors) shown as comparison to observations in Fig. 2 and Fig. 5.
+		/03_processedOBS_reconstr
+			Folder contains .RData files of the observations-based reconstructions. Final reconstructions as .txt files in /data/04_final.
+		/03_processed_CMIP6_4evaluation
+			Folder contains .RData files of the CMIP6 files for evaluation, shown in Extended Data Figures 2-3 and Supplementary Figure 1.
+
+	/scripts
+
+		Read-in of observational datasets and masks:
+			00_readCRU.R
+				Processes HadSST4, CRUTEM5 and CLASSNMat observations to be used for reconstructions.
+
+		CMIP6 read-in scripts:
+			_00a_process_CMIP6_mon.R
+				Processes CMIP6 data with R and CDO into /data/00_DATASET/
+				Processes and reads CMIP6 data into /data/01_processed4train_CMIP6/
+			_00b_process_CMIP6_GMLSAT-GMSST_v2.R
+				Calculate blended data based on cmip6 and extracts target regional means. Amends files in /data/01_processed4train_CMIP6/
+			
+		Training GMST-reconstruction model scripts:
+			01_train_hybrid36.R
+			01_train_tas_land.R
+			01_train_tas_sea_CLASSNMAT.R
+			01_train_tos.R
+			01_train_tos_MR.R
+
+		Data processing scripts:
+			02b_process4evaluation.R
+			02b_process4evaluation_CLASSNMAT.R
+			02b_process4evaluation_MR.R
+			02b_process4evaluation_hybrid36.R
+
+		Data loading scripts:
+			03a_load_global_observations.R
+			03b_load_global_obs_reconstruction.R
+			03b_load_global_obs_reconstruction_ANCDATA.R
+			03c_load_global_proxy_data.R
+			03d_read_ocean2k.R
+
+		Master scripts for plotting of figures:
+			04a_master_load_reconstructions.R
+			04b_master_read_paleo_reconstructions.R
+			04c_compute_trends_4paleo-comparison.R
+
+### 2. Reproduction of Figures:
+To reproduce figures, first go to https://data.iac.ethz.ch/Sippel_et_al_2024_ocean-cold-anomaly/ and obtain all required data and save it to the /data directory. The above described /data directory structured needs to be preserved. Then, go to /figures. Each folder (e.g., /01_reconstruction) contains an .R file that is executable and produces the respective figure, using code and data from the /code, /scripts, and /data directories. Additionally all raw figures are already contained in each figure directory as .pdf files.
+
+### 3. Statistical Learning Code for reconstruction of global mean surface temperature (GMST).
+The statistical learning code for training the GMST reconstructions (and those for other target metrics) in the respective folder for training GMST-reconstruction model scripts: /scripts/01_ Those scripts make use of the pre-processed observational coverage maps and CMIP6 data. The functions for fitting the ridge regression model is available in /code/_ridge_fun_v2.R
+
+### 4. Processing data from original sources
+To process all data from their original source requires to download all data from original sources given in the Data Availability Statement. Further processing is possible by running all scripts contained in /scripts in their successive order. 
+
 
 ## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+The Github repository is maintained by the corresponding author (Sebastian Sippel, sebastian.sippel@uni-leipzig.de). All acknowledgements and references are available in the published paper.
 
 ## License
 For open source projects, say how it is licensed.
 
 ***
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://git.iac.ethz.ch/climphys/ocean-cold-anomaly.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://git.iac.ethz.ch/climphys/ocean-cold-anomaly/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-
-

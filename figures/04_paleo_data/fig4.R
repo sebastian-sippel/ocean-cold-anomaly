@@ -8,9 +8,9 @@
 
 
 ## load all data for reconstructions:
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04a_master_load_reconstructions.R")
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04b_master_read_paleo_reconstructions.R")
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04c_compute_trends_4paleo-comparison.R")
+source("scripts/04a_master_load_reconstructions.R")
+source("scripts/04b_master_read_paleo_reconstructions.R")
+source("scripts/04c_compute_trends_4paleo-comparison.R")
 
 
 
@@ -23,7 +23,7 @@ library(vioplot)
 # 1. Ocean 2k:
 # ------------------------------------------------------------------------------------
 
-file.name = "figures/04_paleo_data/04b_ocean2k_period_diff.pdf"
+file.name = "figures/04_paleo_data/04b_ocean2k_period_diff_fl.pdf"
 ylim = c(-0.6, 0.4)
 xlim = c(0,8)
 trend.ix = 9
@@ -134,7 +134,7 @@ dev.off()
 
 # 2. Neukom global-scale climate field reconstructions + GMST estimates:
 # ------------------------------------------------------------------------------------
-file.name = "figures/04_paleo_data/04a_Pages2k_period_diff.pdf"
+file.name = "figures/04_paleo_data/04a_Pages2k_period_diff_fl.pdf"
 ylim = c(-0.5, 0.5)
 xlim = c(0,6.3)
 trend.ix = 9

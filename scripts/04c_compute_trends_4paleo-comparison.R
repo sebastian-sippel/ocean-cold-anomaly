@@ -18,8 +18,9 @@ trend.years = list(1851:1890, 1871:1910, 1901:1940, 1975:2014, 1851:1900, 1871:1
 
 # 01. Read HadSST4 raw regional estimates for comparison with trends from reconstructions (Figure 4):
 # ------------------------------------------------------------------------------------
-
+source("code/_attribution_hildreth-lu.R")
 source("code/_convenience/convert.to.eurocentric.R")
+source("scripts/03d_read_ocean2k.R")
 raster.template = raster(res = 5, xmn = 0, xmx=360, ymn = -90, ymx=90)
 areaw = c(matrix(values(raster::area(raster.template)), 72, 36)[,36:1]) / sum(c(matrix(values(raster::area(raster.template)), 72, 36)[,36:1]))
 # land_fraction = c(matrix(values(convert.to.pacificcentric(raster("/net/h2o/climphys1/sippels/_DATA/grid/5d00_static/cmip5_masks/sftlf_g025.nc"))), 72, 36)[,36:1])
@@ -37,7 +38,7 @@ lat = c(matrix(coordinates(raster.template)[,2], 72, 36)[,36:1])
     
     print(mon)
     
-    load(paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/01_processed4train_CRU/HadSST4_mon", mon, ".RData", sep=""))
+    load(paste("data/01_processed4train_CRU/HadSST4_mon", mon, ".RData", sep=""))
     
     # Indian Ocean (20◦N–15◦S, 40–100◦E):
     grid.ix = which(lat < 20 & lat > -15 & lon > 40 & lon < 100)

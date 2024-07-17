@@ -7,9 +7,9 @@
 # 25.02.2023
 
 ## load all data for reconstructions:
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04a_master_load_reconstructions.R")
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04b_master_read_paleo_reconstructions.R")
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04c_compute_trends_4paleo-comparison.R")
+source("scripts/04a_master_load_reconstructions.R")
+source("scripts/04b_master_read_paleo_reconstructions.R")
+source("scripts/04c_compute_trends_4paleo-comparison.R")
 
 
 
@@ -37,7 +37,7 @@ xlim = c(-0.5, 2)
 # ------------------------------------------------------------------------------------
 
 # old name: 05_land_ocean_40_years.pdf
-pdf(file = "figures/05_ETCW/fig5.pdf", width = 8, height = 5)
+pdf(file = "figures/05_ETCW/fig5_fl.pdf", width = 8, height = 5)
     par(mar = c(4,4,1,0), cex.lab = 1, cex.axis=1, mfrow=c(1,1))
     layout(matrix(1:2, ncol = 2, byrow = T), widths = c(9,4), heights = c(4,9))
     
@@ -227,7 +227,7 @@ dev.off()
   
   
 # Supplement Figure ??  
-  pdf(file = "figures/05_ETCW/05_land_ocean_50_years.pdf", width = 8, height = 5)
+  pdf(file = "figures/05_ETCW/05_land_ocean_50_years_fl.pdf", width = 8, height = 5)
   par(mar = c(4,4,1,0), cex.lab = 1, cex.axis=1, mfrow=c(1,1))
   layout(matrix(1:2, ncol = 2, byrow = T), widths = c(9,4), heights = c(4,9))
   

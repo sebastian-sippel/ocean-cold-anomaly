@@ -36,7 +36,7 @@ We describe the most important functions and directories.
 	/data
 		Contains the newly derived reconstructions, and all intermediate data to reproduce the study's results. Due to storage constraints, the data directories /00_ up to /_03 are available under: https://data.iac.ethz.ch/Sippel_et_al_2024_ocean-cold-anomaly/.
 
-		/04_final
+		/_final
 			This directory contains the new, final reconstructions as .txt files. The reconstructions presented in the main text are labeled as GMST_reconstructions.txt, and the reconstructions without adding bias and uncertainty estimates for training are labeled as GMST_reconstructions_no-training-bias-unc.txt. Both files contain 13 columns with GMST reconstructions based on CRUTEM5, HadSST4, HadSST4-unadj, ClassNMAT, CoastalHybridSST, ERSSTv5, COBE-SST2, and BEST-Land, as described in the paper. For CRUTEM5 and HadSST4, the 2.5th and 97.5 percentiles (shown in Fig. 1) are also given.
 
 		Further directories available from https://data.iac.ethz.ch/Sippel_et_al_2024_ocean-cold-anomaly/:
@@ -56,7 +56,7 @@ We describe the most important functions and directories.
 		/03_processedCMIP6_reconstr
 			Folder contains CMIP6 reconstructions (based on observational coverage and errors) shown as comparison to observations in Fig. 2 and Fig. 5.
 		/03_processedOBS_reconstr
-			Folder contains .RData files of the observations-based reconstructions. Final reconstructions as .txt files in /data/04_final.
+			Folder contains .RData files of the observations-based reconstructions. Final reconstructions as .txt files in /data/_final.
 		/03_processed_CMIP6_4evaluation
 			Folder contains .RData files of the CMIP6 files for evaluation, shown in Extended Data Figures 2-3 and Supplementary Figure 1.
 
@@ -112,6 +112,7 @@ To process all data from their original source requires to download all data fro
 The Github repository is maintained by the corresponding author (Sebastian Sippel, sebastian.sippel@uni-leipzig.de). All acknowledgements and references are available in the published paper.
 
 ## License
-For open source projects, say how it is licensed.
+This project is licensed under the MIT License. For more details, see the [LICENSE](LICENSE) file.
+
 
 ***

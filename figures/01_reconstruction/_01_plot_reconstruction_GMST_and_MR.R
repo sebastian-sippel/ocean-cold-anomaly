@@ -21,8 +21,7 @@ source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04a_mast
 kadow_crutem5_gmst = ncvar_get(nc_open("data/00_DATASET/obs/Kadow-etal-2020/cmip6ctaspadzens-2_tas_mon-gl-72x36_crutem5.0.2_observation_all-avg_1850-2...FM_SUBCLIM"))
 kadow_hadsst4_gmst = ncvar_get(nc_open("data/00_DATASET/obs/Kadow-etal-2020/cmip6ctaspadzens-2_tas_mon-gl-72x36_hadsst4_observation_all-avg_1850-2023_...FM_SUBCLIM"))
 
-
-
+mean(kadow_crutem5_gmst[51:82]) - mean(kadow_hadsst4_gmst[51:82])
 
 # ------------------------------------------------------------------------------------
 # Plot reconstruction(s):
@@ -43,7 +42,7 @@ col = brewer.pal(n = 8, name = "Dark2")
 {
   
   # GMST reconstruction-mod_p0:
-  pdf(file = "figures/01_reconstruction/SI01_GMST_land_vs_ocean_reconstruction.pdf", width = 8, height=8)
+  pdf(file = "figures/01_reconstruction/Extended_Data_Figure4.pdf", width = 8, height=8)
   {
     par(mfrow=c(2, 1), mar=c(2,4,1,1))
     ylim = c(-1, 1); xlim = c(1850,2020)

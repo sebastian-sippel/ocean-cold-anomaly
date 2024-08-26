@@ -38,7 +38,7 @@ df.out$GMST_ERSST5[match(GMST.ERSSTv5$Year, df.out$Year)] = GMST.ERSSTv5$mod_p1_
 df.out$GMST_COBE_SST2[match(GMST.COBE_SST2$Year, df.out$Year)] = GMST.COBE_SST2$mod_p1_min_50
 df.out$GMST_BESTLand[match(GMST.BEST_Land$Year, df.out$Year)] = GMST.BEST_Land$mod_p1_min_50
 
-write.table(x = round(df.out, 3), file = "data/04_final/GMST_reconstructions.txt", quote = F, row.names = F, col.names = T, sep=",")
+write.table(x = round(df.out, 3), file = "data/_final/GMST_reconstructions.txt", quote = F, row.names = F, col.names = T, sep=",")
 
 
 
@@ -82,7 +82,7 @@ df.out$GMST_ERSST5[match(GMST.ERSSTv5$Year, df.out$Year)] = GMST.ERSSTv5$mod_p1_
 df.out$GMST_COBE_SST2[match(GMST.COBE_SST2$Year, df.out$Year)] = GMST.COBE_SST2$mod_p1_min_50
 df.out$GMST_BESTLand[match(GMST.BEST_Land$Year, df.out$Year)] = GMST.BEST_Land$mod_p1_min_50
 
-write.table(x = round(df.out, 3), file = "data/04_final/GMST_reconstructions_no-training-bias-unc.txt", quote = F, row.names = F, col.names = T, sep=",")
+write.table(x = round(df.out, 3), file = "data/_final/GMST_reconstructions_no-training-bias-unc.txt", quote = F, row.names = F, col.names = T, sep=",")
 
 
 

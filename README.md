@@ -109,7 +109,8 @@ To process all data from their original source requires to download all data fro
 
 
 ## Authors and acknowledgment
-The Github repository is maintained by the corresponding author (Sebastian Sippel, sebastian.sippel@uni-leipzig.de). All acknowledgements and references are available in the published paper.
+The Github repository is maintained by the corresponding author (Sebastian Sippel, sebastian.sippel@uni-leipzig.de). All acknowledgements and references are available in the published paper. [![DOI](https://zenodo.org/badge/817366226.svg)](https://zenodo.org/doi/10.5281/zenodo.13646027).
+
 
 ## License
 This project is licensed under the MIT License. For more details, see the [LICENSE](LICENSE) file.

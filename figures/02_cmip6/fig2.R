@@ -12,7 +12,7 @@ library(dplR)
 
 
 ## load all data for reconstructions:
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04a_master_load_reconstructions.R")
+source("scripts/04a_master_load_reconstructions.R")
 
 
 ## 01a. Scale observations into GMST:
@@ -36,10 +36,10 @@ raw.data.scale = get.diff.window.cor(x = ocean.raw.scale[8:171], y = land.raw.sc
 # 02. Plot cold anomaly plausibility in CMIP6
 # ------------------------------------------------------------------------------------
 
-pdf(file = "figures/02_cmip6/fig2.pdf", width = 8, height=10)
+pdf(file = "figures/02_cmip6/fig2.pdf", width = 3.5, height=5.2, pointsize = 5)
 {
   par(mfrow=c(1, 1), mar=c(3,6,1,5))
-  ylim = c(-3.5, 6.3); xlim = c(1848,2022)
+  ylim = c(-3.7, 6.3); xlim = c(1848,2022)
   
   plot(x = 1850:2020, y = 1850:2020, type="n", 
        ylab = "", xlab = "", main = "", ylim = ylim, xlim = xlim, las=1, yaxt = "n", xaxt = "n", bty = "n", yaxs="i", xaxs="i")
@@ -62,36 +62,36 @@ pdf(file = "figures/02_cmip6/fig2.pdf", width = 8, height=10)
   
   {
     # Add the rectangle polygon to the plot
-    polygon(x = c(1900, 1930, 1930, 1900), y = c(-5, -5, 6.3, 6.3), border = "darkgray", col = make.transparent.color("lightgrey", alpha = 60))
+    polygon(x = c(1900, 1930, 1930, 1900), y = c(-5, -5, 6.3, 6.3), border = "darkgray", col = make.transparent.color("lightgrey", alpha = 60), lwd = 0.5)
     
-    lines(x = c(1850, 1850), y = c(-10, 10), col = "lightgrey", lty = 1)
-    lines(x = c(1875, 1875), y = c(-10, 10), col = "lightgrey", lty = 1)
-    lines(x = c(1900, 1900), y = c(-10, 10), col = "lightgrey", lty = 1)
-    # lines(x = c(1925, 1925), y = c(-10, 10), col = "lightgrey", lty = 1)
-    lines(x = c(1950, 1950), y = c(-10, 10), col = "lightgrey", lty = 1)
-    lines(x = c(1975, 1975), y = c(-10, 10), col = "lightgrey", lty = 1)
-    lines(x = c(2000, 2000), y = c(-10, 10), col = "lightgrey", lty = 1)
+    lines(x = c(1850, 1850), y = c(-10, 10), col = "lightgrey", lty = 1, lwd = 0.5)
+    lines(x = c(1875, 1875), y = c(-10, 10), col = "lightgrey", lty = 1, lwd = 0.5)
+    lines(x = c(1900, 1900), y = c(-10, 10), col = "lightgrey", lty = 1, lwd = 0.5)
+    # lines(x = c(1925, 1925), y = c(-10, 10), col = "lightgrey", lty = 1, lwd = 0.5)
+    lines(x = c(1950, 1950), y = c(-10, 10), col = "lightgrey", lty = 1, lwd = 0.5)
+    lines(x = c(1975, 1975), y = c(-10, 10), col = "lightgrey", lty = 1, lwd = 0.5)
+    lines(x = c(2000, 2000), y = c(-10, 10), col = "lightgrey", lty = 1, lwd = 0.5)
     
     axis(side = 1, at = c(1850, 1900, 1950, 2000, 2020))
     axis(side = 1, at = seq(1850, 2020, 5), tcl=0.2, labels=F)
     
     axis(side = 2, at = seq(4, 6, 0.5), labels=seq(-1, 1, 0.5) / 2, las = 1)  # +0.9
     axis(side = 2, at = seq(4, 6, 0.1), labels=F, tcl=0.2)
-    lines(x = c(1850, 2020), y = c(5, 5), col = "darkgray", lty = 1)
+    lines(x = c(1850, 2020), y = c(5, 5), col = "darkgray", lty = 1, lwd = 0.5)
     text(x = 1850, y = 6, labels = "a. Original Reconstruction", col = "black", pos = 4, font = 2)
     
     axis(side = 4, at = seq(2, 4, 0.5) + 0.5, labels=seq(-1, 1, 0.5) / 2, las = 1)  # +0.9
     axis(side = 4, at = seq(2, 4, 0.1) + 0.5, labels=F, tcl=0.2)
-    lines(x = c(1850, 2020), y = c(3, 3) + 0.5, col = "darkgray", lty = 1)
-    text(x = 1850, y = 4.1, labels = "b. Low-pass filtered \n (>20yr)", col = "black", pos = 4, font = 2)
+    lines(x = c(1850, 2020), y = c(3, 3) + 0.5, col = "darkgray", lty = 1, lwd = 0.5)
+    text(x = 1850, y = 4.1, labels = "b. Low-pass \n filtered (>20yr)", col = "black", pos = 4, font = 2)
     
     axis(side = 2, at = seq(0, 2, 0.5) + 0.5*2, labels=seq(-1, 1, 0.5) / 2, las = 1)  # +0.9
     axis(side = 2, at = seq(0, 2, 0.1) + 0.5*2, labels=F, tcl=0.2)
-    lines(x = c(1850, 2020), y = c(1, 1) + 0.5*2, col = "darkgray", lty = 1)
-    text(x = 1850, y = 1.7 + 0.5*2, labels = "c. High-pass filtered \n (<20yr)", col = "black", pos = 4, font = 2)
+    lines(x = c(1850, 2020), y = c(1, 1) + 0.5*2, col = "darkgray", lty = 1, lwd = 0.5)
+    text(x = 1850, y = 1.7 + 0.5*2, labels = "c. High-pass \n filtered (<20yr)", col = "black", pos = 4, font = 2)
     
 
-    lines(x = c(1850, 2020), y = c(1, 1), col = "black", lty = 1)
+    lines(x = c(1850, 2020), y = c(1, 1), col = "black", lty = 1, lwd = 0.5)
     
     text(x = 1855, y = 0.7, labels = "d. Original Reconstruction, Correlation", col = "black", pos = 4, font = 2)
     axis(side = 4, at = seq(-2, 0, 0.5) + 0.5*1, labels=seq(0, 1, 0.25), las = 1)  # +0.9
@@ -113,9 +113,9 @@ pdf(file = "figures/02_cmip6/fig2.pdf", width = 8, height=10)
     # OBS:
     polygon(x = c(1850:2020, 2020:1850), y = c(OBS_mod_p1_min$diff_x_y_2.5, rev(OBS_mod_p1_min$diff_x_y_97.5)) * sc + c,
             col = make.transparent.color("grey40", alpha = 60), border = make.transparent.color("grey40", 150))
-    lines(x = 1850:2014, y = CMIP6_mod_p1_min$diff_x_y_50 * sc + c, col = "red", lwd = 2)
-    lines(x = 1857:2020, y = raw.data.scale$diff_x_y * sc + c, col = "black", lwd = 2, lty = 5)
-    lines(x = 1850:2020, y = OBS_mod_p1_min$diff_x_y_50 * sc + c, col = "grey40", lwd = 2)
+    lines(x = 1850:2014, y = CMIP6_mod_p1_min$diff_x_y_50 * sc + c, col = "red", lwd = 1.5)
+    lines(x = 1857:2020, y = raw.data.scale$diff_x_y * sc + c, col = "black", lwd = 1.5, lty = 5)
+    lines(x = 1850:2020, y = OBS_mod_p1_min$diff_x_y_50 * sc + c, col = "grey40", lwd = 1.5)
   }
   
   # Low-pass filtered:
@@ -128,9 +128,9 @@ pdf(file = "figures/02_cmip6/fig2.pdf", width = 8, height=10)
     # OBS:
     polygon(x = c(1850:2020, 2020:1850), y = c(OBS_mod_p1_min$diff_x.low_y.low_2.5, rev(OBS_mod_p1_min$diff_x.low_y.low_97.5)) * sc + c,
             col = make.transparent.color("grey40", alpha = 60), border = make.transparent.color("grey40", 150))
-    lines(x = 1850:2014, y = CMIP6_mod_p1_min$diff_x.low_y.low_50 * sc + c, col = "red", lwd = 2)
-    lines(x = 1857:2020, y = raw.data.scale$diff_x.low_y.low * sc + c, col = "black", lwd = 2, lty = 5)
-    lines(x = 1850:2020, y = OBS_mod_p1_min$diff_x.low_y.low_50 * sc + c, col = "grey40", lwd = 2)
+    lines(x = 1850:2014, y = CMIP6_mod_p1_min$diff_x.low_y.low_50 * sc + c, col = "red", lwd = 1.5)
+    lines(x = 1857:2020, y = raw.data.scale$diff_x.low_y.low * sc + c, col = "black", lwd = 1.5, lty = 5)
+    lines(x = 1850:2020, y = OBS_mod_p1_min$diff_x.low_y.low_50 * sc + c, col = "grey40", lwd = 1.5)
   }
   
   # High-pass filtered:
@@ -143,9 +143,9 @@ pdf(file = "figures/02_cmip6/fig2.pdf", width = 8, height=10)
     # OBS:
     polygon(x = c(1850:2020, 2020:1850), y = c(OBS_mod_p1_min$diff_x.high_y.high_2.5, rev(OBS_mod_p1_min$diff_x.high_y.high_97.5)) * sc + c,
             col = make.transparent.color("grey40", alpha = 60), border = make.transparent.color("grey40", 150))
-    lines(x = 1850:2014, y = CMIP6_mod_p1_min$diff_x.high_y.high_50 * sc + c, col = "red", lwd = 2)
-    lines(x = 1857:2020, y = raw.data.scale$diff_x.high_y.high * sc + c, col = "black", lwd = 2, lty = 5)
-    lines(x = 1850:2020, y = OBS_mod_p1_min$diff_x.high_y.high_50 * sc + c, col = "grey40", lwd = 2)
+    lines(x = 1850:2014, y = CMIP6_mod_p1_min$diff_x.high_y.high_50 * sc + c, col = "red", lwd = 1.5)
+    lines(x = 1857:2020, y = raw.data.scale$diff_x.high_y.high * sc + c, col = "black", lwd = 1.5, lty = 5)
+    lines(x = 1850:2020, y = OBS_mod_p1_min$diff_x.high_y.high_50 * sc + c, col = "grey40", lwd = 1.5)
   }
   
   
@@ -165,9 +165,9 @@ pdf(file = "figures/02_cmip6/fig2.pdf", width = 8, height=10)
     polygon(x = c(c(1850:2020)[26:146], c(2020:1850)[26:146]), y = c(OBS_mod_p1_min$cor_x_y_2.5[26:146], rev(OBS_mod_p1_min$cor_x_y_97.5[26:146])) * sc + c,
             col = make.transparent.color("grey40", alpha = 60), border = make.transparent.color("grey40", 150))
     
-    lines(x = 1850:2014, y = CMIP6_mod_p1_min_pt1$cor_x_y_50 * sc + c, col = "red", lwd = 2)
-    lines(x = 1857:2020, y = raw.data.scale$cor_x_y * sc + c, col = "black", lwd = 2, lty = 5)
-    lines(x = 1850:2020, y = OBS_mod_p1_min$cor_x_y_50 * sc + c, col = "grey40", lwd = 2)
+    lines(x = 1850:2014, y = CMIP6_mod_p1_min_pt1$cor_x_y_50 * sc + c, col = "red", lwd = 1.5)
+    lines(x = 1857:2020, y = raw.data.scale$cor_x_y * sc + c, col = "black", lwd = 1.5, lty = 5)
+    lines(x = 1850:2020, y = OBS_mod_p1_min$cor_x_y_50 * sc + c, col = "grey40", lwd = 1.5)
   }
   
   # High-pass filtered Reconstruction, Correlation:
@@ -182,17 +182,22 @@ pdf(file = "figures/02_cmip6/fig2.pdf", width = 8, height=10)
     # OBS:
     polygon(x = c(c(1850:2020)[26:146], c(2020:1850)[26:146]), y = c(OBS_mod_p1_min$cor_x.high_y.high_2.5[26:146], rev(OBS_mod_p1_min$cor_x.high_y.high_97.5[26:146])) * sc + c,
             col = make.transparent.color("grey40", alpha = 60), border = make.transparent.color("grey40", 150))
-    lines(x = 1850:2014, y = CMIP6_mod_p1_min_pt1$cor_x.high_y.high_50 * sc + c, col = "red", lwd = 2)
-    lines(x = 1857:2020, y = raw.data.scale$cor_x.high_y.high * sc + c, col = "black", lwd = 2, lty = 5)
-    lines(x = 1850:2020, y = OBS_mod_p1_min$cor_x.high_y.high_50 * sc + c, col = "grey40", lwd = 2)
+    lines(x = 1850:2014, y = CMIP6_mod_p1_min_pt1$cor_x.high_y.high_50 * sc + c, col = "red", lwd = 1.5)
+    lines(x = 1857:2020, y = raw.data.scale$cor_x.high_y.high * sc + c, col = "black", lwd = 1.5, lty = 5)
+    lines(x = 1850:2020, y = OBS_mod_p1_min$cor_x.high_y.high_50 * sc + c, col = "grey40", lwd = 1.5)
   }
   
-  legend("bottomright", c(expression("Observational GMST reconstructions ("*hat(T)[HadSST4]*" and "*hat(T)[CRUTEM5]*")"), 
+  legend("bottomleft", c(expression("Observational GMST reconstructions ("*hat(T)[HadSST4]*" and "*hat(T)[CRUTEM5]*")"), 
                           "Original HadSST4 vs. original CRUTEM5 (scaled into GMST)", 
                           expression("CMIP6 GMST reconstructions ("*hat(T)[CMIP6-Ocean]*" and "*hat(T)[CMIP6-Land]*")")),
                           # "CMIP6 Ocean vs. Land  (GMST reconstructions)"), 
          col = c("grey40", "black", "red"),  
-         cex = 0.8, ncol = 1, inset = 0.02, lwd = 2, lty = c(1, 5, 1), bg = "white")
+         cex = 1, ncol = 1, inset = 0.01, lwd = 1.5, lty = c(1, 5, 1), bg = "white", xpd = T)
 }
 dev.off()
+
+
+
+
+
 

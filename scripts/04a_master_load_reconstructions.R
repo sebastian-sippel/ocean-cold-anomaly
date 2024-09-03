@@ -8,7 +8,7 @@
 library(matrixStats)
 
 # setwd to project folder:
-setwd("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/")
+setwd(".")
 
 # 00. Load functions & code:
 # ------------------------------------------------------------------------------------
@@ -36,8 +36,8 @@ source("scripts/03b_load_global_obs_reconstruction.R")
 
 # 03. Load long CMIP reconstructions (for >100.000 CMIP years):
 # ------------------------------------------------------------------------------------
-load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedCMIP6_reconstr/CMIP6.tas_land_all.df_v5.RData")
-load("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/03_processedCMIP6_reconstr/CMIP6.tos_all.df.RData")
+load("data/03_processedCMIP6_reconstr/CMIP6.tas_land_all.df_v5.RData")
+load("data/03_processedCMIP6_reconstr/CMIP6.tos_all.df.RData")
 CMIP6.tos_all.df$ann$Yhat$GSAT[which(CMIP6.tos_all.df$ann$Yhat$GSAT > 20)] = NA
 
 
@@ -142,7 +142,6 @@ library("dplR") # package for band-pass filtering
 
 # 09. Derive window correlation for OBS and CMIP (Figure 2):
 # ------------------------------------------------------------------------------------
-setwd("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/")
 
 # OBS Window correlation:
 OBS_mod_p1_min = get.diff.window.cor_ens(x = OBS.tos_$GMST_FM$ann$mod_p1_min, y = OBS.tas_land_$GMST_FM$ann$mod_p1_min, years = 1850:2020, w.width = 51, W = 20, center = T, center.ens.means = T, ens.ix = 1:200)

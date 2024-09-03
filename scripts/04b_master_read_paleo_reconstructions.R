@@ -10,7 +10,7 @@ library(matrixStats)
 # requires to run 04a_master_load_reconstructions.R beforehand!
 
 # setwd to project folder:
-setwd("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/")
+setwd(".")
 
 
 
@@ -56,7 +56,7 @@ source("code/_post-processing_reconstructions.R")
 
 # 03. Read Ocean2k / Tierney et al. (2015) temperature proxies:
 # ------------------------------------------------------------------------------------
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/03d_read_ocean2k.R")
+source("scripts/03d_read_ocean2k.R")
   
   
   

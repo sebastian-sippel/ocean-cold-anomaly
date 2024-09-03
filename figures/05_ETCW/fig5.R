@@ -7,19 +7,14 @@
 # 25.02.2023
 
 ## load all data for reconstructions:
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04a_master_load_reconstructions.R")
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04b_master_read_paleo_reconstructions.R")
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04c_compute_trends_4paleo-comparison.R")
-
-
+source("scripts/04a_master_load_reconstructions.R")
+source("scripts/04b_master_read_paleo_reconstructions.R")
+source("scripts/04c_compute_trends_4paleo-comparison.R")
 
 
 # ------------------------------------------------------------------------------------
 # 02. Land-ocean warming ratio during ETCW:
 # ------------------------------------------------------------------------------------
-
-# setwd("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/figures/05_ETCW/")
-
 
 library(plotrix)
 library(RColorBrewer)
@@ -37,7 +32,7 @@ xlim = c(-0.5, 2)
 # ------------------------------------------------------------------------------------
 
 # old name: 05_land_ocean_40_years.pdf
-pdf(file = "figures/05_ETCW/fig5.pdf", width = 8, height = 5)
+pdf(file = "figures/05_ETCW/fig5.pdf", width = 5.35, height = 3.33, pointsize = 7)
     par(mar = c(4,4,1,0), cex.lab = 1, cex.axis=1, mfrow=c(1,1))
     layout(matrix(1:2, ncol = 2, byrow = T), widths = c(9,4), heights = c(4,9))
     
@@ -47,7 +42,7 @@ pdf(file = "figures/05_ETCW/fig5.pdf", width = 8, height = 5)
          xlab = "Land warming [°C per 40 years]", ylab = "Ocean warming [°C per 40 years]", main = "", ylim = ylim, xlim = xlim, las=1, yaxs="i", xaxs="i")
 
     # Add label (a) at the top left outside of the plot
-    mtext("a", side = 3, line = 0, at = -0.9, adj = 0, cex = 1.1, font = 2)
+    mtext("a", side = 3, line = 0, at = -0.85, adj = 0, cex = 1.1, font = 2)
     mtext("b", side = 3, line = 0, at = 2.05, adj = 0, cex = 1.1, font = 2)
     mtext("Constraints on \n ocean warming", side = 1, line = 3, at = 2.3, adj = 0, cex = 1, font = 1)    
       
@@ -57,10 +52,10 @@ pdf(file = "figures/05_ETCW/fig5.pdf", width = 8, height = 5)
     axis(side = 4, at = seq(-1, 1.5, 0.05), tcl=0.2, labels=F)
     
     # (1) CMIP6 models provide strong constraint between land and ocean:
-    points(y = CMIP6.GMSST_true.trends[,4], x = CMIP6.GMLSAT_true.trends[,4], col = make.transparent.color(red.cols[9], alpha = 40), pch = 16, cex = 0.6)
-    points(y = CMIP6.GMSST_true.trends[,3], x = CMIP6.GMLSAT_true.trends[,3], col = make.transparent.color(red.cols[7], alpha = 80), pch = 16, cex = 0.6)
-    points(y = CMIP6.GMSST_true.trends[,2], x = CMIP6.GMLSAT_true.trends[,2], col = make.transparent.color(red.cols[5], alpha = 100), pch = 16, cex = 0.6)
-    points(y = CMIP6.GMSST_true.trends[,1], x = CMIP6.GMLSAT_true.trends[,1], col = make.transparent.color(red.cols[3], alpha = 100), pch = 16, cex = 0.6)
+    points(y = CMIP6.GMSST_true.trends[,4], x = CMIP6.GMLSAT_true.trends[,4], col = make.transparent.color(red.cols[9], alpha = 150), pch = 16, cex = 0.6)
+    points(y = CMIP6.GMSST_true.trends[,3], x = CMIP6.GMLSAT_true.trends[,3], col = make.transparent.color(red.cols[7], alpha = 150), pch = 16, cex = 0.6)
+    points(y = CMIP6.GMSST_true.trends[,2], x = CMIP6.GMLSAT_true.trends[,2], col = make.transparent.color(red.cols[5], alpha = 150), pch = 16, cex = 0.6)
+    points(y = CMIP6.GMSST_true.trends[,1], x = CMIP6.GMLSAT_true.trends[,1], col = make.transparent.color(red.cols[3], alpha = 150), pch = 16, cex = 0.6)
     
     # show CMIP6 models in terms of Ellipses:
     data = cbind(CMIP6.GMLSAT_true.trends[,4], CMIP6.GMSST_true.trends[,4])
@@ -106,26 +101,26 @@ pdf(file = "figures/05_ETCW/fig5.pdf", width = 8, height = 5)
     lines(x = get.trend(x = CRUTEM5.global.annual$Anomaly, trend.years = trend.years, years = 1850:2020)[1:4], 
           y = get.trend(x = HadSST4.global.annual$Anomaly, trend.years = trend.years, years = 1850:2020)[1:4], col = "black", lty = 5, lwd = 1.5)
     
-    text(x = CRUTEM5_constraint[[1]]$mean_out, y = HadSST4_constraint[[1]]$q025 - 0.04, labels = c("1851-1890"), 
+    text(x = CRUTEM5_constraint[[1]]$mean_out - 0.12, y = HadSST4_constraint[[1]]$q025 - 0.04, labels = c("1851-1890"), 
          adj = 0.5, col = "black", cex = 0.8)
     text(x = CRUTEM5_constraint[[2]]$mean_out, y = HadSST4_constraint[[2]]$q025 - 0.03, labels = c("1871-1910"), 
          adj = 0.5, col = "black", cex = 0.8)
     text(x = CRUTEM5_constraint[[3]]$mean_out, y = HadSST4_constraint[[3]]$q975 + 0.04, labels = c("1901-1940"), 
          adj = 0.5, col = "black", cex = 0.8)
-    text(x = CRUTEM5_constraint[[4]]$mean_out + 0.06, y = HadSST4_constraint[[4]]$q025 - 0.08, labels = c("1975-2014"), 
+    text(x = CRUTEM5_constraint[[4]]$mean_out + 0.07, y = HadSST4_constraint[[4]]$q025 - 0.1, labels = c("1975-2014"), 
          adj = 0.5, col = "black", cex = 0.8)
     
     legend("bottomright", c("Original CRUTEM5 / HadSST4",
                             #"CRUTEM5 / HadSST4", "Reconstruction constraint",
                             #"CRUTEM5 / CoastalHybridSST", "Reconstruction Constraint",
-                            expression(hat(T)[CRUTEM5]^GMLSAT * " / " * hat(T)[HadSST4]^GMSST * " constraint"),
-                            expression(hat(T)[CRUTEM5]^GMLSAT * " / " * hat(T)[CoastalHybridSST]^GMSST * " constraint"),
+                            expression(hat(T)[CRUTEM5]^GMLSAT * " and " * hat(T)[HadSST4]^GMSST * " constraint"),
+                            expression(hat(T)[CRUTEM5]^GMLSAT * " and " * hat(T)[CoastalHybridSST]^GMSST * " constraint"),
                             "CMIP6, 1851-1890", "CMIP6, 1871-1910",
-                            "CMIP6, 1901-1940", "CMIP6, 1975-2014"), col = c("black", "grey40", NA, "brown4", NA,
-                                                         make.transparent.color(red.cols[3], alpha = 200), make.transparent.color(red.cols[5], alpha = 100),
-                                                         make.transparent.color(red.cols[7], alpha = 100), make.transparent.color(red.cols[9], alpha = 100)), 
-           pch = c(8, 3, NA, 3, NA, 16, 16, 16, 16), pt.cex = c(1, 1.5, NA, 1.5, NA, 1, 1, 1, 1),
-           inset = 0.02, cex = 0.65)
+                            "CMIP6, 1901-1940", "CMIP6, 1975-2014"), col = c("black", "grey40", "brown4", 
+                                                         make.transparent.color(red.cols[3], alpha = 256), make.transparent.color(red.cols[5], alpha = 256),
+                                                         make.transparent.color(red.cols[7], alpha = 256), make.transparent.color(red.cols[9], alpha = 256)), 
+           pch = c(8, 3, 3, 16, 16, 16, 16), pt.cex = c(1, 1.5, 1.5, 1, 1, 1, 1),
+           inset = 0.02, cex = 0.71)
     }
     
     # second part of plot (constraints):

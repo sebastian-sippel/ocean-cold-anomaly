@@ -8,9 +8,9 @@
 
 
 ## load all data for reconstructions:
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04a_master_load_reconstructions.R")
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04b_master_read_paleo_reconstructions.R")
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04c_compute_trends_4paleo-comparison.R")
+source("scripts/04a_master_load_reconstructions.R")
+source("scripts/04b_master_read_paleo_reconstructions.R")
+source("scripts/04c_compute_trends_4paleo-comparison.R")
 
 
 
@@ -29,7 +29,7 @@ xlim = c(0,8)
 trend.ix = 9
 
 
-pdf(file = file.name, width = 5, height = 2.5)
+pdf(file = file.name, width = 3.5, height = 1.75, pointsize = 7)
 {
     par(mfrow=c(1, 1), mar=c(1,5,1,1))
     # ylim = c(-0.9, 0.5); xlim = c(0,8)
@@ -39,7 +39,7 @@ pdf(file = file.name, width = 5, height = 2.5)
     lines(x = c(0, 1000), y = c(0,0), col = "lightgrey")
     axis(side = 2, at = seq(-0.5, 0.5, 0.1), tcl=0.2, labels=F)
     # mtext("a", side = 3, line = 0, at = -0.9, adj = 0, cex = 1.1, font = 2)
-    mtext("b", side = 3, line = 0, at = -2, adj = 0, cex = 0.9, font = 2)
+    mtext("b", side = 3, line = 0, at = -1.5, adj = 0, cex = 0.9, font = 2)
     
     {
       # Tropics, full reconstruction:
@@ -111,17 +111,17 @@ pdf(file = file.name, width = 5, height = 2.5)
     }
     
     ### Legend:
-    text(x = 1.4, y = ylim[2] - 0.1, labels = "Tropics", pos=2, cex = 0.7)
-    text(x = 3.4, y = ylim[2] - 0.1, labels = "West \n Pacific", pos=2, cex = 0.7)
-    text(x = 5.4, y = ylim[2] - 0.1, labels = "Indian \n Ocean", pos=2, cex = 0.7)
-    text(x = 7.4, y = ylim[2] - 0.1, labels = "West \n Atlantic", pos=2, cex = 0.7)
+    text(x = 1.4, y = ylim[2] - 0.1, labels = "Tropics", pos=2, cex = 0.71)
+    text(x = 3.4, y = ylim[2] - 0.1, labels = "West \n Pacific", pos=2, cex = 0.71)
+    text(x = 5.4, y = ylim[2] - 0.1, labels = "Indian \n Ocean", pos=2, cex = 0.71)
+    text(x = 7.4, y = ylim[2] - 0.1, labels = "West \n Atlantic", pos=2, cex = 0.71)
     # text(x = 10, y = 0.4, labels = "East \n Pacific", pos=2)
     
     
     legend("bottomleft", c("Land-based reconstruction \n of ocean region", "HadSST4, region average", "Best reconstruction \n (Tierney et al., 2015)",
                            "Range (Tierney et al., 2015)"), col = c(make.transparent.color("orange", 75), 
                                                                    make.transparent.color("blue", 75),
-                                                                   "black", make.transparent.color("darkorchid4", 100)), lwd = c(6,6, NA, 6), pch = c(NA, NA, 25, NA), pt.bg = c(NA, NA, make.transparent.color("darkorchid4", 100), NA), cex = 0.5,
+                                                                   "black", make.transparent.color("darkorchid4", 100)), lwd = c(6,6, NA, 6), pch = c(NA, NA, 25, NA), pt.bg = c(NA, NA, make.transparent.color("darkorchid4", 100), NA), cex = 0.71,
            inset = 0.01, ncol = 2, bg = "white", pt.cex = 1)
   }
 dev.off()
@@ -140,7 +140,7 @@ xlim = c(0,6.3)
 trend.ix = 9
 
 
-  pdf(file = file.name, width = 5, height = 2.5)
+  pdf(file = file.name, width = 3.5, height = 1.75, pointsize = 7)
   {
     par(mfrow=c(1, 1), mar=c(0.2,5,0.2,0.2))
     
@@ -149,9 +149,9 @@ trend.ix = 9
          main = "", ylim = ylim, xlim = xlim, las=1, yaxs="i", xaxt="n", xaxs="i", cex.axis = 0.8, cex.lab = 0.8)
     lines(x = c(0, 1000), y = c(0,0), col = "lightgrey")
     axis(side = 2, at = seq(-0.5, 0.5, 0.1), tcl=0.2, labels=F)
-    mtext("a", side = 3, line = -0.5, at = -1.5, adj = 0, cex = 0.9, font = 2)
+    mtext("a", side = 3, line = -0.5, at = -1.15, adj = 0, cex = 0.9, font = 2)
     
-    at = 0.5; wex = 0.6; cex = 0.5
+    at = 0.5; wex = 0.6; cex = 0.71
     
     # Instrumental reconstruction:
     vioplot(x = OBS.GMST_tas_land.trends[trend.ix,], at = at, wex = wex, col = make.transparent.color("darkorange", alpha = 75), side = "left", add = T, pchMed = 21, yaxt="n", frame.plot = F)
@@ -181,7 +181,7 @@ trend.ix = 9
     text(x = at + 1 - 0.25, y = 0.48, labels = "HadCRUT5 (non-infilled)", srt = 90, cex = cex, adj = 1)
     text(x = at + 1, y = 0.48, labels = "Berkeley Earth", srt = 90, cex = cex, adj = 1)
     text(x = at + 1 + 0.25, y = 0.48, labels = "CW14 (HadSST4 based)", srt = 90, cex = cex, adj = 1)
-    text(x = at + 1 + 0.5, y = 0.48, labels = "CW14 (COBE-SST2 based)", srt = 90, cex = cex, adj = 1)
+    text(x = at + 1 + 0.53, y = 0.48, labels = "CW14 (COBE-SST2 based)", srt = 90, cex = cex, adj = 1)
     
     
     # Neukom GMST estimates:
@@ -257,7 +257,7 @@ trend.ix = 9
     # length(which(CW14.trend[trend.ix] > c(neukom2019_perioddiff_all))) / 7000 * 100  # 5.9th percentile
     # length(which(CW14_COBE.trend[trend.ix] > c(neukom2019_perioddiff_all))) / 7000 * 100  # 24th percentile
 
-    at = 0.5; cex = 0.5
+    at = 0.5; cex = 0.71
     text(x = at-0.1, y = -0.45, labels = round(length(which( median(OBS.GMST_tas_land.trends[trend.ix,]) > c(neukom2019_perioddiff_all))) / 7000 * 100, 1), srt = 0, cex = cex)
     text(x = at+0.2, y = -0.45, labels = round(length(which( median(OBS.GMST_tos.trends[trend.ix,]) > c(neukom2019_perioddiff_all))) / 7000 * 100, 1), srt = 0, cex = cex)
     
@@ -266,7 +266,7 @@ trend.ix = 9
     text(x = at + 1 + 0.25, y = -0.45, labels = round(length(which(CW14.trend[trend.ix] > c(neukom2019_perioddiff_all))) / 7000 * 100, 1), srt = 0, cex = cex)
     text(x = at + 1 + 0.55, y = -0.45, labels = round(length(which(CW14_COBE.trend[trend.ix] > c(neukom2019_perioddiff_all))) / 7000 * 100, 1), srt = 0, cex = cex)
     
-    text(x = at + 3, y = -0.45, labels = "Percentile of instrumental dataset (median) \n in Pages2k GMST reconstruction ensemble", srt = 0, cex = cex)
+    text(x = at + 3.5, y = -0.45, labels = "Percentile of instrumental dataset (median) \n in Pages2k GMST reconstruction ensemble", srt = 0, cex = cex)
     
   }
   dev.off()

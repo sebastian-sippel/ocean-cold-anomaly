@@ -37,7 +37,7 @@ lat = c(matrix(coordinates(raster.template)[,2], 72, 36)[,36:1])
     
     print(mon)
     
-    load(paste("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/data/01_processed4train_CRU/HadSST4_mon", mon, ".RData", sep=""))
+    load(paste("data/01_processed4train_CRU/HadSST4_mon", mon, ".RData", sep=""))
     
     # Indian Ocean (20◦N–15◦S, 40–100◦E):
     grid.ix = which(lat < 20 & lat > -15 & lon > 40 & lon < 100)

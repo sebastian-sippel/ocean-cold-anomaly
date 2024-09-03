@@ -80,11 +80,10 @@ BEST_anom = brick("data/00_DATASET/obs/BEST/Land_and_Ocean_LatLong1_ann.nc", var
 #### Get BerkeleyEarth comparison for 1901-1920:
 
 # set working directory:
-
   cold_anomaly = calc(subset(x = BEST_anom, c(52:71)), fun=mean, na.rm=T)
   ref_period = calc(subset(x = BEST_anom, c(22:41)), fun = mean, na.rm=T)
   
-  pdf(file = "figures/03_spatial_anomaly/fig3b.pdf", width = 9, height = 6)
+  pdf(file = "figures/03_spatial_anomaly/fig3b.pdf", width = 3.5, height = 2.333, pointsize = 5)
   par(mar=c(1,1,1,1), oma=c(0,0,0,0))
   plot_projected_worldmap_eucentric(file.name = NULL, beta = cold_anomaly - ref_period, 
                           disagg = 1, col = col, zlim = c(-2, 2), legend.text = "Temperature difference [°C], [1901-20] vs. [1871-90]", main = "Berkeley Earth",
@@ -137,12 +136,13 @@ lines(coastsCoarse, col = "grey")
 # setwd("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/figures/03_spatial_anomaly/")
 
 
-pdf(file = "fig3a_frac50.pdf", width = 9, height = 6)
-par(mar=c(1,1,1,1), oma=c(0,0,0,0))
+pdf(file = "figures/03_spatial_anomaly/fig3a_frac50.pdf", width = 3.5, height = 2.3333, pointsize = 5)
+par(mar=c(1,0.5,1,0.5), oma=c(0,0.5,0,0.5))
 plot_projected_worldmap_eucentric_DIFF(file.name = NULL, beta = HadSST4_diff, disagg = 1, col = rev(colorRampPalette(RdBu)(101)), zlim = c(-2, 2), useRaster = T, 
-                                                   legend.text = "Temperature difference [°C], 1901-20 vs. 1871-90", main = "CRUTEM5 and HadSST4", nlab = 5, legend = T, asp = 1, 
+                                                   legend.text = "Temperature difference [°C], [1901-20] vs. [1871-90]", main = "CRUTEM5 and HadSST4", nlab = 5, legend = T, asp = 1, 
                                                    raster.to.add = CRUTEM5_diff)
 dev.off()
+
 
 plot_projected_worldmap_eucentric_DIFF(file.name = "figures/03_spatial_anomaly/fig3a_frac50.png", beta = HadSST4_diff, disagg = 1, col = rev(colorRampPalette(RdBu)(101)), zlim = c(-2, 2), useRaster = T, 
                                        legend.text = "Temperature difference [°C], [1901-20] vs. [1871-90]", main = "CRUTEM5 and HadSST4", nlab = 5, legend = T, asp = 1, 
@@ -152,10 +152,10 @@ plot_projected_worldmap_eucentric_DIFF(file.name = "figures/03_spatial_anomaly/f
 HadSST4_diff = get.change(cur.raster = HadSST4, cur.nobs = HadSST4_nobs, ref.period = 1871:1890, test.period = 1901:1920, frac.data = 0.2)
 CRUTEM5_diff = get.change(cur.raster = CRUTEM5, cur.nobs = CRUTEM5_nobs, ref.period = 1871:1890, test.period = 1901:1920, frac.data = 0.2)
 
-pdf(file = "fig3a_frac20.pdf", width = 9, height = 6)
+pdf(file = "figures/03_spatial_anomaly/fig3a_frac20.pdf", width = 3.5, height = 2.3333, pointsize = 5)
 par(mar=c(1,1,1,1), oma=c(0,0,0,0))
 plot_projected_worldmap_eucentric_DIFF(file.name = NULL, beta = HadSST4_diff, disagg = 1, col = rev(colorRampPalette(RdBu)(101)), zlim = c(-2, 2), useRaster = F, 
-                                       legend.text = "Temperature difference [°C], 1901-20 vs. 1871-90", main = "CRUTEM5 and HadSST4", nlab = 5, legend = T, asp = 1, 
+                                       legend.text = "Temperature difference [°C], [1901-20] vs. [1871-90]", main = "CRUTEM5 and HadSST4", nlab = 5, legend = T, asp = 1, 
                                        raster.to.add = CRUTEM5_diff)
 dev.off()
 
@@ -197,7 +197,7 @@ CRUTEM5_diff = get.change(cur.raster = CRUTEM5, cur.nobs = CRUTEM5_nobs, ref.per
 ## try whether violin plot looks nicer:
 library(vioplot)
 
-pdf("figures/03_spatial_anomaly/fig3c_frac50.pdf", height = 9, width = 5)
+pdf("figures/03_spatial_anomaly/fig3c_frac50.pdf", height = 4.5, width = 2, pointsize = 5)
 {
   par(mfrow = c(1, 1), mar = c(4,1,2,1))
   plot(c(1,1), type="n", ylim = c(1, 8), xlim = c(-1.1, 1.1),
@@ -214,8 +214,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac50.pdf", height = 9, width = 5)
     
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = 7.45, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = 7.45, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = 7.9, labels = c("Global"), adj = 0)
-    text(x = 0.75, y = 7.9, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40")
+    text(x = -1, y = 7.9, labels = c("Global"), adj = 0)
+    text(x = 0.2, y = 7.9, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40", adj = 0)
     
     lines(y = c(7.1, 7.1), x = c(-2, 2), col = "grey40")
     
@@ -227,8 +227,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac50.pdf", height = 9, width = 5)
     
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = 6.45, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = 6.45, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = 6.9, labels = c("Northern Hemisphere \n Extra-Tropics"), adj = 0)
-    text(x = 0.75, y = 6.9, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40")
+    text(x = -1, y = 6.9, labels = c("Northern Hemisphere \n Extra-Tropics"), adj = 0)
+    text(x = 0.2, y = 6.9, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40", adj = 0)
     
     # Tropics < 30°N & > -30°N:
     ix = which(values(!is.na(HadSST4_diff) & !is.na(CRUTEM5_diff)) & coordinates(CRUTEM5_diff)[,2] < 30 & coordinates(CRUTEM5_diff)[,2] > -30)
@@ -237,8 +237,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac50.pdf", height = 9, width = 5)
     vioplot(x = values(CRUTEM5_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = 5.5, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = 5.45, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = 5.45, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = 5.9, labels = c("Tropics"), adj = 0)
-    text(x = 0.75, y = 5.9, labels = paste("n = ", length(ix), "   p<.01 **", sep=""), col = "grey40")
+    text(x = -1, y = 5.9, labels = c("Tropics"), adj = 0)
+    text(x = 0.2, y = 5.9, labels = paste("n = ", length(ix), "   p<.01 **", sep=""), col = "grey40", adj = 0)
     
     # SH Extratropics > 30°N:
     ix = which(values(!is.na(HadSST4_diff) & !is.na(CRUTEM5_diff)) & coordinates(CRUTEM5_diff)[,2] < -30)
@@ -248,8 +248,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac50.pdf", height = 9, width = 5)
     vioplot(x = values(CRUTEM5_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = at, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = at - 0.05, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = at - 0.05, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = at + 0.4, labels = label, adj = 0)
-    text(x = 0.75, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40")
+    text(x = -1, y = at + 0.4, labels = label, adj = 0)
+    text(x = 0.2, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40", adj = 0)
     
     lines(y = c(4.1, 4.1), x = c(-2, 2), col = "grey40")
   
@@ -266,8 +266,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac50.pdf", height = 9, width = 5)
     vioplot(x = values(CRUTEM5_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = at, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = at - 0.05, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = at - 0.05, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = at + 0.4, labels = label, adj = 0)
-    text(x = 0.75, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40")
+    text(x = -1, y = at + 0.4, labels = label, adj = 0)
+    text(x = 0.2, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40", adj = 0)
     
     
     # Atlantic: 
@@ -280,8 +280,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac50.pdf", height = 9, width = 5)
     vioplot(x = values(CRUTEM5_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = at, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = at - 0.05, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = at - 0.05, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = at + 0.4, labels = label, adj = 0)
-    text(x = 0.75, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40")
+    text(x = -1, y = at + 0.4, labels = label, adj = 0)
+    text(x = 0.2, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40", adj = 0)
     
     # Indian Ocean: 
     # 20°E, 30°N, 120°E, -75°N
@@ -293,8 +293,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac50.pdf", height = 9, width = 5)
     vioplot(x = values(CRUTEM5_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = at, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = at - 0.05, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = at - 0.05, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = at + 0.4, labels = label, adj = 0)
-    text(x = 0.75, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.05 *", sep=""), col = "grey40")
+    text(x = -1, y = at + 0.4, labels = label, adj = 0)
+    text(x = 0.2, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.05 *", sep=""), col = "grey40", adj = 0)
   }
   legend("bottomright", c("Land", "Ocean"), col = c(make.transparent.color("darkorange", alpha = 75), make.transparent.color("blue", alpha = 75)), lty = 1, lwd = 8, inset = 0.02, bg = "white")
 }
@@ -307,7 +307,7 @@ HadSST4_diff = get.change(cur.raster = HadSST4, cur.nobs = HadSST4_nobs, ref.per
 CRUTEM5_diff = get.change(cur.raster = CRUTEM5, cur.nobs = CRUTEM5_nobs, ref.period = 1871:1890, test.period = 1901:1920, frac.data = 0.2)
 
 
-pdf("figures/03_spatial_anomaly/fig3c_frac20.pdf", height = 9, width = 5)
+pdf("figures/03_spatial_anomaly/fig3c_frac20.pdf", height = 4.5, width = 2, pointsize = 5)
 {
   par(mfrow = c(1, 1), mar = c(4,1,2,1))
   plot(c(1,1), type="n", ylim = c(1, 8), xlim = c(-1.1, 1.1),
@@ -324,8 +324,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac20.pdf", height = 9, width = 5)
     
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = 7.45, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = 7.45, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = 7.9, labels = c("Global"), adj = 0)
-    text(x = 0.75, y = 7.9, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40")
+    text(x = -1, y = 7.9, labels = c("Global"), adj = 0)
+    text(x = 0.2, y = 7.9, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40", adj = 0)
     
     lines(y = c(7.1, 7.1), x = c(-2, 2), col = "grey40")
     
@@ -337,8 +337,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac20.pdf", height = 9, width = 5)
     
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = 6.45, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = 6.45, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = 6.9, labels = c("Northern Hemisphere \n Extra-Tropics"), adj = 0)
-    text(x = 0.75, y = 6.9, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40")
+    text(x = -1, y = 6.9, labels = c("Northern Hemisphere \n Extra-Tropics"), adj = 0)
+    text(x = 0.2, y = 6.9, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40", adj = 0)
     
     # Tropics < 30°N & > -30°N:
     ix = which(values(!is.na(HadSST4_diff) & !is.na(CRUTEM5_diff)) & coordinates(CRUTEM5_diff)[,2] < 30 & coordinates(CRUTEM5_diff)[,2] > -30)
@@ -347,8 +347,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac20.pdf", height = 9, width = 5)
     vioplot(x = values(CRUTEM5_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = 5.5, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = 5.45, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = 5.45, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = 5.9, labels = c("Tropics"), adj = 0)
-    text(x = 0.75, y = 5.9, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40")
+    text(x = -1, y = 5.9, labels = c("Tropics"), adj = 0)
+    text(x = 0.2, y = 5.9, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40", adj = 0)
     
     # SH Extratropics > 30°N:
     ix = which(values(!is.na(HadSST4_diff) & !is.na(CRUTEM5_diff)) & coordinates(CRUTEM5_diff)[,2] < -30)
@@ -358,8 +358,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac20.pdf", height = 9, width = 5)
     vioplot(x = values(CRUTEM5_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = at, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = at - 0.05, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = at - 0.05, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = at + 0.4, labels = label, adj = 0)
-    text(x = 0.75, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40")
+    text(x = -1, y = at + 0.4, labels = label, adj = 0)
+    text(x = 0.2, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40", adj = 0)
     
     lines(y = c(4.1, 4.1), x = c(-2, 2), col = "grey40")
     
@@ -376,8 +376,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac20.pdf", height = 9, width = 5)
     vioplot(x = values(CRUTEM5_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = at, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = at - 0.05, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = at - 0.05, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = at + 0.4, labels = label, adj = 0)
-    text(x = 0.75, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40")
+    text(x = -1, y = at + 0.4, labels = label, adj = 0)
+    text(x = 0.2, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40", adj = 0)
     
     
     # Atlantic: 
@@ -390,8 +390,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac20.pdf", height = 9, width = 5)
     vioplot(x = values(CRUTEM5_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = at, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = at - 0.05, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = at - 0.05, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = at + 0.4, labels = label, adj = 0)
-    text(x = 0.75, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40")
+    text(x = -1, y = at + 0.4, labels = label, adj = 0)
+    text(x = 0.2, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.001 ***", sep=""), col = "grey40", adj = 0)
     
     # Indian Ocean: 
     # 20°E, 30°N, 120°E, -75°N
@@ -403,8 +403,8 @@ pdf("figures/03_spatial_anomaly/fig3c_frac20.pdf", height = 9, width = 5)
     vioplot(x = values(CRUTEM5_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="right", at = at, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("blue", alpha = 75), side="left", at = at - 0.05, wex = 0.5, axes = F, add = T, pchMed = 21, horizontal = T)
     vioplot(x = values(HadSST4_diff)[ix], col = make.transparent.color("white", alpha = 0), border = NA, side="left", at = at - 0.05, wex = 1.5, axes = F, add = T, pchMed = 21, horizontal = T)
-    text(x = -0.9, y = at + 0.4, labels = label, adj = 0)
-    text(x = 0.75, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.05 *", sep=""), col = "grey40")
+    text(x = -1, y = at + 0.4, labels = label, adj = 0)
+    text(x = 0.2, y = at + 0.4, labels = paste("n = ", length(ix), "   p<.05 *", sep=""), col = "grey40", adj = 0)
   }
   legend("bottomright", c("Land", "Ocean"), col = c(make.transparent.color("darkorange", alpha = 75), make.transparent.color("blue", alpha = 75)), lty = 1, lwd = 8, inset = 0.02, bg = "white")
 }

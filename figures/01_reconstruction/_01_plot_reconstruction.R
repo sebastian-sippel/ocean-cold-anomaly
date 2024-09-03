@@ -6,9 +6,10 @@
 # Sebastian Sippel
 # 03.01.2024
 
+setwd(".")
 
 ## load all data for reconstructions:
-source("/net/h2o/climphys1/sippels/_projects/ocean-cold-anomaly/scripts/04a_master_load_reconstructions.R")
+source("scripts/04a_master_load_reconstructions.R")
 
 # code for plots:
 source("code/_convenience/frenchcolormap.R")
@@ -57,11 +58,11 @@ col.HadSST4_ua = "magenta4"
 ## Figure 1: Plot GMST filtered time series with hybrid correction vector:
 ## ----------------------------------------------------------------------------------------
 
-# mod_p1:
-pdf(file = "figures/01_reconstruction/fig1.pdf", width = 8, height=11)
+# mod_p1 / 1 column:
+pdf(file = "figures/01_reconstruction/fig1.pdf", width = 3.5, height=5.2, pointsize = 5)
 {
   par(mfrow=c(1, 1), mar=c(2,5,1,4))
-  ylim = c(-4.6, 6.3); xlim = c(1848,2022)
+  ylim = c(-4.75, 6.9); xlim = c(1848,2022)
   
   plot(x = 1850:2020, y = 1850:2020, type="n", 
        ylab = expression("Predicted global mean surface temperature anomaly [" * hat(T) * ", in °C]"), 
@@ -69,55 +70,55 @@ pdf(file = "figures/01_reconstruction/fig1.pdf", width = 8, height=11)
   
   {
     # Add the rectangle polygon to the plot
-    polygon(x = c(1900, 1930, 1930, 1900), y = c(-5, -5, 6.3, 6.3), border = "darkgray", col = make.transparent.color("lightgrey", alpha = 60))
+    polygon(x = c(1900, 1930, 1930, 1900), y = c(-5, -5, 6.3, 6.3), border = "darkgray", col = make.transparent.color("lightgrey", alpha = 60), lwd = 0.5)
     
-    lines(x = c(1850, 1850), y = c(-10, 10), col = "lightgrey", lty = 1)
-    lines(x = c(1875, 1875), y = c(-10, 10), col = "lightgrey", lty = 1)
-    lines(x = c(1900, 1900), y = c(-10, 10), col = "lightgrey", lty = 1)
-    #lines(x = c(1925, 1925), y = c(-10, 10), col = "lightgrey", lty = 1)
-    lines(x = c(1950, 1950), y = c(-10, 10), col = "lightgrey", lty = 1)
-    lines(x = c(1975, 1975), y = c(-10, 10), col = "lightgrey", lty = 1)
-    lines(x = c(2000, 2000), y = c(-10, 10), col = "lightgrey", lty = 1)
+    lines(x = c(1850, 1850), y = c(-10, 6), col = "lightgrey", lty = 1, lwd = 0.5)
+    lines(x = c(1875, 1875), y = c(-10, 10), col = "lightgrey", lty = 1, lwd = 0.5)
+    lines(x = c(1900, 1900), y = c(-10, 10), col = "lightgrey", lty = 1, lwd = 0.5)
+    #lines(x = c(1925, 1925), y = c(-10, 10), col = "lightgrey", lty = 1, lwd = 0.5)
+    lines(x = c(1950, 1950), y = c(-10, 10), col = "lightgrey", lty = 1, lwd = 0.5)
+    lines(x = c(1975, 1975), y = c(-10, 10), col = "lightgrey", lty = 1, lwd = 0.5)
+    lines(x = c(2000, 2000), y = c(-10, 10), col = "lightgrey", lty = 1, lwd = 0.5)
     
     axis(side = 1, at = c(1850, 1900, 1950, 2000, 2020))
     axis(side = 1, at = seq(1850, 2020, 5), tcl=0.2, labels=F)
     
     axis(side = 2, at = seq(4, 6, 0.5), labels=seq(-1, 1, 0.5), las = 1)  # +0.9
     axis(side = 2, at = seq(4, 6, 0.1), labels=F, tcl=0.2)
-    lines(x = c(1850, 2020), y = c(5, 5), col = "darkgray", lty = 1)
+    lines(x = c(1850, 2020), y = c(5, 5), col = "darkgray", lty = 1, lwd = 0.5)
     text(x = 1850, y = 5.5, labels = "a. Original Reconstruction", col = "black", pos = 4, font = 2)
     
     axis(side = 4, at = seq(2, 4, 0.5) + 0.5, labels=seq(-1, 1, 0.5), las = 1)  # +0.9
     axis(side = 4, at = seq(2, 4, 0.1) + 0.5, labels=F, tcl=0.2)
-    lines(x = c(1850, 2020), y = c(3, 3) + 0.5, col = "darkgray", lty = 1)
-    text(x = 1850, y = 3.3+0.5, labels = "b. Low-pass filtered \n (>20yr)", col = "black", pos = 4, font = 2)
+    lines(x = c(1850, 2020), y = c(3, 3) + 0.5, col = "darkgray", lty = 1, lwd = 0.5)
+    text(x = 1850, y = 3.3+0.5, labels = "b. Low-pass \n filtered (>20yr)", col = "black", pos = 4, font = 2)
     
     axis(side = 2, at = seq(0, 2, 0.5) + 0.5*2, labels=seq(-1, 1, 0.5), las = 1)  # +0.9
     axis(side = 2, at = seq(0, 2, 0.1) + 0.5*2, labels=F, tcl=0.2)
-    lines(x = c(1850, 2020), y = c(1, 1) + 0.5*2, col = "darkgray", lty = 1)
-    text(x = 1850, y = 1.5 + 0.5*2, labels = "c. High-pass filtered \n (<20yr)", col = "black", pos = 4, font = 2)
+    lines(x = c(1850, 2020), y = c(1, 1) + 0.5*2, col = "darkgray", lty = 1, lwd = 0.5)
+    text(x = 1850, y = 1.5 + 0.5*2, labels = "c. High-pass \n filtered (<20yr)", col = "black", pos = 4, font = 2)
     
     axis(side = 4, at = seq(-2, 0, 0.5) + 0.5*3, labels=seq(-1, 1, 0.5), las = 1)  # +0.9
     axis(side = 4, at = seq(-2, 0, 0.1) + 0.5*3, labels=F, tcl=0.2)
-    lines(x = c(1850, 2020), y = c(-1, -1) + 0.5*3, col = "darkgray", lty = 1)
+    lines(x = c(1850, 2020), y = c(-1, -1) + 0.5*3, col = "darkgray", lty = 1, lwd = 0.5)
     text(x = 1850, y = -0.5 + 0.5*3, labels = "d. Forced response", col = "black", pos = 4, font = 2)
     
     axis(side = 2, at = seq(-4, -2, 0.5) + 0.5*4, labels=seq(-1, 1, 0.5), las = 1)  # +0.9
     axis(side = 2, at = seq(-4, -2, 0.1) + 0.5*4, labels=F, tcl=0.2)
-    lines(x = c(1850, 2020), y = c(-3, -3) + 0.5*4, col = "darkgray", lty = 1)
+    lines(x = c(1850, 2020), y = c(-3, -3) + 0.5*4, col = "darkgray", lty = 1, lwd = 0.5)
     text(x = 1850, y = -2.5 + 0.5*4, labels = "e. Unforced, low-pass filtered (>20yr)", col = "black", pos = 4, font = 2)
     
     axis(side = 4, at = seq(-6, -4, 0.5) + 0.5*5, labels=seq(-1, 1, 0.5), las = 1)  # +0.9
     axis(side = 4, at = seq(-6, -4, 0.1) + 0.5*5, labels=F, tcl=0.2)
-    lines(x = c(1850, 2020), y = c(-5, -5) + 0.5*5, col = "darkgray", lty = 1)
+    lines(x = c(1850, 2020), y = c(-5, -5) + 0.5*5, col = "darkgray", lty = 1, lwd = 0.5)
     text(x = 1850, y = -4.5 + 0.5*5, labels = "f. Unforced, high-pass filtered (<20yr)", col = "black", pos = 4, font = 2)
     
     axis(side = 2, at = seq(-7.5, -6, 0.5) + 0.5*6, labels=seq(-0.5, 1, 0.5), las = 1)  # +0.9
     axis(side = 2, at = seq(-7.5, -6, 0.1) + 0.5*6, labels=F, tcl=0.2)
-    lines(x = c(1850, 2020), y = c(-7, -7) + 0.5*6, col = "darkgray", lty = 1)
+    lines(x = c(1850, 2020), y = c(-7, -7) + 0.5*6, col = "darkgray", lty = 1, lwd = 0.5)
     text(x = 1850, y = -6.1 + 0.5*6, labels = "g. Implied SST adjustments w.r.t. HadSST4-unadj.", col = "black", pos = 4, font = 2)
     
-    mtext(text = "Global implied \n SST Adjustment [°C]", side = 2, line = 3, at = -3.8, col = "black", cex = 0.9)
+    mtext(text = "Global implied \n SST Adjustment [°C]", side = 2, line = 3, at = -3.8, col = "black", cex = 1)
   }
   
   # Full reconstruction:
@@ -285,30 +286,23 @@ pdf(file = "figures/01_reconstruction/fig1.pdf", width = 8, height=11)
     lines(x = 1850:2016, y = (cor_vec_hadsst4[1:167] + cor_vec_hybrid36) * sc + c, col = col.hybrid36, lwd = 1.5)
   }
   
-  
   legend("top", c("CRUTEM5", "HadSST4", "HadSST4-unadj", "ClassNMAT", "CoastalHybridSST"),
           lty = 1, col = c(col.CRUTEM5, col.HadSST4, col.HadSST4_ua, col.CLASSNMAT, col.hybrid36),  
-          cex = 0.7, lwd = 2, ncol = 3, bg = "white", title = "Dataset used for GMST reconstruction")
+          cex = 1, lwd = 2, ncol = 2, bg = "white", title = "Dataset used for GMST reconstruction")
   
-  # legend("top", 
-  #       legend = c(expression(hat(T)[CRUTEM5]), 
-  #                  expression(hat(T)[HadSST4]), 
-  #                  expression(hat(T)[HadSST4-unadj]),
-  #                  expression(hat(T)[ClassNMAT]),
-  #                  expression(hat(T)[CoastalHybridSST])), 
-  #       lty = 1, 
-  #       col = c(col.CRUTEM5, col.HadSST4, col.HadSST4_ua, col.CLASSNMAT, col.hybrid36),  
-  #       cex = 0.75, 
-  #       lwd = 2, 
-  #       ncol = 3, 
-  #       bg = "white")
+  legend("bottom", legend = "                                                  ", 
+         ncol = 2, bg = "white", inset = 0.007, bty = "o", x.intersp = 0, y.intersp = 0.6)
   
-  legend("bottomright", 
-         legend = c(expression(hat(T)[HadSST4] - hat(T)[HadSST4-unadj]), 
-                    expression(hat(T)[CoastalHybridSST] - hat(T)[HadSST4-unadj])),
-         col = c(col.HadSST4, col.hybrid36),  
-         cex = 0.7, ncol = 2, bg = "white", inset = 0.01, lwd = 2)
-
+  legend("bottomleft", c(expression(hat(T)[HadSST4] - hat(T)[HadSST4-unadj])), col = c(col.HadSST4), inset = 0.007, lwd = 1.5, 
+         x.intersp = 0.8, y.intersp = 0.4, bty = "n")
+  legend("bottomright", c(expression(hat(T)[CoastalHybridSST] - hat(T)[HadSST4-unadj])), col = c(col.hybrid36), inset = 0.007, lwd = 1.5, 
+         x.intersp = 0.8, y.intersp = 0.4, bty = "n")
+  
+  # legend("bottomleft", 
+  #       legend = c(expression(hat(T)[HadSST4] - hat(T)[HadSST4-unadj]), 
+  #                  expression(hat(T)[CoastalHybridSST] - hat(T)[HadSST4-unadj])),
+  #       col = c(col.HadSST4, col.hybrid36),  
+  #       cex = 1, ncol = 2, bg = "white", inset = 0.007, lwd = 2, x.intersp = 0, y.intersp = 0.4)
 }
 dev.off()
 

@@ -24,8 +24,6 @@ land.polygon_eucentric <- readOGR("code/spatial_utils/shp_global110/", "110m_lan
 
 
 {
-  
-  
   # Adjust raster values to zlim:
   adjust_raster_values <- function(cur.raster, zlim) {
     
@@ -103,13 +101,13 @@ land.polygon_eucentric <- readOGR("code/spatial_utils/shp_global110/", "110m_lan
     land.polygon1=gBuffer(land.polygon, byid=TRUE, width=0)
     options(warn=0)
     plot(spTransform(crop(land.polygon1, extent(land.polygon)-0.0001 ), CRSobj = PROJ_deshift), add = T)
-    plot(pp_proj, add=T, lwd = 2)
     
     # get the horizontal lines:
     hori.lines = (spLines(rbind(c(180, 0), c(-180, 0)), rbind(c(180, 45), c(-180, 45)), rbind(c(180, -45), c(-180, -45)), crs = proj4string(beta)))
     plot(spTransform(hori.lines, CRSobj = PROJ), add=T, col = "darkgrey")
     vert.lines =  spLines(cbind(-120, seq(-90, 90, by = 0.1)), cbind(-60, seq(-90, 90, by = 0.1)), cbind(0, seq(-90, 90, by = 0.1)), cbind(60, seq(-90, 90, by = 0.1)), cbind(120, seq(-90, 90, by = 0.1)), crs = proj4string(beta))
     lines(spTransform(vert.lines, CRSobj = PROJ), col = "darkgrey")
+    plot(pp_proj, add=T, lwd = 2)
     
     if (!is.null(points.to.add)) plot(spTransform(SpatialPoints(points.to.add, proj4string = longlat), CRSobj = PROJ), pch = 16, cex = 0.2, add=T)
     
@@ -171,25 +169,51 @@ land.polygon_eucentric <- readOGR("code/spatial_utils/shp_global110/", "110m_lan
     # par(mar=c(1,1,1,1), oma=c(0,0,0,0), mfrow=c(1,1))
     
     if (!is.null(file.name)) {
-      png(file = file.name, width = 9, height = 6, units = "in", res = 150)
+      png(file = file.name, width = 3.5, height = 2.333, units = "in", res = 150, pointsize = 5)
       par(mar=c(1,1,1,1), oma=c(0,0,0,0))
     } 
     
-    plot(beta_proj, axes=F, box=FALSE, add = F, horizontal=T, legend=F,
-         zlim = c(zlim[1]-leg.col.diff, zlim[2]+leg.col.diff), interpolate=FALSE,
-         col = col, colNA = "gray92", useRaster = T, main = main, breaks =  c(zlim[1]-leg.col.diff*leg.const, seq(zlim[1], zlim[2], length.out = length(col)-1), zlim[2]+leg.col.diff*leg.const), asp = asp)
+    # Create a mask for NA values
+    beta_proj_NA <- beta_proj  # Create a logical mask where NA values are TRUE
+    values(beta_proj_NA)[values(is.na(beta_proj))] <- -9999  # Create a logical mask where NA values are TRUE
+    
+    # Create a custom color palette including NA color
+    custom_colors <- c("gray93", col)  # 'gray92' for NA values, followed by your regular color palette
+    
+    # Modify the breaks to include an extra range for NA values
+    extended_breaks <- c(zlim[1] - leg.col.diff * leg.const, 
+                         seq(zlim[1], zlim[2], length.out = length(col) - 1), 
+                         zlim[2] + leg.col.diff * leg.const)
+    
+    # Plot the raster with the custom palette
+    plot(beta_proj, 
+         axes = FALSE, 
+         box = FALSE, 
+         add = FALSE, 
+         horizontal = TRUE, 
+         legend = FALSE,
+         zlim = c(zlim[1] - leg.col.diff, zlim[2] + leg.col.diff), 
+         interpolate = FALSE,
+         col = col,  # Use the custom color palette
+         colNA = "gray93",  # Set the NA color directly
+         useRaster = T, 
+         main = main, 
+         breaks = extended_breaks,  # Use the extended breaks
+         asp = asp)
+    
     # axis.args=list(labels = seq(zlim[1], zlim[2], length.out=nlab), at = seq(zlim[1], zlim[2], length.out=nlab))) # round(seq(zlim[1], zlim[2], length.out = length(col)+1), 4))   # colNA argument can be switched off
-    mtext(legend.text, side=1, line=-0.5)
+    mtext(legend.text, side=1, line=-0.3)
     plot(temp, add =T, horizontal=F, legend=F, useRaster=T, col="white", axes=F, box=FALSE, interpolate = F)  # temp simply color grid cells white that lie ouside of rectangle, 20190616
     
-    lines(spTransform(land.polygon_eucentric, CRSobj = PROJ), add=T, col = "grey")
+
+    lines(spTransform(land.polygon_eucentric, CRSobj = PROJ), add=T, col = "grey", lwd = 0.6)
     # plot(spTransform(land.polygon, CRSobj = PROJ), add = T)
-    plot(pp_proj, add=T, lwd = 2)
     
     hori.lines = (spLines(rbind(c(180, 0), c(-180, 0)), rbind(c(180, 45), c(-180, 45)), rbind(c(180, -45), c(-180, -45)), crs = longlat))
-    plot(spTransform(hori.lines, CRSobj = PROJ), add=T, col = "darkgrey")
+    plot(spTransform(hori.lines, CRSobj = PROJ), add=T, col = "darkgrey", lwd = 0.6)
     vert.lines =  spLines(cbind(-120, seq(-90, 90, by = 0.1)), cbind(-60, seq(-90, 90, by = 0.1)), cbind(0, seq(-90, 90, by = 0.1)), cbind(60, seq(-90, 90, by = 0.1)), cbind(120, seq(-90, 90, by = 0.1)), crs = longlat)
-    lines(spTransform(vert.lines, CRSobj = PROJ), col = "darkgrey")
+    lines(spTransform(vert.lines, CRSobj = PROJ), col = "darkgrey", lwd = 0.6)
+    plot(pp_proj, add=T, lwd = 1.5)
     
     if (!is.null(points.to.add)) plot(spTransform(SpatialPoints(points.to.add, proj4string = longlat), CRSobj = PROJ), pch = 16, cex = 0.2, add=T)
     
@@ -197,7 +221,7 @@ land.polygon_eucentric <- readOGR("code/spatial_utils/shp_global110/", "110m_lan
     if (legend == T) {
       image.plot(axes=F, box=F, add = F, horizontal=T, legend.only = T,
                  zlim = zlim, interpolate=FALSE,
-                 col = col, colNA = "gray95", useRaster = T, main = main, breaks = c(zlim[1]-leg.col.diff*leg.const, seq(zlim[1], zlim[2], length.out = length(col)-1), zlim[2]+leg.col.diff*leg.const), 
+                 col = col, colNA = "gray95", useRaster = F, main = main, breaks = c(zlim[1]-leg.col.diff*leg.const, seq(zlim[1], zlim[2], length.out = length(col)-1), zlim[2]+leg.col.diff*leg.const), 
                  axis.args=list(labels = col.axis.lab, at = seq(zlim[1], zlim[2], length.out=nlab)),
                  legend.width = 0.7, legend.shrink = 0.6) # round(seq(zlim[1], zlim[2], length.out = length(col)+1), 4))   # colNA argument can be switched off
     }
@@ -254,21 +278,51 @@ land.polygon_eucentric <- readOGR("code/spatial_utils/shp_global110/", "110m_lan
       par(mar=c(1,1,1,1), oma=c(0,0,0,0))
     } 
     
-    plot(beta_proj, axes=F, box=FALSE, add = F, horizontal=T, legend=F,
-         zlim = c(zlim[1]-leg.col.diff, zlim[2]+leg.col.diff), interpolate=FALSE,
-         col = col, colNA = "gray92", useRaster = T, main = main, breaks =  c(zlim[1]-leg.col.diff*leg.const, seq(zlim[1], zlim[2], length.out = length(col)-1), zlim[2]+leg.col.diff*leg.const), asp = asp)
+    # Create a mask for NA values
+    beta_proj_NA <- beta_proj  # Create a logical mask where NA values are TRUE
+    values(beta_proj_NA)[values(is.na(beta_proj))] <- -9999  # Create a logical mask where NA values are TRUE
+
+    # Create a custom color palette including NA color
+    custom_colors <- c("gray93", col)  # 'gray92' for NA values, followed by your regular color palette
+    
+    # Modify the breaks to include an extra range for NA values
+    extended_breaks <- c(-10000, zlim[1] - leg.col.diff * leg.const, 
+                         seq(zlim[1], zlim[2], length.out = length(col) - 1), 
+                         zlim[2] + leg.col.diff * leg.const)
+    
+    # Plot the raster with the custom palette
+    plot(beta_proj_NA, 
+         axes = FALSE, 
+         box = FALSE, 
+         add = FALSE, 
+         horizontal = TRUE, 
+         legend = FALSE,
+         zlim = c(zlim[1] - leg.col.diff, zlim[2] + leg.col.diff), 
+         interpolate = FALSE,
+         col = custom_colors,  # Use the custom color palette
+         colNA = "gray96",  # Set the NA color directly
+         useRaster = FALSE, 
+         main = main, 
+         breaks = extended_breaks,  # Use the extended breaks
+         asp = asp)
+    
+    
+    # plot(beta_proj, axes=F, box=FALSE, add = F, horizontal=T, legend=F,
+    #     zlim = c(zlim[1]-leg.col.diff, zlim[2]+leg.col.diff), interpolate=FALSE,
+    #     col = col, colNA = "gray92", useRaster = F, main = main, breaks =  c(zlim[1]-leg.col.diff*leg.const, seq(zlim[1], zlim[2], length.out = length(col)-1), zlim[2]+leg.col.diff*leg.const), asp = asp)
+  
     # axis.args=list(labels = seq(zlim[1], zlim[2], length.out=nlab), at = seq(zlim[1], zlim[2], length.out=nlab))) # round(seq(zlim[1], zlim[2], length.out = length(col)+1), 4))   # colNA argument can be switched off
-    mtext(legend.text, side=1, line=-0.5)
+    mtext(legend.text, side=1, line=-0.3)
     plot(temp, add =T, horizontal=F, legend=F, useRaster=T, col="white", axes=F, box=FALSE, interpolate = F)  # temp simply color grid cells white that lie ouside of rectangle, 20190616
     
-    lines(spTransform(land.polygon_eucentric, CRSobj = PROJ), add=T, col = "grey")
+    lines(spTransform(land.polygon_eucentric, CRSobj = PROJ), add=T, col = "grey", lwd = 0.6)
     # plot(spTransform(land.polygon, CRSobj = PROJ), add = T)
-    plot(pp_proj, add=T, lwd = 2)
     
     hori.lines = (spLines(rbind(c(180, 0), c(-180, 0)), rbind(c(180, 45), c(-180, 45)), rbind(c(180, -45), c(-180, -45)), crs = longlat))
-    plot(spTransform(hori.lines, CRSobj = PROJ), add=T, col = "darkgrey")
+    plot(spTransform(hori.lines, CRSobj = PROJ), add=T, col = "darkgrey", lwd = 0.6)
     vert.lines =  spLines(cbind(-120, seq(-90, 90, by = 0.1)), cbind(-60, seq(-90, 90, by = 0.1)), cbind(0, seq(-90, 90, by = 0.1)), cbind(60, seq(-90, 90, by = 0.1)), cbind(120, seq(-90, 90, by = 0.1)), crs = longlat)
-    lines(spTransform(vert.lines, CRSobj = PROJ), col = "darkgrey")
+    lines(spTransform(vert.lines, CRSobj = PROJ), col = "darkgrey", lwd = 0.6)
+    plot(pp_proj, add=T, lwd = 1.5)
 
     if (!is.null(raster.to.add)) {
       
@@ -280,7 +334,7 @@ land.polygon_eucentric <- readOGR("code/spatial_utils/shp_global110/", "110m_lan
         col.seq = seq(zlim[1], zlim[2], length.out = length(col))
         col.ix = which.min(abs(points.to.add.val[i] - col.seq))
         point.to.add = SpatialPoints(data.frame(x = points.to.add.coord[i,1], y = points.to.add.coord[i,2]))
-        points(spTransform(SpatialPoints(point.to.add, proj4string = longlat), CRSobj = PROJ), bg =  col[col.ix], col = "grey40", pch = 21, cex = 1)
+        points(spTransform(SpatialPoints(point.to.add, proj4string = longlat), CRSobj = PROJ), bg =  col[col.ix], col = "grey40", pch = 21, cex = 0.8, lwd = 0.2)
       }
     }
     

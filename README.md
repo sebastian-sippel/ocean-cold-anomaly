@@ -3,6 +3,10 @@
 ## Name
 Early 20th century cold bias in observational ocean surface temperature
 
+[![DOI](https://zenodo.org/badge/817366226.svg)](https://zenodo.org/doi/10.5281/zenodo.13646027)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 ## Description
 This repository contains code to reproduce the findings of the paper 'Early 20th century cold bias in observational ocean surface temperature' (by Sippel, Kent, Meinshausen, Chan, Kadow, Neukom, Fischer, Humphrey, Rohde, de Vries, and Knutti), and this README describes the code and data for reproducibility. 
 
@@ -109,7 +113,7 @@ To process all data from their original source requires to download all data fro
 
 
 ## Authors and acknowledgment
-The Github repository is maintained by the corresponding author (Sebastian Sippel, sebastian.sippel@uni-leipzig.de). All acknowledgements and references are available in the published paper. [![DOI](https://zenodo.org/badge/817366226.svg)](https://zenodo.org/doi/10.5281/zenodo.13646027).
+The Github repository is maintained by the corresponding author (Sebastian Sippel, sebastian.sippel@uni-leipzig.de). All acknowledgements and references are available in the published paper.
 
 
 ## License
